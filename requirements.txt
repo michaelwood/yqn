@@ -1,0 +1,11 @@
+Django==2.1
+django-rest-framework
+feedparser
+pytz
+social-auth-core
+social-auth-app-django
+django-filter
+django-registration
+mysqlclient
+bleach
+python-magic

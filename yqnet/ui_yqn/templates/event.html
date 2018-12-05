@@ -1,0 +1,16 @@
+{% extends 'events_base.html' %}
+{% load static %}
+{% block events_content %}
+
+<div class="my-3 p-3 bg-white rounded">
+    <div class="clearfix pb-1 mb-0  ">
+        <div id="events-app">
+            <events event-id="{{id}}"></events>
+        </div>
+
+    </div>
+</div>
+
+{% load vue_widget %}
+{% vue_widget "events.html" %}
+{% endblock %}

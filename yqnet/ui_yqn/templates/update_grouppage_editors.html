@@ -1,0 +1,43 @@
+<html>
+{% load static %} {% load bootstrap_tags %}
+<!-- TODO temporary UI to be loaded as an iframe until a better solution is developed -->
+
+<head>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static "vendor/bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+
+    <script src="{% static "vendor/jquery/jquery-3.3.1.min.js" %}"></script>
+    <!-- Custom styles for this template TODO ? -->
+    <script src="{% static "vendor/popper/popper.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/bootstrap-helpers.js" %}"></script>
+
+    <link href="{% static "vendor/chosen/component-chosen.min.css" %}" rel="stylesheet">
+    <script src="{% static "vendor/chosen/chosen.jquery.min.js" %}"></script>
+    <script>
+        $(document).ready(function () {
+            $("select").chosen();
+            $(".chosen-search-input").prop("placeholder", "Username...");
+
+            if (window.location.search.indexOf("success") != -1){
+                $("#success-msg").show();
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <p id="success-msg" style="display: none" class="alert alert-success">Sucessfully Updated</p>
+    <h6>Users who can edit "{{object.title}}"</h6>
+
+    <div class="mt-4">
+        <form method="post">{% csrf_token %} {{ form|as_bootstrap }}
+            <input type="submit" class="btn btn-primary d-block ml-auto" value="Save">
+        </form>
+    </div>
+
+
+</body>
+
+</html>

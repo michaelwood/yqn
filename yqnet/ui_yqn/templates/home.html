@@ -1,0 +1,91 @@
+
+<!--- TEMPLATE NOT IN USE -->
+
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+{% load static %}
+
+     <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
+          <a href="#" tabindex=0 class="float-right small" data-trigger="focus" data-placement="left" data-content="These are posts aggregated from around the web and from
+                  the YQN community. The views expressed in these posts are their own
+                  authors and
+                  not of YQN" data-toggle="popover" data-container="body">
+            <i class="far fa-question-circle"></i>
+          </a>
+        
+          <h6 class="float-left">Home</h6>
+        </div>
+
+      <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h6 class="border-bottom border-gray pb-2 mb-0">Recently added stuff</h6>
+        {% for post in posts %}
+
+        <div class="media text-muted pt-3">
+          <img src="{{post.thumbnail_computed}}" alt="logo" class="mr-2 rounded-circle" style="max-width: 50px">
+          <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+            <strong class="d-block text-gray-dark">{{post.title}}</strong>
+            {{post.text|striptags|truncatewords_html:20|safe}}
+          </p>
+        </div>
+
+        {% endfor %}
+        <small class="d-block text-right mt-3">
+          <a href="{% url "posts" %}">All Posts</a>
+        </small>
+
+        {% for event in events %}
+        <div class="media text-muted pt-3">
+          <div class="rounded-circle bg-dark d-block mr-2" style="width:50px; height:50px;" >
+              <i class="far fa-calendar-alt"></i> 
+          </div>
+          <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+            <strong class="d-block text-gray-dark">{{event.title}}</strong>
+            {{event.description|striptags|truncatewords_html:20}}
+          </p>
+        </div>
+        {% endfor %}
+
+        <small class="d-block text-right mt-3">
+          <a href="#">All events</a>
+        </small>
+      </div>
+
+      <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h6 class="border-bottom border-gray pb-2 mb-0">Random twitter feed</h6>
+        <div class="media text-muted pt-3">
+          <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
+          <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <strong class="text-gray-dark">Full Name</strong>
+              <a href="#">Follow</a>
+            </div>
+            <span class="d-block">@username</span>
+          </div>
+        </div>
+        <div class="media text-muted pt-3">
+          <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
+          <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <strong class="text-gray-dark">Full Name</strong>
+              <a href="#">Follow</a>
+            </div>
+            <span class="d-block">@username</span>
+          </div>
+        </div>
+        <div class="media text-muted pt-3">
+          <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
+          <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <strong class="text-gray-dark">Full Name</strong>
+              <a href="#">Follow</a>
+            </div>
+            <span class="d-block">@username</span>
+          </div>
+        </div>
+        <small class="d-block text-right mt-3">
+          <a href="#">All suggestions</a>
+        </small>
+      </div>
+{% endblock %}

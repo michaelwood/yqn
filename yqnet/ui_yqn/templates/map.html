@@ -1,0 +1,73 @@
+{% extends 'events_base.html' %}
+{% load static %}
+{% block events_content %}
+<link rel="stylesheet" href="{% static "/vendor/leaflet/leaflet.css" %}" />
+<script src="{% static "/vendor/leaflet/leaflet.min.js" %}"></script>
+
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+    <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
+
+
+
+    <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
+      <div class="float-right">
+
+        {% if user.is_authenticated %}
+
+        <button title="Add Single Event" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-Events">
+            <i class="fas fa-plus-circle"></i>
+             Event
+        </button>
+
+        <button title="Add Events location" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-EventsLocations">
+            <i class="fas fa-plus-circle"></i>
+             Regular Events
+        </button>
+        {% else %}
+
+        <a href="{% url "login" %}?next={% url "map" %}?action=do_post" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus-circle"></i>
+            Event
+        </a>
+
+        <a href="{% url "login" %}?next={% url "map" %}?action=do_post" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus-circle"></i>
+            Regular Events
+        </a>
+
+        {% endif %}
+
+        <button id="locate-me" class="btn btn-sm btn-secondary" onClick="yqnBus.$emit('locate-me')">
+                <i class="far fa-compass"></i>
+                Locate Me
+        </button>
+
+      </div>
+
+      <h6 class="float-left">Events</h6>
+        <a href="#" tabindex=0 class="small float-left ml-2" data-trigger="focus" data-placement="left" data-content="These are event aggregated from around the web and from
+           the YQN community. The events are not run by YQN" data-toggle="popover" data-container="body">
+            <i class="far fa-question-circle"></i>
+        </a>
+    </div>
+
+    <div id="map-app" class="mt-2" >
+        <map-area></map-area>
+    </div>
+
+</div>
+
+{% load vue_widget %}
+
+{% vue_widget "map.html" %}
+
+{% if user.is_authenticated %}
+<div id="add-object-modal-app" v-cloak>
+  <add-object-modal start-model="EventsLocations" success="Thank you for adding your event" title="Add a location"></add-object-modal>
+  <add-object-modal start-model="Events" title="Add your one-off event" success="Thank you for adding your event"></add-object-modal>
+</div>
+
+{% vue_widget "add-object-modal.html" %}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "userprofile_base.html" %}
+
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+
+{% load bootstrap_tags %}
+
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+    <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
+    <h6>Update your details</h6>
+    </div>
+
+    <div class="mt-4">
+        <form method="post">{% csrf_token %} {{ form|as_bootstrap }}
+            <input type="submit" class="btn btn-primary d-block ml-auto" value="Update">
+        </form>
+    </div>
+
+</div>
+{% endblock %}

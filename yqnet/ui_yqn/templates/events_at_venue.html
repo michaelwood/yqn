@@ -1,0 +1,20 @@
+{% extends 'events_base.html' %}
+{% load static %}
+
+{% block extra_nav %}
+    <a href="{% url "venue" id %}" id="venue-title" class="nav-link"></a>
+{% endblock %}
+
+{% block events_content %}
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+    <div class="clearfix pb-1 mb-0  ">
+        <div id="venue-app" >
+            <venue venue-id="{{id}}"></venue>
+        </div>
+
+    </div>
+</div>
+
+{% load vue_widget %}
+{% vue_widget "events-at-venue.html" %}
+{% endblock %}

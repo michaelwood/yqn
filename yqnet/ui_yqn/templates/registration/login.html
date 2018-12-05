@@ -1,0 +1,37 @@
+
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+{% load bootstrap_tags %}
+
+<div class="container">
+
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h5>Login</h5>
+
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            {{form|as_bootstrap}}
+
+           <a href="{% url 'password_reset' %}" class="d-block mb-2">Lost password?</a>
+
+
+           <div class="d-flex flex-row-reverse">
+            <input type="submit" class="btn btn-primary" value="Login"> 
+            <a href="{% url 'django_registration_register' %}" class="mr-2" >Register</a>
+            </div>
+
+
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+    <h5>Or Login with <a href="{% url 'social:begin' 'google-oauth2' %}" class="mt-2" >Google Account</a></h5>
+
+
+
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+
+{% block title %}Groups{% endblock %}
+
+{% block category_nav %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+    <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
+        <div class="float-right">
+        
+            
+            {% if user.is_authenticated %}
+        
+            <button title="" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-GroupPages" data-original-title="Add Group Page">
+                <i class="fas fa-plus-circle"></i>
+                Group Page
+            </button>
+        
+            <button title="" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#add-object-modal-GroupRedirectPages" data-original-title="Add Link">
+                <i class="fas fa-plus-circle"></i>
+                Link
+            </button>
+            {% else %} 
+
+            <a href="{% url "login" %}?next={% url "pages" %}?action=do_post" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus-circle"></i>
+                Group Page
+            </a>
+
+            <a href="{% url "login" %}?next={% url "pages" %}?action=do_post" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus-circle"></i>
+                Link
+            </a>
+
+            {% endif %}
+        
+        
+        </div>
+
+       <h5 class="float-left">Quaker Groups</h5>
+        <a href="#" tabindex=0 class="float-left small ml-2 text" data-trigger="focus" data-placement="left" data-html="true" data-content='These are pages by the YQN community. The views expressed in these posts are their own
+           authors and not of YQN.' data-toggle="popover" data-container="body">
+            <i class="far fa-question-circle"></i>
+        </a>
+ 
+
+    </div>
+
+    <div class="card-deck">
+    {% for page in pages %}
+    <div class="card page-list-item m-4" style="min-width: 10rem;"  >
+        <div class="card-header">
+            {{page.title}}
+        </div>
+        <div class="card-body overflow-hidden"> 
+            <h5 class="card-title">{{page.title}}</h5>
+            {% if page.body %}
+            <p class="card-text">
+            {{page.body|striptags|truncatewords_html:10|safe}}
+            </p>
+            {% endif %}
+
+            <p class="card-text small text-muted">
+            Short link: <a href="{% url "user-pages" page.slug %}">{{origin}}{% url "user-pages" page.slug %}</a>
+            </p>
+
+            {% if page.redirect %}
+            <p class="card-text">
+            <a href="{{page.redirect}}" target="_blank">{{page.redirect}} 
+                <i class="fas fa-directions"></i>
+            </a>
+            </p>
+            {% endif %}
+
+            <a href="{% if page.redirect %}{{page.redirect}}{% else %}{% url "user-pages" page.slug %}{% endif %}"
+                class="btn btn-primary card-link">Vist</a>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+
+    <small class="d-block text-right mt-3">
+        {{page.last_modified}}
+    </small>
+</div>
+
+{% load vue_widget %}
+
+{% if user.is_authenticated %}
+<div id="add-object-modal-app" v-cloak>
+  <add-object-modal start-model="GroupPages" title="Create a Page"></add-object-modal>
+  <add-object-modal start-model="GroupRedirectPages" title="Add a Link"></add-object-modal>
+</div>
+
+{% vue_widget "add-object-modal.html" %}
+{% endif %}
+
+<script>
+    /* TODO temp for DEMO */
+    yqnBus.$on("data-added", function(data){
+        console.log(data);
+        window.location.reload();
+    });
+</script>
+
+{% endblock %}
+

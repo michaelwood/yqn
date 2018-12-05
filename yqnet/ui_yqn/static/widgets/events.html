@@ -1,0 +1,211 @@
+
+<script type="text/x-template" id="events-template">
+ <div id="events-widget">
+    <span v-if="!eventId">
+
+    <div class="border-gray p-1 mb-0">
+        Show:
+        <a href='#' class="badge badge-light"
+         v-for="month in futureMonths"
+         v-on:click.prevent="showMonth = month">{{month.name}}</a>
+    </div>
+
+    <h2>{{showMonth.name}}</h2>
+
+    </span>
+
+    <p v-if="events.length == 0">None found</p>
+
+    <transition-group name="list" tag="div">
+        <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="event in events" v-bind:key="event.id" >
+
+            <div class="d-flex flex-column flex-fill">
+
+                <div class="d-flex flex-row">
+                    <div class="rounded-circle post-thumb d-block" style="min-width: 90px; background-color: #343a40">
+                            <h3 class="text-center mt-4" style="color: white;">{{event.display_day}}</h3>
+                    </div>
+                    <div class="ml-3 d-flex flex-column pb-2 flex-fill">
+                        <h3>{{event.title}}</h3>
+                        <p>
+                            Start: {{event.display_date_time_start}}<br />
+                            Finish: {{event.display_date_time_end}} <br />
+                            Location: <a v-bind:href="event.venue_details.url" title="All events at this venue">{{event.venue_details.title}}</a> <span v-html="event.venue_details.address"></span> <a v-bind:href="'https://www.google.com/maps/search/?api=1&query=' + encodeURI(event.venue_details.lat)+',' +encodeURI(event.venue_details.lng) ">Map</a>
+                        </p>
+                    </div>
+                </div>
+
+                <p v-html="event.description"></p>
+                <!-- if the link is relative it won't have http so no point linking to ourselves to find out more -->
+                <a v-if="event.url.indexOf('http') !== -1" v-bind:href="event.url">Find out more</a>
+                <a v-if="event.has_email" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Event', objectId: event.id, title: event.title } )" class="ml-auto">Contact organiser</a>
+
+            </div>
+                <div class="dropdown dropleft action-menu-yqn">
+                    <a href class="action-menu-yqn p-1 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                       <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(event.url)">Share</a>
+                        <a v-if="event.user.username === yqnUtils.loggedInUsername" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(event.id)">Delete</a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Events', objectId: event.id, title: 'Report: '+event.title, report: true })">Report <i class="far fa-flag"></i></a>
+                    </div>
+                </div> <!-- / dropdown -->
+        </div>
+    </transition-group>
+</div> <!-- end events widget -->
+</script>
+
+
+<script type="text/javascript">
+
+    var MAX_POST_HEIGHT = 500;
+
+    Vue.component('events', {
+        props: {
+            'eventId': { type: String, default: null },
+  
+         },
+        template: '#events-template',
+
+        data: function() { 
+            return {
+            yqnUtils: yqnUtils,
+            yqnBus: yqnBus,
+            expandedPostCSSClass: "event-expand-overflow-open",
+            expandedPost: undefined,
+            events: [],
+            enabled: false,
+            nextPageUrl: "",
+
+            futureMonths: [],
+            showMonth: null,
+
+            months : [
+                { name: "January", calNum: 1 },
+                { name: "Feburary", calNum: 2 },
+                { name: "March", calNum: 3 },
+                { name: "April", calNum: 4},
+                { name: "May", calNum: 5},
+                { name: "June", calNum: 6},
+                { name: "July", calNum: 7 },
+                { name: "August", calNum: 8 },
+                { name: "September" , calNum: 9 },
+                { name: "October" , calNum: 10 },
+                { name: "November" , calNum: 11 },
+                { name: "December", calNum: 12 },
+            ],
+
+            currentUser: null,
+            currentMonth:  new Date().getMonth(), /* Jan = 0 */
+            currentEventId: null,
+            }
+        },
+
+        watch: {
+            showMonth: 'fetchData',
+            limit: 'fetchData',
+            currentUser: 'fetchData',
+            currentEventId: 'fetchData',
+        },
+
+        created: function (){
+            /* Remember that months start at 0 */
+            for (var i=this.currentMonth; i < this.months.length; i++){
+                this.futureMonths.push(this.months[i]);
+
+                if (!this.showMonth && (this.currentMonth+1) == this.months[i].calNum ){
+                    this.showMonth = this.months[i];
+                }
+            }
+
+            if (window.location.hash.indexOf("event-") > 0){
+                this.currentEventId =  window.location.hash.substr(("#event-").length)
+            }
+            
+            let ctx = this;
+
+            yqnBus.$on("data-added", function(){ 
+                /* TODO instead of refresh we could appened to the events[] ? */
+                console.log("Get message data changed");
+                ctx.fetchData();
+             });
+
+
+        },
+
+        updated: function(){
+            /* Setup the Bootstrap tooltips */
+            this.$nextTick(function () {
+                $(".list-item [title]").tooltip();
+            });
+        },
+
+        methods: {
+            fetchData() {
+                var incoming = this;
+
+                var url = "/api/Events/"
+
+                if (!this.eventId) {
+
+                    console.log("Fetching data month" + this.showMonth);
+
+                    var startDate = new Date();
+                    var endDate = new Date();
+
+                    startDate.setDate(01);
+                    startDate.setMonth(this.showMonth.calNum - 1);
+
+                    endDate.setMonth(this.showMonth.calNum - 1);
+                    endDate.setDate(yqnUtils.getDaysInMonth(this.showMonth.calNum));
+
+
+                    /* Split on the time component out as we don't care about the exact time */
+                    var params = {
+                        date_time_start_after: startDate.toISOString().split("T")[0],
+                        date_time_start_before: endDate.toISOString().split("T")[0],
+                    };
+                } else {
+                    var params = { id: this.eventId };
+                }
+
+            
+
+                url += yqnUtils.urlParams(params);
+
+                $.getJSON(url, function (data) {
+                    incoming.events = data;
+                    incoming.enabled = true;
+                    incoming.nextPageUrl = data.next;
+                });
+            },
+
+            expandPost(id, event){
+                $(event.srcElement).tooltip('hide');
+
+                if (this.expandedPost === id){
+                    this.expandedPost = -1;
+                    event.srcElement.scrollIntoView(false);
+                } else {
+                    /* Open */
+                    this.expandedPost = id;
+                }
+            },
+
+            deleteObj(id){
+                ctx = this;
+                yqnUtils.delete("/api/Event/" + id, function(){
+                    yqnBus.$emit("notify", { title: "Deleted", body: "Post deleted"});
+                    ctx.fetchData();
+                });
+            }
+
+        }
+    });
+
+var vApp = new Vue({
+    el: '#events-app',
+});
+
+</script>

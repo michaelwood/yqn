@@ -1,0 +1,58 @@
+<script type="text/template" id="notifications-template">
+    <div class="messages-container"  style="position: fixed; top: 60px; right: 10px; z-index: 999;" aria-live="polite" aria-atomic="true">
+
+        <div v-for="msg in messages" v-bind:id="msg.id" class="toast bg-light" style="min-width: 200px" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-bell mr-2"></i>
+                <strong class="mr-auto">{{msg.title}}</strong>
+                <small class="text-muted ml-2">{{msg.time}}</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                {{msg.body}}
+            </div>
+        </div>
+
+   </div>
+</script>
+
+
+<script type="text/javascript">
+Vue.component('notifications', {
+        template: "#notifications-template",
+
+        data: function(){
+            return {
+                messages: [],
+            }
+        },
+
+        updated: function(){
+            this.$nextTick(function(){
+                $(".toast").toast({ delay: 4000 });
+                $("#" + this.messages[this.messages.length -1].id).toast("show");
+            });
+        },
+
+        created: function(){
+            var ctx = this;
+
+            yqnBus.$on("notify", function(msg){
+                if (msg.title == undefined || msg.body == undefined){
+                    console.log("Set a title and body please");
+                    return;
+                }
+                msg.id = "notification-"+Date.now(),
+                msg.time = new Date(Date.now()).toLocaleTimeString(),
+                ctx.messages.push(msg)
+            });
+        },
+});
+
+
+var vApp = new Vue({
+    el: '#notifications-app',
+});
+</script>

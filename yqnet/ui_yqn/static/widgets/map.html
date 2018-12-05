@@ -1,0 +1,272 @@
+<script type="text/x-template" id="map-template">
+<div>
+
+    <!-- postcode modal -->
+    <div class="modal fade" id="postcode-modal" tabindex="-1" role="dialog" aria-labelledby="postcodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="postcodeModalLabel">Enter your post code</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Your browser didn't allow us to locate you, but you can still find yourself via a postcode</p>
+                <p v-if="postcodeErr" class="alert alert-warning">{{postcodeErr}}</p>
+                <form>
+                    <div class="form-group">
+                        <label for="postcode">Post code</label>
+                        <input type="text" id="postcode" name="postcode" class="form-control" v-model="postcode" />
+
+                        <!-- Link TODO -->
+                        <small class="form-text text-muted"><a href="/privacy">Privacy policy</a></small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" v-on:click="locateByPostCode">Locate</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <a name="map" />
+    <div id="map-render-area" style="min-height: 70vh;" class="mb-2"></div>
+
+
+    <transition-group name="list" tag="div">
+        <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="venue in venues" v-bind:key="venue.id">
+            <a v-bind:name="venue.title"></a>
+
+            <div class="d-flex flex-column flex-fill">
+
+                <div class="d-flex flex-row flex-fill">   
+                    <div class="rounded-circle post-thumb d-block" style="min-width: 90px; background-color: #343a40">
+                        <h3 class="text-center mt-4" style="color: white;"><i class="fas fa-map-marker-alt"></i></h3>
+                    </div>
+
+                    <div class="ml-3 d-flex flex-column pb-2 flex-fill">
+                        <h3>{{venue.title}}</h3>
+                        <p>
+                            Location: <span v-html="venue.address"></span> {{venue.postcode}} <a v-bind:href="'https://www.google.com/maps/search/?api=1&query=' + encodeURI(venue.postcode)">Google Map</a>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column mt-3">
+                    <ul>
+                        <li v-for="event in venue.eventslocation_set"><a v-bind:href="event.url">{{event.title}}</a> (regular events)</li>
+                        <li v-for="event in venue.event_set"><a  v-bind:href="event.url">{{event.title}}</a> {{event.start}} - {{event.end}}</li>
+                    </ul>
+                    <a href="#map" class="ml-auto">Back to map</a>
+                </div>
+
+            </div>
+            
+            <div class="dropdown dropleft action-menu-yqn">
+                <a href class="action-menu-yqn p-1 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" v-bind:href="venue.url">Venue</a>
+                    <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(venue.url)">Share</a>
+                    <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Venue', objectId: 'venue.id', report: true, title: venue.title })" >Report <i class="far fa-flag"></i></a>
+                </div>
+            </div> <!-- / dropdown -->
+        </div>
+    </transition-group>
+
+
+</div>
+</script>
+
+<script>
+
+Vue.component('map-area', {
+        template: '#map-template',
+        
+        data: function(){
+            return {
+                yqnUtils: yqnUtils,
+                yqnBus: yqnBus,
+                located: false,
+                venues: [],
+                map: null,
+                markers: [],
+                postcode: "",
+                postcodeErr: null,
+                fetchDataDelay: null,
+            }
+        },
+
+        updated: function(){
+
+            this.$nextTick(function () {
+                /* Remove the old markers */
+                for (let i=0; i<this.markers.length; i++){
+                    this.markers[i].removeFrom(this.map);
+                }
+
+                this.markers = [];
+
+                /* Add the new ones */
+
+                for (let i = 0; i < this.venues.length; i++) {
+                    var m = L.marker([this.venues[i].lat, this.venues[i].lng]).addTo(this.map)
+                        .bindPopup('<a href="#'+ this.venues[i].title +'">'+ this.venues[i].title + '</a>');
+                    this.markers.push(m);
+                }
+
+            });
+
+        },
+
+        created: function(){
+            let ctx = this;
+            /* This comes from the locate me button way up the page out of the
+             * scope for this component */
+            yqnBus.$on("locate-me", function(){
+                ctx.locate();
+            });
+
+
+            yqnBus.$on("data-added", function () {
+                console.log("Get message data changed");
+                ctx.fetchData();
+            });
+
+        },
+
+        mounted: function () {
+            let ctx = this;
+
+            $(document).ready(function(){
+
+                ctx.map = L.map('map-render-area', {
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(ctx.map);
+
+                /* fetchData will be triggered by the zoom to location
+                ctx.map.on("locationfound", function(){
+                    ctx.fetchData();
+                }); */
+
+                ctx.map.on("zoomend",  ctx.fetchData);
+                ctx.map.on("moveend",  ctx.fetchData);
+                ctx.map.on("resize",  ctx.fetchData);
+
+                ctx.map.on("locationerror", function(e){
+                    $("#postcode-modal").modal("show");
+                });
+
+                ctx.map.on("locationfound", function(e){
+                    ctx.located = true;
+                });
+
+                ctx.locate();
+
+            });
+        },
+
+        watch: {
+            located: "fetchData",
+        },
+
+        methods: {
+
+            fetchDataDelay: function(){
+                /* Add a short delay in fetching the data to avoid hitting the API
+                 * at every change event if the changes are happening rapidly
+                 * (e.g. panning the map) 
+                 */
+                if (this.fetchDataDelay){
+                    window.clearTimeout(this.fetchDataDelay);
+                }
+
+                let ctx = this;
+
+                this.fetchDataDelay = window.setTimeout(function(){
+                    ctx.fetchData();
+                }, 1000);
+            },
+
+            locate: function() {
+                this.map.locate({
+                    setView: true,
+                    maxZoom: 11,
+                });
+            },
+
+            fetchData: function(){
+                if (!this.located){
+                    console.log("Can't yet show anything until we have a location")
+                    return;
+                }
+
+                let bounds = this.map.getBounds();
+                let topRight = bounds.getNorthEast();
+                let bottomLeft = bounds.getSouthWest();
+
+                let param = {
+                    lat_min: bottomLeft.lat,
+                    lat_max: topRight.lat,
+
+                    lng_min: bottomLeft.lng,
+                    lng_max: topRight.lng,
+                };
+
+                let url = "/api/EventsAtVenue/" + yqnUtils.urlParams(param);
+
+                let ctx = this;
+                        
+                $.getJSON(url, function(data){
+                    ctx.venues = data;
+                });
+            },
+
+            locateByPostCode: function(){
+
+                this.postcodeErr = null;
+
+                let ctx = this;
+
+                $.getJSON("https://mapit.mysociety.org/postcode/" + this.postcode,
+                function(data){
+                    if (data.length == 0){
+                        ctx.postcodeErr = "No results for postcode"
+                        return;
+                    }
+
+                    $("#postcode-modal").modal("hide");
+                    ctx.located = true;
+
+                    ctx.map.setView([data.wgs84_lat, data.wgs84_lon], 11, { maxZoom: 11 });
+
+
+                }).fail(
+                function(data){
+                    console.log("error doing postcode lookup");
+                    ctx.postcodeErr = data.responseJSON.error;
+                });
+
+
+
+            },
+
+        },
+
+});
+
+
+var vApp = new Vue({
+    el: '#map-app',
+});
+</script>
+
+
+ 

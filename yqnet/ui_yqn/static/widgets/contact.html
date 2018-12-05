@@ -1,0 +1,138 @@
+<script type="text/x-template" id="contact-template">
+
+<!-- Contact modal -->
+  <div class="modal fade" id="contact-modal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 v-if="report" class="moda-title" id="contactModalLabel">Report</h5>
+          <h5 v-else class="modal-title" id="contactModalLabel">Contact</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <p v-if="report">Report an issue to site admin.</p>
+            <h6>Subject: {{title}}</h6>
+
+
+            <div v-if="error" class="alert alert-warning">Please check the form.
+                    <span class="alert-error"> {{error}} </span>
+                </span>
+            </div>
+
+
+            <form>
+                <span v-if="!yqnUtils.loggedInUsername">
+                    <div class="form-group">
+                        <label for id="name">Name</label>
+                        <input type="text" class="form-control" v-model="message['name']" placeholder="Name" id="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for id="email">Email</label>
+                        <input type="email" v-model="message['email']" placeholder="Email address" class="form-control" id="email" required>
+                    </div>
+                </span>
+
+                <div class="form-group">
+                    <label for="body">Message</label>
+                    <textarea id="body" class="form-control" v-model="message['body']" placeholder="Your Message here" required></textarea>
+                </div>
+
+                <input type="text" name="url" class="d-none" v-model="message['url']" required>
+            </form>
+
+       </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" v-on:click.prevent="send">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</script>
+
+<script type="text/javascript">
+Vue.component('contact', {
+    template: "#contact-template",
+
+    data: function(){
+        return {
+            objectId: -1,
+            yqnUtils: yqnUtils,
+            modelName: '',
+            title: "",
+            error: null,
+            message: {},
+            report: false,
+        }
+    },
+
+    updated: function(){
+        this.$nextTick(function(){
+        });
+    },
+
+    created: function(){
+        let ctx = this;
+
+        yqnBus.$on("contact", function(data){
+
+            if (data.modelName === undefined || data.objectId === undefined
+                || data.title == undefined) {
+                    console.log("Not enough parameters for contact widget");
+                    return;
+                }
+
+            ctx.modelName = data.modelName;
+            ctx.objectId = data.objectId;
+            ctx.title = data.title;
+            ctx.report = data.hasOwnProperty("report");
+
+            $("#contact-modal").modal("show");
+        });
+    },
+
+    methods: {
+        send: function(){
+            let ctx = this;
+
+            let data = {
+                modelName: this.modelName,
+                objectId: this.objectId,
+                message: this.message,
+                report: this.report,
+            };
+
+            $.post("/api/Contact/", JSON.stringify(data),
+                function(data){
+                    $("#contact-modal").modal("hide");
+
+                    yqnBus.$emit("notify", { title: "Sent!" , body: "Message sent successfully" });
+                    
+                    ctx.error = null;
+                    ctx.message = {};
+                    ctx.objectId = -1;
+                    ctx.title = '';
+                    ctx.modelName = '';
+                },
+            ).fail(function(error){
+                console.log(error);
+                window.scroll(0,0);
+                try {
+                    ctx.error = error.responseJSON.error;
+                } catch {
+                    ctx.error = "Server error :( Please report this."
+                }
+            });
+
+        },
+    },
+});
+
+var vApp = new Vue({
+    el: '#contact-app',
+});
+</script>

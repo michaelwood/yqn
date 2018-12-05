@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block category_nav %}
+    <div class="nav-scroller bg-white shadow-sm">
+        <nav class="nav nav-underline">
+            <a class="nav-link" href="{% url 'edit-profile' %}">
+                Edit Profile
+            </a>
+
+            <a class="nav-link" href="{% url 'password_change' %}">
+                Change Password
+            </a>
+        </nav>
+    </div>
+{% endblock %}
+

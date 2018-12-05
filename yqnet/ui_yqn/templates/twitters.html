@@ -1,0 +1,55 @@
+{% extends 'posts_base.html' %}
+{% block posts_content %}
+{% load static %}
+{% load vue_widget %}
+
+<script async src="{% static "vendor/twitter/widgets.min.js" %} " charset="utf-8"></script>
+
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+
+    <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
+      <div class="float-right">
+        {% if user.is_authenticated %}
+        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-Twitters">
+            <i class="fas fa-plus-circle"></i>
+             Twitter
+        </button>
+        {% else %}
+        <a href="{% url "login" %}?next={% url "posts" %}?action=do_post" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus-circle"></i>
+             Twitter
+        </a>
+        {% endif %}
+      </div>
+
+      <h6 class="float-left">Recent Tweets</h6>
+        <a href="#" tabindex=0 class="small float-left ml-2" data-trigger="focus" data-placement="left" data-content="These tweets are aggregated from around the web and from
+            the YQN community. The views expressed in these posts are their own
+            authors and
+            not of YQN" data-toggle="popover" data-container="body">
+        <i class="far fa-question-circle"></i>
+      </a>
+
+</div>
+
+
+    <div class="d-flex flex-wrap justify-content-center">
+        {% for twit in twitter %}
+
+        <div class="tweet p-1" id="twit-{{twit.id}}">
+            <a class="twitter-timeline" data-tweet-limit="1" data-width="500" data-height="500" data-dnt="true" href="https://twitter.com/{{twit.username}}"></a>
+        </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+
+<div id="add-object-modal-app" v-cloak>
+  <add-object-modal start-model="Twitters" title="Add your Twitter feed" success="Twitter feed added"></add-object-modal>
+</div>
+
+{% vue_widget "add-object-modal.html" %}
+
+{% endblock %}

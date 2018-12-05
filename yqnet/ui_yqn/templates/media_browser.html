@@ -1,0 +1,15 @@
+<form method="POST" action="{% url 'media-upload' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>File
+    <input name="file" type="file">
+    </label>
+    <input type="submit" value="Upload" />
+</form>
+
+<form method="POST" action="{% url 'media-upload' %}?group_page=true" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>File
+    <input name="file" type="file">
+    </label>
+    <input type="submit" value="Upload" />
+</form>

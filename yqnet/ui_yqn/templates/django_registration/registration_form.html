@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% load bootstrap_tags %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+    <h5>Register</h5>
+    <form method="post" action=".">
+        {% csrf_token %} {{ form|as_bootstrap }}
+        <input type="submit" class="ml-auto btn btn-primary d-block" value="{% trans 'Submit' %}" />
+    </form>
+</div>
+{% endblock %}

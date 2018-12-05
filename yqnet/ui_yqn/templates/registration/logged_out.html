@@ -1,0 +1,16 @@
+
+<!-- Template not in use. Just redirect to index as per settings -->
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <p>Bye!</p>
+        <a href="{% url 'login' %}">Login</a>
+
+    </div>
+</div>
+{% endblock %}
+

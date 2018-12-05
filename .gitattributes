@@ -1,0 +1,9 @@
+
+# Mark the minified files as binary so we don't git grep them
+*min.js binary
+*.map binary
+
+# These are a bit more akward as they're not generally identified as min
+yqnet/ui_yqn/static/vendor/*/*.css binary
+yqnet/ui_yqn/static/vendor/*/*/*.css binary
+

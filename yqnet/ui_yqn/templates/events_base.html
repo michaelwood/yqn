@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Events{% endblock %}
+
+{% block category_nav %}
+    <div class="nav-scroller bg-white shadow-sm">
+      <nav class="nav nav-underline">
+        <a class="nav-link" href="{% url "map" %}">Map
+            <i class="fas fa-map-marked-alt"></i>
+        </a>
+ 
+        <a class="nav-link" href="{% url "events" %}">
+			Listings
+			<span class="badge badge-pill bg-light align-text-bottom">{{total_events}}</span>
+        </a>
+        
+        {% block extra_nav %}
+        {% endblock %}
+      </nav>
+    </div>
+
+{% endblock %}
+
+
+{% block content %}
+
+{% load vue_widget %}
+
+  <div id="contact-app">
+      <contact></contact>
+  </div>
+
+{% vue_widget "contact.html" %}
+
+    {% block events_content %}
+    {% endblock %}
+
+{% endblock %}

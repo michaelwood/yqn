@@ -1,0 +1,305 @@
+{% load static %}
+{% load vue_widget %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{{page.title}} (YQN)</title>
+
+    <!-- Font Awesome -->
+    <link href="{% static "vendor/fontawesome/css/all.min.css" %}" rel="stylesheet">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static "vendor/bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+
+    <script src="{% static "vendor/jquery/jquery-3.3.1.min.js" %}"></script>
+    <!-- Custom styles for this template TODO ? -->
+<!--     <link href="{% static "css/user-page.css" %}" rel="stylesheet"> -->
+
+    <script src="{% static "vendor/popper/popper.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/bootstrap-helpers.js" %}"></script>
+
+
+    {% if DEBUG %}
+    <script src="{% static "vendor/vue/vue.js" %}"></script>
+    {% else %}
+    <script src="{% static "vendor/vue/vue.min.js" %}"></script>
+    {% endif %}
+
+    <script src="{% static "vendor/js-cookie/js.cookie.min.js" %}"></script>
+    <script src="{% static "js/yqn-utils.js" %}"></script>
+
+    <script>
+        var pageId = "{{page.id}}";
+        var pageTitle = "{{page.title}}";
+
+        $(document).ready(function(){
+            $("#contact-btn").click(function(e){
+                e.preventDefault();
+
+                let contactData = { 
+                    modelName: 'GroupPage',
+                    objectId: pageId, 
+                    title: pageTitle,
+                };
+
+                yqnBus.$emit("contact", contactData);
+            });
+        });
+
+    </script>
+
+    {# We only load tinymce when editing as its rather big #}
+    {% if editing %}
+
+    <script src="{% static "vendor/tinymce/tinymce.min.js" %}"></script>
+    <script>
+    var url = "/api/GroupPage/{{page.id}}";
+    var uploadUrl = "{% url 'api:media-upload' %}?group_page={{page.id}}";
+
+    $(document).ready(function(){
+
+        tinyMCE.init({
+                selector: "textarea",
+                plugins: "autolink code lists link emoticons image preview",
+                menubar: false,
+                toolbar: "undo redo | bold italic underline styleselect | bullist numlist emoticons | alignleft aligncenter alignright | link image | preview code",
+                statusbar: false,
+                image_list: url + "/images", //Such a stupid bit of UI...
+                images_upload_credentials: true,
+
+                file_picker_types: 'image',
+                images_upload_url: uploadUrl,
+                images_upload_handler: function(blobInfo, success, failure){
+                    let data = new FormData();
+                    data.append('file', blobInfo.blob(), blobInfo.filename());
+                    data.append("group_page", pageId);
+ 
+                    $.ajax({
+                        type: "POST",
+                        url: uploadUrl,                   
+                        enctype: 'multipart/form-data',
+                        headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+                        processData: false,
+                        contentType: false,
+                        data: data,
+                        success: function(data){
+                            success(data.location);
+                        },
+                        error: function(data){
+                            console.log(data);
+                            failure(data.responseText);
+                        },
+                    });
+                },
+    
+                setup: function(editor){
+
+                },
+            });
+
+            $("#delete-page").click(function(e){
+                e.preventDefault();
+                if (window.confirm("Really delete page?")){
+                    yqnUtils.delete(url, function(){               
+                        window.location = "/";
+                    });
+                }
+            });
+
+
+            $("#save-page").click(function(e){
+                e.preventDefault();
+
+                data = {
+                    body: tinyMCE.activeEditor.getContent(),
+                    title: $("input[name=title]").val(),
+                    slug:  $("input[name=slug]").val(),
+                    email:  $("input[name=email]").val(),
+                };
+
+                console.log(data);
+
+                $.ajax({
+                    type: "PATCH",
+                    url: url,
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    accept: 'application/json',
+                    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+                    success: function () { 
+                        window.scroll(0,0);
+                        yqnBus.$emit("notify", {title: "Saved", body: "All changes have been saved"});
+                    },
+                    error: function (error) { 
+                        console.log(error);
+                        var errorMsg = '';
+
+                        for (var i in error.responseJSON){
+                            errorMsg += i + " - " + error.responseJSON[i];
+                        }
+
+                        window.scroll(0,0);
+                        yqnBus.$emit("notify", {title: "Error saving", body: errorMsg});
+                    },
+                });
+
+            });
+
+            $("#open-permissions-modal").click(function(){
+               let iframe = $("#permissions-iframe");
+               iframe.prop("src", iframe.data("src"));
+            });
+
+    });
+    </script>
+    {% endif %}
+
+  </head>
+
+
+  <body class="bg-light">
+    {% csrf_token %}
+
+    <div id="notifications-app">
+        <notifications></notifications>
+    </div>
+    {% vue_widget "notifications.html" %}
+
+    <div id="contact-app">
+        <contact></contact>
+    </div>
+    {% vue_widget "contact.html" %}
+
+	  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+      <a class="mr-auto mr-lg-0" href="{% url "pages" %}">
+        <img alt="Young Quaker Network logo"
+        src="{% static "imgs/logo_yqn.png" %}"
+        data-toggle="tooltip"
+        height="15" title="Young Quaker Network" />
+      </a>
+
+      <div class="ml-auto">
+          <ul class="navbar-nav">
+              {% if user.is_authenticated %}
+              <li class="nav-item">
+                  <a class="nav-link p-0" href="{% url 'logout' %}">Logout {% if user.first_name %}
+                  {{user.first_name}}
+                  {% else %}
+                  {{user.username}}
+                  {% endif %}
+                </a>
+              </li>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                  <a class="nav-link p-0" href="{% url "login" %}">Login</a>
+              </li>
+              {% endif %}
+
+          </ul>
+      </div>
+
+
+	  </nav>
+
+	  <main role="main" class="container">
+
+	  <div class="my-3 p-3 bg-white rounded shadow-sm">
+		  <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
+            {% if editing and user_can_edit %}
+
+            <!-- Temp permissions modal -->
+            <div class="modal fade" id="permissions-modal" tabindex="-1" role="dialog" aria-labelledby="permissionsModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="permissionsModalLabel">Permissions</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe id="permissions-iframe" data-src="{% url "user-page-permissions" page.slug page.id %}"
+                        style="border: unset; width:100%; min-height: 45vh"
+                        ></iframe>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <!-- / permissions modal -->
+
+            <div class="d-flex flex-column flex-fill">
+                <h3>Editing: <a href="{% url "user-pages" page.slug %}" target="_blank">{{page.title}}</a></h3>
+                <div class="form-group">
+                    <label for="title-input">Title</label>
+                    <input type="text" id="title-input" class="form-control form-control-lg" name="title" value="{{page.title}}" />
+                </div>
+
+                <div class="form-group">
+                    <label for="slug-input">Slug</label>
+                    <input type="text" id="slug-input" class="form-control form-control-lg" name="slug" value="{{page.slug}}" />
+                </div>
+
+                <div class="form-group">
+                    <label for="email-input">Contact email</label>
+                    <input type="email" id="email-input" class="form-control form-control-lg" name="email" value="{{page.email}}" />
+                </div>
+
+            </div>
+
+            <p><i class="fas fa-user-edit mr-1"></i><a href="#" id="open-permissions-modal" data-toggle="modal" data-target="#permissions-modal">Edit permissions</a></p>
+
+
+
+            {% else %}
+             
+
+              <h3 class="float-left">{{page.title}}</h3>
+
+
+            {% endif %}
+
+            {% if user_can_edit and not editing %}
+              <a href="{% url "user-page-edit" page.slug %}" tabindex=0 class="btn btn-primary btn-sm float-right small" ><i class="fas fa-edit"></i> Edit</a>
+            {% endif %}
+          </div>
+          
+        {% if editing and user_can_edit %}
+            <label for="page-edit-content">Body</label>
+            <small>(<a href="https://getbootstrap.com/docs/4.3/layout/overview/" target="_blank">Bootstrap</a> available)</small>
+            <textarea id="page-edit-content" style="width:100%; min-height: 800px">{{page.body|safe}}</textarea>
+            <div class="d-flex flex-row mt-2 mb-2">
+                
+                <button class="btn btn-danger small" id="delete-page">Delete</button>
+                <button class="btn btn-primary small ml-auto" id="save-page">Save</button>
+            </div>
+        {% else %}
+ 
+          <div class="container">
+             {{page.body|safe}}
+          </div>
+
+        {% if page.has_email %}
+        <button class="ml-auto d-block btn btn-sm btn-secondary" id="contact-btn"><i class="fas fa-envelope"></i> Contact</button>
+        {% endif %}
+
+        {% endif %}
+
+		  <small class="d-block text-right mt-3">
+			  {{page.last_modified}}
+          </small>
+	  </div>
+
+	  </main>
+  </body>
+</html>
