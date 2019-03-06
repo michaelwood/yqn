@@ -54,7 +54,7 @@
                     </a>
                     <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(post.url)">Share</a>
                     <a v-if="post.user.username === yqnUtils.loggedInUsername" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(post.id)">Delete</a>
-                    <a class="dropdown-item" href="#">Report <i class="far fa-flag"></i></a>
+                    <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Posts', objectId: post.id, title: 'Report: '+post.title, report: true })">Report <i class="far fa-flag"></i></a>
                 </div>
             </div>
             <!-- / dropdown -->
@@ -103,6 +103,7 @@
         data: function() { 
             return {
             yqnUtils: yqnUtils,
+            yqnBus: yqnBus,
             expandedPostCSSClass: "post-expand-overflow-open",
             expandedPost: undefined,
             posts: [],
