@@ -27,7 +27,7 @@
                 </strong>
 
                 <div v-if="post.ext_author">
-                    <a v-bind:href="post.ext_url">{{post.ext_author}}</a> 
+                    <a v-bind:href="post.ext_url">{{post.ext_author}}</a>
                 </div>
                 <div v-else>
                    <a href="#">@{{post.user.username}}</a>
@@ -36,9 +36,9 @@
 
                 <div class="text-muted">
                     <i v-if="post.source === sourceTypes.BLOG.id" class="fas fa-globe-americas" data-toggle="tooltip" data-placement="top" title="Blog"> Blog</i>
-                    <i v-else-if="post.source === sourceTypes.PODCAST.id" class="fas fa-podcast" data-toggle="tooltip" data-placement="top" title="Podcast"> Podcast</i> 
-                    <i v-else-if="post.source === sourceTypes.LOCAL.id" class="fas fa-users" data-toggle="tooltip" data-placement="top" title="YQN community"> Quakr</i> 
-                    <i v-else-if="post.source === sourceTypes.NEWS.id" class="fas fa-newspaper" data-toggle="tooltip" data-placement="top" title="News"> News</i> 
+                    <i v-else-if="post.source === sourceTypes.PODCAST.id" class="fas fa-podcast" data-toggle="tooltip" data-placement="top" title="Podcast"> Podcast</i>
+                    <i v-else-if="post.source === sourceTypes.LOCAL.id" class="fas fa-users" data-toggle="tooltip" data-placement="top" title="YQN community"> Quakr</i>
+                    <i v-else-if="post.source === sourceTypes.NEWS.id" class="fas fa-newspaper" data-toggle="tooltip" data-placement="top" title="News"> News</i>
                     <span>{{post.publish_date}}</span>
                 </div>
             </div>
@@ -61,7 +61,7 @@
         </div>
 
 
-        <div class="media flex-fill pb-3 mb-0 lh-125 post-text-body post" 
+        <div class="media flex-fill pb-3 mb-0 lh-125 post-text-body post"
          v-bind:class="[ expandedPost == post.id ? expandedPostCSSClass : '']">
             <!-- start post text -->
             <div v-html="post.text" v-bind:data-postid="post.id" class="media-text post-text p-2" ref="post-text"></div>
@@ -71,7 +71,7 @@
         <div v-if="post.ext_url" class="flex-fill border-top p-3 font-italic">
             <a v-bind:href="post.ext_url" class="d-block text-right" target="_blank" v-bind:title="post.title">Continue Reading <i class="fas fa-external-link-alt"></i></a>
         </div>
- 
+
 <!--
         <div class="post-expand-overflow" v-if="post.source === sourceTypes.PODCAST.id">
             <button class="m-2 btn btn-sm btn-light" v-on:click="expandPost(post.id, $event)" data-toggle="tooltip" title="Expand">
@@ -95,12 +95,12 @@
     var MAX_POST_HEIGHT = 500;
 
     Vue.component('posts', {
-        props: { 
+        props: {
             'limit' : { default: 5  },
          },
         template: '#events-template',
 
-        data: function() { 
+        data: function() {
             return {
             yqnUtils: yqnUtils,
             yqnBus: yqnBus,
@@ -139,7 +139,7 @@
             }
 
             let ctx = this;
-            yqnBus.$on("data-added", function(){ 
+            yqnBus.$on("data-added", function(){
                 /* TODO instead of refresh we could appened to the posts[] ? */
                 console.log("Get message data changed");
                 ctx.fetchData();
@@ -155,7 +155,7 @@
             });
         },
 /*
-        updated: function () { 
+        updated: function () {
             this.$nextTick(function () {
                 /* Code that will run only after the entire view has been rendered */
                 /* Toggle the visibility of the Read more button by checking to see
@@ -173,7 +173,7 @@
                 }
             })
         },*/
-         
+
         methods: {
             fetchData() {
                 var incoming = this;
@@ -194,10 +194,10 @@
                 }
 
                 if (this.currentPostId){
-                    window.location.hash = 'post-'+this.currentPostId; 
+                    window.location.hash = 'post-'+this.currentPostId;
                     params.id = this.currentPostId;
                 } else {
-                    window.location.hash = ''; 
+                    window.location.hash = '';
                 }
 
                 url += yqnUtils.urlParams(params);
