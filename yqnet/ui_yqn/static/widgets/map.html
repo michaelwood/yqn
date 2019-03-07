@@ -42,7 +42,7 @@
 
             <div class="d-flex flex-column flex-fill">
 
-                <div class="d-flex flex-row flex-fill">   
+                <div class="d-flex flex-row flex-fill">
                     <div class="rounded-circle post-thumb d-block" style="min-width: 90px; background-color: #343a40">
                         <h3 class="text-center mt-4" style="color: white;"><i class="fas fa-map-marker-alt"></i></h3>
                     </div>
@@ -64,7 +64,7 @@
                 </div>
 
             </div>
-            
+
             <div class="dropdown dropleft action-menu-yqn">
                 <a href class="action-menu-yqn p-1 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-ellipsis-v"></i>
@@ -86,7 +86,7 @@
 
 Vue.component('map-area', {
         template: '#map-template',
-        
+
         data: function(){
             return {
                 yqnUtils: yqnUtils,
@@ -223,7 +223,7 @@ Vue.component('map-area', {
                 let url = "/api/EventsAtVenue/" + yqnUtils.urlParams(param);
 
                 let ctx = this;
-                        
+
                 $.getJSON(url, function(data){
                     ctx.venues = data;
                 });
@@ -267,6 +267,3 @@ var vApp = new Vue({
     el: '#map-app',
 });
 </script>
-
-
- 

@@ -25,7 +25,7 @@
                                 <location v-if="field.name == 'postcode'" v-bind:field="field" v-on:selected="autocompleteSelected"></location>
                                 <input v-else-if="field.name == 'lat' || field.name == 'lng'" type="text" v-bind:value="input[field.name]" placeholder="Use postcode lookup" v-bind:name="field.name" class="form-control" v-bind:id="field.name"  readonly>
                                 <slug v-else-if="field.name == 'slug'" type="text" v-bind:from="input['title']" v-model="input[field.name]" v-bind:name="field.name" v-bind:id="field.name" v-on:selected="autocompleteSelected"></slug>
-                                
+
                                 <input v-else-if="field.data.max_length" v-bind:name="field.name" type="text" class="form-control" v-model="input[field.name]"  v-bind:id="field.name" >
                                 <div v-else-if="field.data.type === 'boolean'" class="form-check">
                                     <input v-bind:name="field.name" type="checkbox" class="form-check-input" v-model="input[field.name]"  v-bind:id="field.name" >
@@ -63,7 +63,7 @@
 
 <script type="text/javascript">
 
-/* <datetime> Date and time picker 
+/* <datetime> Date and time picker
  * Makes uses of vueJSDatepicker to do the heavy lifting
  * https://github.com/charliekassel/vuejs-datepicker
  * Extends this to have hour/minute field and use our pattern of event handling
@@ -89,7 +89,7 @@ Vue.component('datetime', {
                         </div> \
                     </div> \
                    </div>',
-    
+
     data: function(){
         return {
             date: null,
@@ -126,11 +126,11 @@ Vue.component('slug', {
     data: function(){
         return {
             suggestion: '',
-            edited: false, 
+            edited: false,
         }
     },
 
-    watch: { 
+    watch: {
         from : "makeSuggestion",
     },
 
@@ -149,7 +149,7 @@ Vue.component('slug', {
             }
 
             var str = this.from;
-        
+
             /* modified from http://dense13.com/blog/2009/05/03/converting-string-to-slug-javascript/ */
             str = str.replace(/^\s+|\s+$/g, ''); // trim
             str = str.toLowerCase();
@@ -159,19 +159,19 @@ Vue.component('slug', {
                 .replace(/-+/g, '-'); // collapse dashes
 
             this.suggestion = str;
-            
+
             this.$emit("selected", { key: "slug", value: this.suggestion });
         },
     },
 });
 
-/* <location> Uses mapit to look up lat/lnglocation from the postcode 
+/* <location> Uses mapit to look up lat/lnglocation from the postcode
 *  This is a little clunky but offloads hitting their API to the client
 */
 Vue.component('location', {
     props: ['field'],
 
-    data: function(){ 
+    data: function(){
         return {
             postcode: null,
             searching: false,
@@ -264,15 +264,15 @@ Vue.component('fk-autocomplete', {
                 ctx.searching = false;
                 ctx.options.push({ id: "__new__", title: "Add new..." });
             });
-        
+
         },
         selected: function(id, title) {
             this.selectionActive = false;
             console.log("selected "+ id);
             this.selection = title;
 
-            /* value is id this sounds strange but id is the fk of the object 
-             * selected 
+            /* value is id this sounds strange but id is the fk of the object
+             * selected
              */
             var selected = { key: this.name, value: id };
 
@@ -295,7 +295,7 @@ Vue.component('add-object-modal', {
         props: ['start-model', 'title', 'success'],
 
         data: function(){
-            return { 
+            return {
                 modalId: "add-object-modal-" + this.startModel,
                 fields: [],
                 info: "",
@@ -343,17 +343,17 @@ Vue.component('add-object-modal', {
                                 continue;
                             }
 
-                            /* Set the selector ID to indicate if we're going need to 
+                            /* Set the selector ID to indicate if we're going need to
                              * initalise the tinyMCE editor
                              */
                             if (data.actions.POST[fields[i]].type ==='string' &&
                                 !data.actions.POST[fields[i]].max_length){
                                  ctx.tinyMCE = "#" + fields[i];
                              }
-                            
-                            var field = { 
+
+                            var field = {
                                 name : fields[i],
-                                data: data.actions.POST[fields[i]] 
+                                data: data.actions.POST[fields[i]]
                             };
 
                             fieldsArray.push(field);
@@ -383,7 +383,7 @@ Vue.component('add-object-modal', {
                     contentType: 'application/json',
                     accept: 'application/json',
                     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-                    success: function (data) { 
+                    success: function (data) {
                         console.log("all good");
                         console.log(data);
                         yqnBus.$emit("data-added", this.input);
@@ -414,7 +414,7 @@ Vue.component('add-object-modal', {
                         });
 
                     },
-                    error: function (error) { 
+                    error: function (error) {
                         console.log(error);
                         /* TODO Make the error messages more friendly */
                         window.scroll(0,0);
