@@ -97,7 +97,7 @@ Vue.component('map-area', {
                 markers: [],
                 postcode: "",
                 postcodeErr: null,
-                fetchDataDelay: null,
+                fetchDataDelayTimer: null,
             }
         },
 
@@ -156,9 +156,9 @@ Vue.component('map-area', {
                     ctx.fetchData();
                 }); */
 
-                ctx.map.on("zoomend",  ctx.fetchData);
-                ctx.map.on("moveend",  ctx.fetchData);
-                ctx.map.on("resize",  ctx.fetchData);
+                ctx.map.on("zoomend",  ctx.fetchDataDelay);
+                ctx.map.on("moveend",  ctx.fetchDataDelay);
+                ctx.map.on("resize",  ctx.fetchDataDelay);
 
                 ctx.map.on("locationerror", function(e){
                     $("#postcode-modal").modal("show");
@@ -182,15 +182,15 @@ Vue.component('map-area', {
             fetchDataDelay: function(){
                 /* Add a short delay in fetching the data to avoid hitting the API
                  * at every change event if the changes are happening rapidly
-                 * (e.g. panning the map) 
+                 * (e.g. panning the map)
                  */
-                if (this.fetchDataDelay){
-                    window.clearTimeout(this.fetchDataDelay);
+                if (this.fetchDataDelayTimer){
+                    window.clearTimeout(this.fetchDataDelayTimer);
                 }
 
                 let ctx = this;
 
-                this.fetchDataDelay = window.setTimeout(function(){
+                this.fetchDataDelayTimer = window.setTimeout(function(){
                     ctx.fetchData();
                 }, 1000);
             },
