@@ -493,21 +493,33 @@ Vue.component('add-object-modal', {
                     } catch {}
 
                     if (this.tinyMCE){
-
                         let ctx = this;
-                        /* TinyMCE appears to be racy without this
-                        * About 1 in 4 loads fail if it isn't deffered :(
-                        */
-                        setTimeout(function(){
+                        let modal = $("#"+ctx.modalId);
+
+                        /* TinyMCE appears to be easily racy. Replacement TODO*/
+
+                        function initTinyMCE(){
                             console.log("Init tinymce: " + ctx.tinyMCE);
                             tinyMCE.init({
-                                selector: ctx.tinyMCE,
                                 plugins: "autolink code lists emoticons",
                                 menubar: false,
                                 toolbar: "undo redo bold italic underline lists emoticons | code",
                                 statusbar: false,
+                                selector: ctx.tinyMCE,
+                                setup: function(ed){
+                                    ed.on("init", function(){
+                                        console.log("tinyMCE Loaded");
+                                    });
+                                },
                             });
-                        }, 0);
+                        }
+
+                        if (modal.is(":visible")){
+                            initTinyMCE();
+                        } else {
+                            modal.on("shown.bs.modal", initTinyMCE);
+                        }
+
                     }
                 });
             },
