@@ -75,17 +75,23 @@ class Post(models.Model):
     private = models.BooleanField(default=False, help_text="Only show this post to logged in users")
 
     def thumbnail_computed(self):
+
         if self.thumbnail:
             return self.thumbnail
-        elif self.xml_feed and self.xml_feed.manual_thumbnail:
+
+        if self.xml_feed and self.xml_feed.manual_thumbnail:
             return self.xml_feed.manual_thumbnail
+
+        avatar = UserMedia.objects.filter(user=self.user, file_upload__contains=settings.AVATAR_PREFIX).first()
+        if avatar:
+            return avatar.file_upload.url
 
         return "%s/imgs/fav/android-chrome-192x192.png" % settings.STATIC_URL
 
     def url(self):
         if self.ext_url:
             return self.ext_url
-        
+
         return reverse_lazy("posts") + "#post-%s" % self.id
 
 
@@ -210,7 +216,7 @@ class GroupPage(models.Model):
         # Making a post is optional and we don't want any errors
         # to fail the save on this object
         except Exception as e:
-            print(e) 
+            print(e)
             pass
 
         super().save(*args, **kwargs)
@@ -274,7 +280,7 @@ class Event(models.Model):
                 )
             # Making a post is optional and we don't want any errors
             # to fail the save on this object
-            except Exception: 
+            except Exception:
                pass
 
 
@@ -293,11 +299,11 @@ class Event(models.Model):
 
     def get_venue(self):
         return self.venue
-    
+
     def get_url(self):
         if self.url:
             return self.url
-        
+
         return reverse_lazy("event", args=(self.id,))
 
     def has_email(self):
@@ -313,14 +319,14 @@ class EventsLocation(models.Model):
     title = models.CharField(max_length=200)
     group_page = models.ForeignKey(GroupPage, null=True, on_delete=models.DO_NOTHING)
     url = models.URLField(help_text="Link to find out about your events")
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE) 
+    venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     private = models.BooleanField(default=False, help_text="Only show this information to logged in users")
     email = models.EmailField(null=True, blank=True, help_text="If left blank enquiries will be forwarded to your current login email")
 
     def get_venue(self):
         return self.venue
-    
+
     def get_group_page(self):
         return self.group_page
 
@@ -344,7 +350,7 @@ class EventsLocation(models.Model):
                 )
             # Making a post is optional and we don't want any errors
             # to fail the save on this object
-            except Exception: 
+            except Exception:
                pass
 
         super().save(*args, **kwargs)
