@@ -16,11 +16,12 @@ import json
 from db_yqn.models import GroupPageMedia, UserMedia, GroupPage
 from db_yqn import models
 from db_yqn.email import send_email_about_object, send_email_report
+from settings_yqn import settings
 
 # All the non rest API here
 
 class Contact(View):
-    """ 
+    """
     Report an object to the admin or Contact an object's email
 
     contact data:
@@ -91,7 +92,7 @@ class Contact(View):
         # This whitelist needs to be kept tight as getattr will blindly access
         # anything it is asked to on the model module
         whitelist_models_names = ['Event', 'EventsLocation', 'GroupPage']
-              
+
         if self.contact_data['modelName'] not in whitelist_models_names:
             return HttpResponseBadRequest("Bad model")
 
@@ -109,24 +110,35 @@ class Contact(View):
 
 class Upload(LoginRequiredMixin, View):
 
-    whitelist_mime_types = ['image/', 'application/pdf', 'application/vnd.ms-excel', 
+    whitelist_mime_types = ['image/', 'application/pdf', 'application/vnd.ms-excel',
     'application/vnd.oasis.opendocument.spreadsheet', ]
 
     def post(self, request, *args, **kwargs):
 
         file_uploaded = request.FILES['file']
 
-        media_obj = self.handle_uploaded_file(file_uploaded, request.POST.get("group_page"))
+        media_obj = self.handle_uploaded_file(
+            file_uploaded,
+            group_page=request.POST.get("group_page", False),
+            avatar=request.POST.get("avatar", False)
+        )
 
-        if not self.check_content_type(media_obj):
+        content_type_valid = False
+
+        if request.POST.get("avatar", False):
+            content_type_valid = self.check_content_type(media_obj, ['image/'])
+        else:
+            content_type_valid = self.check_content_type(media_obj)
+
+        if not content_type_valid:
             return HttpResponseBadRequest("File type not permitted")
 
         return JsonResponse({ "location": media_obj.file_upload.url })
 
-    def check_content_type(self, media_obj):
+    def check_content_type(self, media_obj, whitelist_mime_types=whitelist_mime_types):
         uploaded_mime = magic.from_file(media_obj.file_upload.path, mime=True)
 
-        for mime in self.whitelist_mime_types:
+        for mime in whitelist_mime_types:
             if mime in uploaded_mime:
                 return True
 
@@ -137,11 +149,26 @@ class Upload(LoginRequiredMixin, View):
 
         return False
 
-    def handle_uploaded_file(self, file_uploaded, group_page):
+    def delete_old_avatars(self):
+        for avatar in UserMedia.objects.filter(user=self.request.user, file_upload__contains=settings.AVATAR_PREFIX):
+            print("Delete %s" % avatar.file_upload.path)
+            os.remove(avatar.file_upload.path)
+            avatar.delete()
+
+
+    def handle_uploaded_file(self, file_uploaded, group_page=False, avatar=False):
 
         if group_page:
             media_obj = GroupPageMedia.objects.create(
                 page=GroupPage.objects.get(pk=group_page),
+                file_upload=file_uploaded)
+        elif avatar:
+            # Note this will delete the current avatar if the file type is wrong
+            # Thus resetting back to the default
+            self.delete_old_avatars()
+            file_uploaded.name = "yqn-avatar-%s" % file_uploaded.name
+            media_obj = UserMedia.objects.create(
+                user=self.request.user,
                 file_upload=file_uploaded)
         else:
             media_obj = UserMedia.objects.create(
@@ -151,5 +178,5 @@ class Upload(LoginRequiredMixin, View):
         with open(media_obj.file_upload.path, 'wb+') as destination:
             for chunk in file_uploaded.chunks():
                 destination.write(chunk)
-        
+
         return media_obj
