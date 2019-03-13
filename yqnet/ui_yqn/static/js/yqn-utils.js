@@ -16,14 +16,14 @@ var yqnUtils = {
         for (var key in obj){
           if (obj[key] === undefined)
             continue;
-    
+
           str += key+ "="+obj[key].toString();
           str += "&";
         }
-    
+
         /* Maintain the current hash */
         str += window.location.hash;
-    
+
         return str;
       },
 
@@ -96,6 +96,14 @@ $.ajaxSetup({
 });
 
 
+$(document).ajaxStart(function(){
+  $("#ajax-loading-spinner").show();
+});
+
+$(document).ajaxComplete(function(){
+  $("#ajax-loading-spinner").hide();
+});
+
 
 $(document).ready(function(){
 
@@ -107,7 +115,7 @@ $(document).ready(function(){
     yqnUtils.setCookieData({ last_time: Date.now() });
 });
 
-/* prevent Bootstrap from hijacking TinyMCE modal focus 
+/* prevent Bootstrap from hijacking TinyMCE modal focus
  Its all getting a bit too modal out there...
 */
 
