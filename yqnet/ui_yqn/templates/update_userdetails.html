@@ -5,13 +5,55 @@
 {% block content %}
 
 {% load bootstrap_tags %}
+<script>
+    $(document).ready(function(){
+
+        $("#file-upload").change(function(e){
+            e.preventDefault();
+            let data = new FormData($("#picture-upload-form")[0]);
+
+            $.ajax({
+                type: "POST",
+                url: $("#picture-upload-form").prop("action"),
+                enctype: 'multipart/form-data',
+                headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+                processData: false,
+                contentType: false,
+                data: data,
+                success: function (data) {
+                    yqnBus.$emit("notify", { title: "Profile picture changed", body : "New profile picture has been uploaded" });
+                    $("#avatar").prop("src", data.location);
+                    $("#current-avatar").text(data.location);
+                },
+                error: function (data) {
+                    console.log(data);
+                },
+            });
+        });
+    });
+</script>
 
 <div class="my-3 p-3 bg-white rounded shadow-sm">
     <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
     <h6>Update your details</h6>
     </div>
 
-    <div class="mt-4">
+    <div class="mt-2 d-flex flex-row">
+        <img class="round rounded-circle post-thumb" alt="Avatar" src="{{current_avatar}}" id="avatar" />
+        <form method="POST" id="picture-upload-form" class="align-self-center ml-4 mt-2" action="{% url 'api:media-upload' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="file-upload">Profile picture</label>
+                <input name="file" class="form-control-file" id="file-upload" placeholder="{{current_avatar}}" accept="image/*" type="file">
+                <small>Currently <span id="current-avatar">{{current_avatar}}</span></small>
+            </div>
+            <input type="hidden" name="avatar" value="true" >
+        </form>
+        <p>Images should be square. e.g. 200px by 200px. Please make sure images are appropriate.</p>
+
+    </div>
+
+    <div class="mt-2">
         <form method="post">{% csrf_token %} {{ form|as_bootstrap }}
             <input type="submit" class="btn btn-primary d-block ml-auto" value="Update">
         </form>

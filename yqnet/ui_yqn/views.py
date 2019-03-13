@@ -8,9 +8,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.urls import reverse_lazy
 
 import datetime
 from db_yqn.models import Post, Twitter, GroupPage, Event, EventsLocation, Venue
+from db_yqn.models import UserMedia
+from settings_yqn import settings
 
 
 # Not in use
@@ -151,6 +154,17 @@ class UpdateUserDetailsView(UpdateView, LoginRequiredMixin):
 
     def get_object(self):
         return self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        try:
+            context['current_avatar'] = UserMedia.objects.get(user=self.request.user, file_upload__contains="yqn-avatar-").file_upload.url
+        except UserMedia.DoesNotExist as e:
+            print(e)
+            context['current_avatar'] = settings.STATIC_URL + '/imgs/fav/android-chrome-192x192.png'
+
+        return context
 
 # TEMP TODO this
 class GroupPageEditorsUpdate(UpdateView, LoginRequiredMixin):
