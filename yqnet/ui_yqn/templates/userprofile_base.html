@@ -6,10 +6,11 @@
             <a class="nav-link" href="{% url 'edit-profile' %}">
                 Edit Profile
             </a>
-
+            {% if user.social_auth.count == 0 %}
             <a class="nav-link" href="{% url 'password_change' %}">
                 Change Password
             </a>
+            {% endif %}
         </nav>
     </div>
 {% endblock %}
