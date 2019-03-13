@@ -360,13 +360,20 @@ class EventsLocation(models.Model):
 
 # Note file sizes should be limited using the http server
 # e.g. Apache2 LimitRequestBody 102400 (100k)
+def user_dir(instance, filename):
+    return "user/%s/%s" % (instance.user.pk, filename)
+
+def group_dir(instance, filename):
+    return "group/%s/%s" % (instance.page.slug, filename)
+
 
 class UserMedia(models.Model):
-    file_upload = models.FileField(upload_to="user/%Y/%m/%d")
+    file_upload = models.FileField(upload_to=user_dir)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+
 class GroupPageMedia(models.Model):
-    file_upload = models.FileField(upload_to="pages/%Y/%m/%d")
+    file_upload = models.FileField(upload_to=group_dir)
     page = models.ForeignKey(GroupPage, on_delete=models.CASCADE)
 
     def get_title(self):
@@ -375,8 +382,7 @@ class GroupPageMedia(models.Model):
     def get_url(self):
         return self.file_upload.url
 
-
-
+# Register models with django /admin site
 from django.contrib import admin
 admin.site.register(Post)
 admin.site.register(Twitter)
