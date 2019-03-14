@@ -52,7 +52,7 @@ class TwittersView(PostsView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        twitter = Twitter.objects.all()
+        twitter = Twitter.objects.order_by('?')
         context['twitter'] = twitter
 
         return context
