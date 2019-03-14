@@ -10,20 +10,20 @@ from django.utils import timezone
 from db_yqn.models import Post, XMLFeed, Instagram, Twitter, GroupPage
 from db_yqn.models import EventsLocation, Venue, Event, GroupPageMedia
 
-# If defining 'fields' remember to add field for id 
+# If defining 'fields' remember to add field for id
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id','username')
-        read_only_fields = ('id', 'username')
+        fields = ('id','first_name')
+        read_only_fields = ('id', 'first_name')
 
 
 class PostSerializer(serializers.ModelSerializer):
 
     user = UserSerializer(read_only=True)
     publish_date = serializers.DateTimeField(format="%d %b %H:%M", read_only=True)
-    
+
     class Meta:
         model = Post
         fields = ('id', 'title', 'user', 'source','text', 'publish_date', 'ext_url','thumbnail_computed', 'url', 'ext_author')
@@ -32,7 +32,7 @@ class PostSerializer(serializers.ModelSerializer):
 class XMLFeedSerializer(serializers.ModelSerializer):
 
     user = UserSerializer(read_only=True)
-    
+
     class Meta:
         model = XMLFeed
         fields = ("__all__")
@@ -40,7 +40,7 @@ class XMLFeedSerializer(serializers.ModelSerializer):
 
 class SocialMediaAccSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    
+
     class Meta:
         fields = ("__all__")
         read_only_fields = ('user',)
@@ -77,7 +77,7 @@ class GroupPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupPage
-        # TODO we don't always need the body and sending it is potentially expensive 
+        # TODO we don't always need the body and sending it is potentially expensive
         fields = ("id", "go_to", "url", "title", "redirect", "last_modified", "body", "last_updated_by")
         read_only_fields = ('users',"redirect","last_updated_by")
 
@@ -103,12 +103,12 @@ class EventsLocationSerializer(serializers.ModelSerializer):
 
 class EventsSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    # venue field is used for introspection of fk by add-object-model so use a 
+    # venue field is used for introspection of fk by add-object-model so use a
     # custom field for the deserialised venue
     venue_details = VenueSerializer(read_only=True, source="get_venue")
 
     url = serializers.CharField(read_only=True, source="get_url")
-    
+
     # Date formatting is much better in Python than JS so do this here
     display_day = serializers.CharField(read_only=True, source="get_display_day")
     display_date_time_start = serializers.CharField(read_only=True, source="get_display_date_time_start")
@@ -123,8 +123,8 @@ class EventsSerializer(serializers.ModelSerializer):
 # Ex fields for many=True
 # queryset they use is blah_set.all()
 # usage:
-#   blah_set = EventField(many=True, read_only=True) 
-# 
+#   blah_set = EventField(many=True, read_only=True)
+#
 # class EventsLocationField(serializers.RelatedField):
 #      def to_representation(self, events_location):
 #        return { "title" : events_location.title,
@@ -190,7 +190,7 @@ class EventsAtVenue(serializers.ModelSerializer):
     eventslocation_set = NestedEventsLocationSerializer(many=True, read_only=True)
     url = serializers.CharField(read_only=True, source="get_url")
     event_set = NestedFutureEventsSerializer(read_only=True, many=True)
-    
+
     class Meta:
         model = Venue
         fields = ("__all__")

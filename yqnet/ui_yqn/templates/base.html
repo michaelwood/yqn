@@ -159,24 +159,17 @@
             </div>
           </li>
 
-
-
           {% if user.is_authenticated %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Profile
+             {% if user.first_name %}
+                {{user.first_name}}
+              {% else %}
+                {{user.username}}
+              {% endif %}
            </a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <h6 class="dropdown-header">
-                Logged in as
-                 {% if user.first_name %}
-                   {{user.first_name}}
-                 {% else %}
-                   {{user.username}}
-                 {% endif %}
-              </h6>
               <a class="dropdown-item" href="{% url 'edit-profile' %}">Edit profile</a>
-              <a class="dropdown-item" href="#">Probable something here</a>
               <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
             </div>
           </li>

@@ -7,7 +7,7 @@
         <a href='#' class="badge badge-light"
          v-for="source in sourceTypes"
          v-on:click.prevent="currentSource = source">{{source.name}}</a>
-         <a v-if="currentUser" href="#" class="badge badge-secondary" v-on:click.prevent="currentUser = null">{{currentUser.username}} &times;</a>
+         <a v-if="currentUser" href="#" class="badge badge-secondary" v-on:click.prevent="currentUser = null">{{currentUser.first_name}} &times;</a>
     </div>
 
 <transition-group name="list" tag="div">
@@ -30,7 +30,7 @@
                     <a v-bind:href="post.ext_url">{{post.ext_author}}</a>
                 </div>
                 <div v-else>
-                   <a href="#">@{{post.user.username}}</a>
+                   <a href="#" v-on:click.prevent="currentUser = post.user">{{post.user.first_name}}</a>
                 </div>
 
 
@@ -49,7 +49,7 @@
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item"
                        href="#"
-                       v-on:click="currentUser = post.user">
+                       v-on:click.prevent="currentUser = post.user">
                         All from this user
                     </a>
                     <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(post.url)">Share</a>
