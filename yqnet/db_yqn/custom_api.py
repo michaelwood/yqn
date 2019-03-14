@@ -162,7 +162,7 @@ class Upload(LoginRequiredMixin, View):
             # Note this will delete the current avatar if the file type is wrong
             # Thus resetting back to the default
             delete_old_avatars(self.request.user)
-            file_uploaded.name = "%s%s", (settings.AVATAR_PREFIX, file_uploaded.name)
+            file_uploaded.name = "%s%s" % (settings.AVATAR_PREFIX, file_uploaded.name)
             media_obj = UserMedia.objects.create(
                 user=self.request.user,
                 file_upload=file_uploaded)
