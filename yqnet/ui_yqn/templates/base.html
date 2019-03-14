@@ -10,6 +10,16 @@
 
     <title>{% block title %}{% endblock %} - Quakr - The Young Quaker Network</title>
 
+    {% if user.is_authenticated %}
+    <!-- only need this when we're auth as it's quite large -->
+    <script src="{% static "vendor/tinymce/tinymce.min.js" %}" ></script>
+    <!-- cache warming -->
+    <script src="{% static "vendor/tinymce/themes/modern/theme.min.js" %}"></script>
+    <script src="{% static "vendor/tinymce/plugins/autolink/plugin.min.js" %}"></script>
+    <link href="{% static "vendor/tinymce/skins/lightgray/skin.min.css" %}" rel="stylesheet">
+    {% endif %}
+
+
     <script src="{% static "vendor/jquery/jquery-3.3.1.min.js" %}"></script>
     {% if DEBUG %}
     <script src="{% static "vendor/vue/vue.js" %}"></script>
@@ -31,8 +41,6 @@
     <script src="{% static "js/bootstrap-helpers.js" %}"></script>
 
     {% if user.is_authenticated %}
-    <!-- only need this when we're auth as it's quite large -->
-    <script src="{% static "vendor/tinymce/tinymce.min.js" %}" ></script>
     <!-- Todo maybe load this the Vue way -->
     <script src="{% static "vendor/vuejs-datepicker/vuejs-datepicker.min.js" %}" ></script>
     {% endif %}
