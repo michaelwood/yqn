@@ -49,9 +49,9 @@
             </div>
             <input type="hidden" name="avatar" value="true" >
         </form>
-        <p>Images should be square. e.g. 200px by 200px. Please make sure images are appropriate.</p>
-
     </div>
+
+    <p>Images should be square. e.g. 200px by 200px. Please make sure images are appropriate.</p>
 
     <div class="mt-2">
         <form method="post">{% csrf_token %} {{ form|as_bootstrap }}

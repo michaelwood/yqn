@@ -15,8 +15,10 @@ import json
 
 from db_yqn.models import GroupPageMedia, UserMedia, GroupPage
 from db_yqn import models
-from db_yqn.email import send_email_about_object, send_email_report
 from settings_yqn import settings
+
+from utils_yqn.avatar import make_avatar, delete_old_avatars
+from utils_yqn.email import send_email_about_object, send_email_report
 
 # All the non rest API here
 
@@ -149,12 +151,6 @@ class Upload(LoginRequiredMixin, View):
 
         return False
 
-    def delete_old_avatars(self):
-        for avatar in UserMedia.objects.filter(user=self.request.user, file_upload__contains=settings.AVATAR_PREFIX):
-            print("Delete %s" % avatar.file_upload.path)
-            os.remove(avatar.file_upload.path)
-            avatar.delete()
-
 
     def handle_uploaded_file(self, file_uploaded, group_page=False, avatar=False):
 
@@ -165,11 +161,17 @@ class Upload(LoginRequiredMixin, View):
         elif avatar:
             # Note this will delete the current avatar if the file type is wrong
             # Thus resetting back to the default
-            self.delete_old_avatars()
-            file_uploaded.name = "yqn-avatar-%s" % file_uploaded.name
+            delete_old_avatars(self.request.user)
+            file_uploaded.name = "%s%s", (settings.AVATAR_PREFIX, file_uploaded.name)
             media_obj = UserMedia.objects.create(
                 user=self.request.user,
                 file_upload=file_uploaded)
+            # TODO resize the avatar to be square and the right size
+            # Can the file_uploaded be pasted to Image?
+            avatar.make_avatar(file_uploaded, media_obj.file_upload.path)
+
+            return media_obj
+
         else:
             media_obj = UserMedia.objects.create(
                 user=self.request.user,
