@@ -22,7 +22,10 @@ def make_avatar(filep, path):
 def delete_old_avatars(user):
     """ Delete any old avatars from given user """
 
-    for avatar in UserMedia.objects.filter(user=user, file_upload__contains=settings.AVATAR_PREFIX):
-        os.remove(avatar.file_upload.path)
-        avatar.delete()
+    try:
+        for avatar in UserMedia.objects.filter(user=user, file_upload__contains=settings.AVATAR_PREFIX):
+            os.remove(avatar.file_upload.path)
+            avatar.delete()
+    except UserMedia.DoesNotExist:
+        pass
 
