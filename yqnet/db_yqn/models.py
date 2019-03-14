@@ -46,7 +46,9 @@ class XMLFeed(models.Model):
     name = models.CharField(max_length=100)
     enabled = models.BooleanField(default=False)
 
-    source = models.IntegerField(choices=Sources.REMOTE_SOURCE_TYPES)
+    source = models.IntegerField(choices=Sources.REMOTE_SOURCE_TYPES,
+        help_text="The 'source' or category for this feed",
+        verbose_name="Category")
 
     manual_thumbnail = models.URLField(
         help_text="Url to a thumbnail img, used if the feed doesn't provide one automatically",
