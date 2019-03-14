@@ -9,3 +9,4 @@ django-registration
 mysqlclient
 bleach
 python-magic
+pillow
