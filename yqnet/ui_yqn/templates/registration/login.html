@@ -20,14 +20,14 @@
 
 
            <div class="d-flex flex-row-reverse">
-            <input type="submit" class="btn btn-primary" value="Login"> 
+            <input type="submit" class="btn btn-primary" value="Login">
             <a href="{% url 'django_registration_register' %}" class="mr-2" >Register</a>
             </div>
 
 
             <input type="hidden" name="next" value="{{ next }}">
         </form>
-    <h5>Or Login with <a href="{% url 'social:begin' 'google-oauth2' %}" class="mt-2" >Google Account</a></h5>
+    <p>Or Login with <a href="{% url 'social:begin' 'google-oauth2' %}" class="mt-2" >Google Account</a></p>
 
 
 
