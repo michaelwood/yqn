@@ -168,7 +168,7 @@ class Upload(LoginRequiredMixin, View):
                 file_upload=file_uploaded)
             # TODO resize the avatar to be square and the right size
             # Can the file_uploaded be pasted to Image?
-            avatar.make_avatar(file_uploaded, media_obj.file_upload.path)
+            make_avatar(file_uploaded, media_obj.file_upload.path)
 
             return media_obj
 
