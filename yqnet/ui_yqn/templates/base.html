@@ -35,7 +35,10 @@
     <script src="{% static "js/yqn-utils.js" %}"></script>
     <script>
       yqnUtils.staticUrl = "{% static '' %}";
-      yqnUtils.loggedInUsername = "{{user.username}}";
+      yqnUtils.loggedInUser = {
+        name: "{{user.username}}",
+        id: "{{user.id}}",
+      };
     </script>
 
     <script src="{% static "js/bootstrap-helpers.js" %}"></script>
@@ -181,7 +184,6 @@
           </li>
           {% else %}
           <li class="nav-item">
-            <!-- FIXME -->
               <a class="nav-link" href="{% url "login" %}">Login</a>
           </li>
           {% endif %}

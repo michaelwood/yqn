@@ -23,7 +23,7 @@
 
 
             <form>
-                <span v-if="!yqnUtils.loggedInUsername">
+                <span v-if="!yqnUtils.loggedInUser.name">
                     <div class="form-group">
                         <label for id="name">Name</label>
                         <input type="text" class="form-control" v-model="message['name']" placeholder="Name" id="name" required>
@@ -111,7 +111,7 @@ Vue.component('contact', {
                     $("#contact-modal").modal("hide");
 
                     yqnBus.$emit("notify", { title: "Sent!" , body: "Message sent successfully" });
-                    
+
                     ctx.error = null;
                     ctx.message = {};
                     ctx.objectId = -1;

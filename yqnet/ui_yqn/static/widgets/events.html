@@ -47,7 +47,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(event.url)">Share</a>
-                        <a v-if="event.user.username === yqnUtils.loggedInUsername" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(event.id)">Delete</a>
+                        <a v-if="event.user.id == yqnUtils.loggedInUser.id" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(event.id)">Delete</a>
                         <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Events', objectId: event.id, title: 'Report: '+event.title, report: true })">Report <i class="far fa-flag"></i></a>
                     </div>
                 </div> <!-- / dropdown -->
@@ -64,11 +64,11 @@
     Vue.component('events', {
         props: {
             'eventId': { type: String, default: null },
-  
+
          },
         template: '#events-template',
 
-        data: function() { 
+        data: function() {
             return {
             yqnUtils: yqnUtils,
             yqnBus: yqnBus,
@@ -122,10 +122,10 @@
             if (window.location.hash.indexOf("event-") > 0){
                 this.currentEventId =  window.location.hash.substr(("#event-").length)
             }
-            
+
             let ctx = this;
 
-            yqnBus.$on("data-added", function(){ 
+            yqnBus.$on("data-added", function(){
                 /* TODO instead of refresh we could appened to the events[] ? */
                 console.log("Get message data changed");
                 ctx.fetchData();
@@ -170,7 +170,7 @@
                     var params = { id: this.eventId };
                 }
 
-            
+
 
                 url += yqnUtils.urlParams(params);
 
