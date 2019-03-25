@@ -1,4 +1,4 @@
-Django==2.1
+Django>=2.1.6
 django-rest-framework
 feedparser
 pytz
