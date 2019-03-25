@@ -115,7 +115,7 @@ class Post(models.Model):
 
 
 class Twitter(models.Model):
-    username = models.CharField(help_text="Enter your Twitter username", max_length=200)
+    username = models.CharField(help_text="Enter your Twitter username", unique=True, max_length=200)
     user = models.ForeignKey(User, null=True, default=None, on_delete=models.CASCADE)
 
     def __str__(self):
