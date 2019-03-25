@@ -80,9 +80,6 @@ class Command(BaseCommand):
                 logger.warn("  Database has already got duplicates. Doing nothing for %s", entry.title)
 
 
-
-                               
-                            
         except Exception as e:
             logger.warn("Error saving rss entry as a post %s", e)
 
@@ -101,7 +98,7 @@ class Command(BaseCommand):
            for entry in feed.entries:
                print(" - Extracting %s" % entry.title)
                self.extract_posts(entry, feed.feed.title, xml_feed)
-        
+
        print("\nTotal posts added %d" % self.total_added)
 
 
