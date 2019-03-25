@@ -5,32 +5,59 @@
 
 {% block content %}
 
+{% load static %}
 {% load bootstrap_tags %}
+<style scoped>
+    ul.ticklist {
+        list-style: none;
+    }
+    .ticklist li:before {
+        content: "\2713";
+    }
+</style>
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+    <div class="row">
+        <div class="col border-right">
+            <h5>Register</h5>
+            <p>With an account you can:</p>
+            <ul class="ticklist">
+                <li>Make and comment on posts</li>
+                <li>Create and collaborate on group pages</li>
+                <li>Add your events</li>
+                <li>Add your blog/podcast</li>
+                <li>Add your Twitter account</li>
+                <li>Quickly contact events</li>
+            </ul>
 
-<div class="container">
+            <p>And lots more stuff coming soon!</p>
 
-    <div class="my-3 p-3 bg-white rounded shadow-sm">
-        <h5>Login</h5>
+            <a href="{% url 'django_registration_register' %}" class="btn d-block btn-primary mb-2 ml-auto">Register</a>
+        </div>
 
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            {{form|as_bootstrap}}
+        <div class="col">
 
-           <a href="{% url 'password_reset' %}" class="d-block mb-2">Lost password?</a>
+            <h5>Login</h5>
 
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %} {{form|as_bootstrap}}
 
-           <div class="d-flex flex-row-reverse">
-            <input type="submit" class="btn btn-primary" value="Login">
-            <a href="{% url 'django_registration_register' %}" class="mr-2" >Register</a>
-            </div>
-
-
-            <input type="hidden" name="next" value="{{ next }}">
-        </form>
-    <p>Or Login with <a href="{% url 'social:begin' 'google-oauth2' %}" class="mt-2" >Google Account</a></p>
+                <a href="{% url 'password_reset' %}" class="d-block mb-2">Lost password?</a>
 
 
 
+                <input type="hidden" name="next" value="{{ next }}">
+
+                <input type="submit" class="ml-auto d-block btn btn-primary" value="Login">
+
+            </form>
+
+            <hr />
+            <h5>Or login in using google account</h5>
+            <p><a href="{% url 'privacy' %}">Privacy policy</a></p>
+
+            <a href="{% url 'social:begin' 'google-oauth2' %}" class="d-block float-right"><img src="{% static 'imgs/btn_google_signin_dark_normal_web.png' %}" alt="Login with Google Account"></a>
+
+        </div>
     </div>
 </div>
 {% endblock %}
