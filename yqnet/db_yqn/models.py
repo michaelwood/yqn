@@ -58,6 +58,17 @@ class XMLFeed(models.Model):
         return "%s - %s" % (Sources.get_name(self.source), self.url)
 
 
+def user_dir(instance, filename):
+    return "user/%s/%s" % (instance.user.pk, filename)
+
+class UserMedia(models.Model):
+    file_upload = models.FileField(upload_to=user_dir)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def get_url(self):
+        return self.file_upload.url
+
+
 class Post(models.Model):
 
     publish_date = models.DateTimeField("publish", name="publish_date", default=timezone.now)
@@ -75,6 +86,8 @@ class Post(models.Model):
     xml_feed = models.ForeignKey(XMLFeed, on_delete=models.CASCADE, null=True, blank=True)
 
     private = models.BooleanField(default=False, help_text="Only show this post to logged in users")
+
+    media = models.ForeignKey(UserMedia, on_delete=models.CASCADE, null=True)
 
     def thumbnail_computed(self):
 
@@ -362,16 +375,9 @@ class EventsLocation(models.Model):
 
 # Note file sizes should be limited using the http server
 # e.g. Apache2 LimitRequestBody 102400 (100k)
-def user_dir(instance, filename):
-    return "user/%s/%s" % (instance.user.pk, filename)
 
 def group_dir(instance, filename):
     return "group/%s/%s" % (instance.page.slug, filename)
-
-
-class UserMedia(models.Model):
-    file_upload = models.FileField(upload_to=user_dir)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class GroupPageMedia(models.Model):
