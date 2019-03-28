@@ -13,12 +13,13 @@ import os
 import magic
 import json
 
-from db_yqn.models import GroupPageMedia, UserMedia, GroupPage
+from db_yqn.models import GroupPageMedia, UserMedia, GroupPage, Post, Sources
 from db_yqn import models
 from settings_yqn import settings
 
 from utils_yqn.avatar import make_avatar, delete_old_avatars
 from utils_yqn.email import send_email_about_object, send_email_report
+from utils_yqn.image_post import make_image_for_post
 
 # All the non rest API here
 
@@ -110,27 +111,40 @@ class Contact(View):
 
 
 
+
 class Upload(LoginRequiredMixin, View):
+    """ API to handle file uploads """
 
     whitelist_mime_types = ['image/', 'application/pdf', 'application/vnd.ms-excel',
     'application/vnd.oasis.opendocument.spreadsheet', ]
 
     def post(self, request, *args, **kwargs):
 
-        file_uploaded = request.FILES['file']
-
-        media_obj = self.handle_uploaded_file(
-            file_uploaded,
-            group_page=request.POST.get("group_page", False),
-            avatar=request.POST.get("avatar", False)
-        )
+        try:
+            file_uploaded = request.FILES['file']
+        except KeyError:
+            return JsonResponse({"error": "No file supplied" }, status=500)
 
         content_type_valid = False
 
-        if request.POST.get("avatar", False):
+        if request.POST.get("avatar"):
+            media_obj = self.handle_avatar_file(file_uploaded)
             content_type_valid = self.check_content_type(media_obj, ['image/'])
-        else:
+
+        elif request.POST.get("group_page"):
+            media_obj = self.handle_group_page_file(file_uploaded)
             content_type_valid = self.check_content_type(media_obj)
+
+        elif request.POST.get("post"):
+            media_obj, post = self.handle_post_image_file(file_uploaded)
+            content_type_valid = self.check_content_type(media_obj, ['image/'])
+
+            if not content_type_valid:
+                # Do we need this? The media object being deleted would cascade?
+                post.delete()
+
+        else:
+            self.handle_other_file(file_uploaded)
 
         if not content_type_valid:
             return HttpResponseBadRequest("File type not permitted")
@@ -145,41 +159,62 @@ class Upload(LoginRequiredMixin, View):
                 return True
 
         # Mime type wasn't found: destroy the file and object
-
         os.remove(media_obj.file_upload.path)
         media_obj.delete()
 
         return False
 
+    def handle_avatar_file(self, file_uploaded):
+        # Note this will delete the current avatar if the file type is wrong
+        # Thus resetting back to the default
+        delete_old_avatars(self.request.user)
 
-    def handle_uploaded_file(self, file_uploaded, group_page=False, avatar=False):
+        file_uploaded.name = "%s%s" % (
+            settings.AVATAR_PREFIX, file_uploaded.name)
 
-        if group_page:
-            media_obj = GroupPageMedia.objects.create(
-                page=GroupPage.objects.get(pk=group_page),
-                file_upload=file_uploaded)
-        elif avatar:
-            # Note this will delete the current avatar if the file type is wrong
-            # Thus resetting back to the default
-            delete_old_avatars(self.request.user)
+        media_obj = UserMedia.objects.create(
+            user=self.request.user,
+            file_upload=file_uploaded)
 
-            file_uploaded.name = "%s%s" % (settings.AVATAR_PREFIX, file_uploaded.name)
+        make_avatar(file_uploaded, media_obj.file_upload.path)
 
-            media_obj = UserMedia.objects.create(
-                user=self.request.user,
-                file_upload=file_uploaded)
+        return media_obj
 
-            make_avatar(file_uploaded, media_obj.file_upload.path)
 
-            return media_obj
-
-        else:
-            media_obj = UserMedia.objects.create(
-                user=self.request.user,
-                file_upload=file_uploaded)
+    def handle_group_page_file(self, file_uploaded):
+        group_page = self.request.POST.get("group_page")
+        media_obj = GroupPageMedia.objects.create(
+            page=GroupPage.objects.get(pk=group_page),
+            file_upload=file_uploaded)
 
         with open(media_obj.file_upload.path, 'wb+') as destination:
             for chunk in file_uploaded.chunks():
                 destination.write(chunk)
 
         return media_obj
+
+    def handle_post_image_file(self, file_uploaded):
+        media_obj = UserMedia.objects.create(
+            user=self.request.user,
+            file_upload=file_uploaded)
+
+        post = Post.objects.create(
+            title=self.request.POST.get("title"),
+            text=self.request.POST.get("text"),
+            source=Sources.LOCAL,
+            user=self.request.user,
+            media=media_obj,
+        )
+
+        make_image_for_post(file_uploaded, media_obj.file_upload.path)
+
+        return media_obj, post
+
+    def handle_other_file(self, file_uploaded):
+        media_obj = UserMedia.objects.create(
+            user=self.request.user,
+            file_upload=file_uploaded)
+
+        with open(media_obj.file_upload.path, 'wb+') as destination:
+            for chunk in file_uploaded.chunks():
+                destination.write(chunk)
