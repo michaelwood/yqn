@@ -35,7 +35,7 @@
                     </div>
                 </div>
 
-                <p v-html="event.description"></p>
+                <p class="m-2" v-html="event.description"></p>
                 <!-- if the link is relative it won't have http so no point linking to ourselves to find out more -->
                 <a v-if="event.url.indexOf('http') !== -1" v-bind:href="event.url">Find out more</a>
                 <a v-if="event.has_email" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Event', objectId: event.id, title: event.title } )" class="ml-auto">Contact organiser</a>

@@ -34,8 +34,8 @@
                         </div>
 
                     </div>
-                    <a class="mt-2 mb-2" v-if="event.url" v-bind:href="event.url">Find out more - {{event.title}}</a>
-                    <a class="mt-2 mb-2 ml-auto" v-if="event.has_email" href="#" v-on:click.prevent='yqnBus.$emit("contact", { modelName: "EventsLocation", objectId: event.id, title: event.title } )'>Contact organiser</a>
+                    <a class="m-2" v-if="event.url" v-bind:href="event.url">Find out more - {{event.title}}</a>
+                    <a class="m-2 ml-auto" v-if="event.has_email" href="#" v-on:click.prevent='yqnBus.$emit("contact", { modelName: "EventsLocation", objectId: event.id, title: event.title } )'>Contact organiser</a>
                 </div>
 
                 <div class="dropdown dropleft action-menu-yqn">

@@ -27,7 +27,7 @@
 
         <a href="{% url "login" %}?next={% url "events" %}?action=do_post" class="btn btn-primary btn-sm">
             <i class="fas fa-plus-circle"></i>
-            Regular Events
+            Events Link
         </a>
 
 
@@ -42,7 +42,7 @@
         </a>
     </div>
 
-    <h1>One-off events</h1>
+    <h1 class="mb-4">One-off events</h1>
     <a name="one-off"></a>
     <div id="events-app" class="border-bottom">
         <events></events>
@@ -50,21 +50,21 @@
 
    <div class="mb-1 pt-2 border-bottom">
        <a name="regular"></a>
-       <h1>Regular Events</h1>
+       <h1 class="mb-4">Regular Events</h1>
     </div>
 
 
     <div id="regular-events-app" class="border-bottom">
         <regular-events></regular-events>
     </div>
-   
+
 </div>
 
 <div id="add-object-modal-app" v-cloak>
     <add-object-modal start-model="EventsLocations" success="Thank you for adding your event" title="Add a location"></add-object-modal>
     <add-object-modal start-model="Events" title="Add your one-off event" success="Thank you for adding your event"></add-object-modal>
 </div>
-      
+
 {% vue_widget "events.html" %}
 {% vue_widget "regular-events.html" %}
 

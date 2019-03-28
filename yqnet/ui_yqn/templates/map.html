@@ -19,9 +19,9 @@
              Event
         </button>
 
-        <button title="Add Events location" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-EventsLocations">
+        <button title="Add a link to your events" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-EventsLocations">
             <i class="fas fa-plus-circle"></i>
-             Regular Events
+             Events Link
         </button>
         {% else %}
 
@@ -32,7 +32,7 @@
 
         <a href="{% url "login" %}?next={% url "map" %}?action=do_post" class="btn btn-primary btn-sm">
             <i class="fas fa-plus-circle"></i>
-            Regular Events
+            Events Link
         </a>
 
         {% endif %}
@@ -63,7 +63,7 @@
 
 {% if user.is_authenticated %}
 <div id="add-object-modal-app" v-cloak>
-  <add-object-modal start-model="EventsLocations" success="Thank you for adding your event" title="Add a location"></add-object-modal>
+  <add-object-modal start-model="EventsLocations" success="Thank you for adding your event" title="Add a link to your events page"></add-object-modal>
   <add-object-modal start-model="Events" title="Add your one-off event" success="Thank you for adding your event"></add-object-modal>
 </div>
 
