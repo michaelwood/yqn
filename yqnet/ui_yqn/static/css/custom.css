@@ -1,6 +1,6 @@
 
 body {
- padding-top: 57px;
+ padding-top: 56px;
 /*ackground-size : contain;
  background-repeat: no-repeat;*/
  background: white url("/static/imgs/wallpaper.jpg") no-repeat fixed top;
@@ -8,14 +8,14 @@ body {
 }
 
 @media (max-width: 991.98px) {
-    
+
  body {
     background: white url("/static/imgs/wallpaper_sm.jpg") no-repeat fixed center top 50px;
     background-size: cover;
  }
 
  main {
-     padding: 4px !important;
+     padding: 0px !important;
  }
 
 }
@@ -51,7 +51,7 @@ body {
 }
 
 .list-enter-to {
-    
+
     opacity: 1;
 }
 
@@ -72,12 +72,11 @@ body {
     height: 60px;
     background-image: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1));
 }
-/*
+
 .post-expand-overflow-open {
-    max-height: unset;
-    padding-bottom: 60px;
+    max-height: 800px;
 }
-*/
+
 .post-text-link, .post-text-link:hover {
     text-decoration: none;
     color: unset;
@@ -133,4 +132,12 @@ https://vuejs.org/v2/api/#v-cloak
 
 .vdp-datepicker__calendar .cell:hover {
     border: 1px solid #ffc107 !important;
+}
+
+a.nav-link.bg-dark {
+    color: #fff;
+}
+
+a.nav-link.bg-dark:hover {
+    background-color: #343a40!important;
 }

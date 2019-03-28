@@ -95,6 +95,18 @@ $.ajaxSetup({
   }
 });
 
+function setActivePage(){
+ $(".nav-scroller .nav-link").each(function(){
+   if($(this).prop("href") == window.location.href){
+     $(this).addClass("bg-dark");
+   } else {
+     $(this).removeClass("bg-dark");
+   }
+
+ });
+
+
+}
 
 $(document).ajaxStart(function(){
   $("#ajax-loading-spinner").show();
@@ -112,8 +124,15 @@ $(document).ready(function(){
   if (!settingsCookie){
     $("#yqn-welcome-msg").show();
   }
-    yqnUtils.setCookieData({ last_time: Date.now() });
+
+  yqnUtils.setCookieData({ last_time: Date.now() });
+
+
+  setActivePage();
+
 });
+
+
 
 /* prevent Bootstrap from hijacking TinyMCE modal focus
  Its all getting a bit too modal out there...

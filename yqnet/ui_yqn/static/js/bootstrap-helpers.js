@@ -17,4 +17,5 @@ $(document).ready(function () {
   $('.modal').on("show.bs.modal", function(){
     $("[title]").tooltip('hide');
   });
+
 });
