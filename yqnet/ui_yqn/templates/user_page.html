@@ -33,7 +33,15 @@
     {% endif %}
 
     <script src="{% static "vendor/js-cookie/js.cookie.min.js" %}"></script>
+
     <script src="{% static "js/yqn-utils.js" %}"></script>
+    <script>
+      yqnUtils.staticUrl = "{% static '' %}";
+      yqnUtils.loggedInUser = {
+        name: "{{user.username}}",
+        id: "{{user.id}}",
+      };
+    </script>
 
     <script>
         var pageId = "{{page.id}}";
@@ -43,9 +51,9 @@
             $("#contact-btn").click(function(e){
                 e.preventDefault();
 
-                let contactData = { 
+                let contactData = {
                     modelName: 'GroupPage',
-                    objectId: pageId, 
+                    objectId: pageId,
                     title: pageTitle,
                 };
 
@@ -80,10 +88,10 @@
                     let data = new FormData();
                     data.append('file', blobInfo.blob(), blobInfo.filename());
                     data.append("group_page", pageId);
- 
+
                     $.ajax({
                         type: "POST",
-                        url: uploadUrl,                   
+                        url: uploadUrl,
                         enctype: 'multipart/form-data',
                         headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
                         processData: false,
@@ -98,7 +106,7 @@
                         },
                     });
                 },
-    
+
                 setup: function(editor){
 
                 },
@@ -107,7 +115,7 @@
             $("#delete-page").click(function(e){
                 e.preventDefault();
                 if (window.confirm("Really delete page?")){
-                    yqnUtils.delete(url, function(){               
+                    yqnUtils.delete(url, function(){
                         window.location = "/";
                     });
                 }
@@ -133,11 +141,11 @@
                     contentType: 'application/json',
                     accept: 'application/json',
                     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-                    success: function () { 
+                    success: function () {
                         window.scroll(0,0);
                         yqnBus.$emit("notify", {title: "Saved", body: "All changes have been saved"});
                     },
-                    error: function (error) { 
+                    error: function (error) {
                         console.log(error);
                         var errorMsg = '';
 
@@ -262,7 +270,7 @@
 
 
             {% else %}
-             
+
 
               <h3 class="float-left">{{page.title}}</h3>
 
@@ -273,18 +281,19 @@
               <a href="{% url "user-page-edit" page.slug %}" tabindex=0 class="btn btn-primary btn-sm float-right small" ><i class="fas fa-edit"></i> Edit</a>
             {% endif %}
           </div>
-          
+
         {% if editing and user_can_edit %}
             <label for="page-edit-content">Body</label>
             <small>(<a href="https://getbootstrap.com/docs/4.3/layout/overview/" target="_blank">Bootstrap</a> available)</small>
             <textarea id="page-edit-content" style="width:100%; min-height: 800px">{{page.body|safe}}</textarea>
             <div class="d-flex flex-row mt-2 mb-2">
-                
-                <button class="btn btn-danger small" id="delete-page">Delete</button>
-                <button class="btn btn-primary small ml-auto" id="save-page">Save</button>
+
+                <button class="btn btn-danger small mr-auto" id="delete-page">Delete</button>
+                <a href="{% url "user-pages" page.slug %}" class="btn btn-secondary small mr-2">Cancel</a>
+                <button class="btn btn-primary small" id="save-page">Save</button>
             </div>
         {% else %}
- 
+
           <div class="container">
              {{page.body|safe}}
           </div>
