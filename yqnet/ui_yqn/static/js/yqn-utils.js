@@ -69,7 +69,7 @@ var yqnUtils = {
         let text  = encodeURIComponent("This is interesting " +url+ " (via Quakr)");
 
         $("#share-twitter").prop("href", "https://twitter.com/home?status="+text);
-        $("#share-facebook").prop("href", "https://www.facebook.com/sharer/sharer.php?u="+text);
+        $("#share-facebook").prop("href", "https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(url));
         $("#share-email").prop("href", "mailto:?subject=You%20might%20be%20interested%20in%20this%20(via%20Quakr)&body="+text);
 
         $("#share-modal").modal("show");
