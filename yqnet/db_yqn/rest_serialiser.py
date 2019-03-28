@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.utils import timezone
 from db_yqn.models import Post, XMLFeed, Instagram, Twitter, GroupPage
-from db_yqn.models import EventsLocation, Venue, Event, GroupPageMedia
+from db_yqn.models import EventsLocation, Venue, Event, GroupPageMedia, UserMedia
 
 # If defining 'fields' remember to add field for id
 
@@ -18,16 +18,22 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id','first_name')
         read_only_fields = ('id', 'first_name')
 
+class UserMediaSerializer(serializers.ModelSerializer):
+    url = serializers.CharField(read_only=True, source="get_url")
+    class Meta:
+        model = UserMedia
+        fields = ('url',)
 
 class PostSerializer(serializers.ModelSerializer):
 
     user = UserSerializer(read_only=True)
     publish_date = serializers.DateTimeField(format="%d %b %H:%M", read_only=True)
+    media = UserMediaSerializer()
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'user', 'source','text', 'publish_date', 'ext_url','thumbnail_computed', 'url', 'ext_author')
-        read_only_fields = ('user','source','publish_date', 'ext_author', 'ext_url','thumbnail', 'thumbnail_computed', 'url')
+        fields = ('id', 'title', 'media', 'user', 'source','text', 'publish_date', 'ext_url','thumbnail_computed', 'url', 'ext_author',)
+        read_only_fields = ('user','source','publish_date', 'ext_author', 'ext_url','thumbnail', 'thumbnail_computed', 'url', 'media',)
 
 class XMLFeedSerializer(serializers.ModelSerializer):
 
