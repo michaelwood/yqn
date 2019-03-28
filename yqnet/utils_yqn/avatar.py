@@ -26,6 +26,6 @@ def delete_old_avatars(user):
         for avatar in UserMedia.objects.filter(user=user, file_upload__contains=settings.AVATAR_PREFIX):
             os.remove(avatar.file_upload.path)
             avatar.delete()
-    except UserMedia.DoesNotExist:
+    except (UserMedia.DoesNotExist, FileNotFoundError):
         pass
 
