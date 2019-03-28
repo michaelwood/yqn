@@ -243,7 +243,7 @@ class GroupPage(models.Model):
 
 
 class Venue(models.Model):
-    title = models.CharField(max_length=200, unique=True)
+    title = models.CharField(max_length=200, unique=True, verbose_name="Venue name")
     address = models.TextField()
     postcode = models.CharField(max_length=20, help_text="Must be valid UK postcode")
 
@@ -263,7 +263,7 @@ class Event(models.Model):
     description = models.TextField()
     date_time_start = models.DateTimeField()
     date_time_end = models.DateTimeField()
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
+    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, verbose_name="Venue name")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     private = models.BooleanField(default=False, help_text="Only show this event to logged in users")
     email = models.EmailField(null=True, blank=True, help_text="Email address for enquiries")
@@ -331,9 +331,9 @@ class Event(models.Model):
 
 
 class EventsLocation(models.Model):
-    title = models.CharField(max_length=200)
-    group_page = models.ForeignKey(GroupPage, null=True, on_delete=models.DO_NOTHING)
-    url = models.URLField(help_text="Link to find out about your events")
+    title = models.CharField(max_length=200, help_text="e.g. Quaker Meeting")
+    group_page = models.ForeignKey(GroupPage, null=True, on_delete=models.DO_NOTHING, help_text="Link to a group page")
+    url = models.URLField(help_text="External link to find out more about your events", blank=True, null=True)
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     private = models.BooleanField(default=False, help_text="Only show this information to logged in users")
