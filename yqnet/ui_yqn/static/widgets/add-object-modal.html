@@ -1,5 +1,5 @@
 <scipt type="text/template" id="modal-template">
-    <div class="modal fade" tabindex="-1" role="dialog" v-bind:id="modalId">
+    <div class="modal fade" tabindex="-1" role="dialog" v-bind:id="modalId" ref="bs-modal" >
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -16,7 +16,7 @@
 
                     <p>{{info}}</p>
 
-                    <form>
+                    <form ref="main-form">
                         <transition-group tag="div" name="list">
 
                         <div v-for="field in fields" class="form-group list-item" v-bind:key="field.name">
@@ -41,6 +41,7 @@
                                         <option v-for="choice in field.data.choices" v-bind:value="choice.value">{{choice.display_name}}</option>
                                     </select>
                                 </div>
+
                                 <small>{{field.data.help_text}}</small>
                         </div>
                         </transition-group>
@@ -77,7 +78,7 @@ Vue.component('datetime', {
         vuejsDatepicker
     },
         template: '<div class="d-flex flex-column">  \
-                    <vuejs-datepicker :required="true" :bootstrap-styling="true"  v-on:selected="dateSelected" v-model="date"></vuejs-datepicker> \
+                    <vuejs-datepicker :required="true" :bootstrap-styling="true"  v-on:selected="dateSelected" placeholder="Select..." v-model="date"></vuejs-datepicker> \
                     <div class="pt-2 form-row"> \
                         <div class="col"> \
                             <label>Hour</label> \
@@ -181,7 +182,7 @@ Vue.component('location', {
     template: '<div class="input-group mb-3"> \
               <input type="text" class="form-control border-right-0" v-bind:id="field.name" v-model="postcode" v-bind:name="field.name" aria-label="postcode with lookup button addon" aria-describedby="button-addon1"> \
                 <div class="input-group-append"> \
-                    <button class="btn btn-outline-secondary" type="button" v-on:click.prevent="lookup" id="button-addon1">Lookup map position \
+                    <button class="btn btn-outline-secondary" type="button" v-on:click.prevent="lookup" id="button-addon1" v-bind:class="{ \'disabled\' : searching }">Check \
                     <div class="spinner-border spinner-border-sm d-none" v-bind:class="{ \'d-inline-block\' : searching }" role="status" aria-hidden="true"></div> \
                     </button> \
                 </div> \
@@ -223,8 +224,9 @@ Vue.component('fk-autocomplete', {
 
     template: '<div> \
                 <input type="text" placeholder="Search..." class="form-control" v-model="searchText" v-bind:id="name"> \
-                <div class="flex-column shadow-sm border d-none list-group" v-bind:class="{ \'d-flex\':  selectionActive }"> \
-                  <div class="spinner-border spinner-border-sm ml-auto m-2 float-right d-none" v-bind:class="{ \'d-block\' : searching }" role="status" aria-hidden="true"></div> \
+                <div class="spinner-border spinner-border-sm m-2 d-none mr-4" v-bind:class="{ \'d-block\' : searching }" role="status" aria-hidden="true" style="position: absolute; z-index: 100; right: 0;"></div> \
+                <div class="flex-column shadow-sm border d-none list-group" v-bind:class="{ \'d-flex\':  selectionActive }" > \
+                  <span class="list-group-item list-group-item-action p-2" v-if="options.length === 1"><strong>No results</strong></span> \
                   <a href="#" v-for="option in options" class="list-group-item list-group-item-action p-2" v-on:click.prevent="selected(option.id, option.title)">{{option.title}}</a> \
                 </div> \
                </div>',
@@ -242,7 +244,7 @@ Vue.component('fk-autocomplete', {
     },
 
     watch: {
-        searchText: "search",
+      searchText: "search",
     },
 
     methods: {
@@ -310,6 +312,8 @@ Vue.component('add-object-modal', {
         mounted: function (){
             this.fetchData();
             console.log(this.model);
+
+            $(this.$refs['bs-modal']).on("shown.bs.modal", this.modalShown);
         },
 
         watch: {
@@ -417,12 +421,19 @@ Vue.component('add-object-modal', {
                     error: function (error) {
                         console.log(error);
                         /* TODO Make the error messages more friendly */
-                        window.scroll(0,0);
+                        $(".modal").scrollTop(0);
                         ctx.error = error.responseJSON;
                     },
                 });
 
                 return false;
+            },
+
+            modalShown: function(){
+                console.log("modal opened");
+                this.maybeInitTinyMCE();
+
+                this.$refs['main-form'].getElementsByTagName("input")[0].focus();
             },
 
             autocompleteSelected: function(data){
@@ -487,9 +498,20 @@ Vue.component('add-object-modal', {
                     }
 
                     try {
+                        console.log("removing old editor?");
+                        /* Find our editor */
+                        for(let i=0; tinyMCE.EditorManager.editors; i++){
+                           let editor = tinyMCE.EditorManager.editors[i];
+
+                           if (editor.id == this.tinyMCE){
+                               editor.remove();
+                               console.log("editor removed");
+                           }
+                        }
+                        /*
                         tinyMCE.activeEditor.remove();
-                        /* It doesn't really up after itself :( */
-                        $(".mce-tinymce").remove();
+                        /* It doesn't really up after itself :( *//*
+                        $(".mce-tinymce").remove();*/
                     } catch {}
 
                     if (this.tinyMCE){
