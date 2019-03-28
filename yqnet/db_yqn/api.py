@@ -39,7 +39,7 @@ import re
 
 
 class FilterRequiredMixin(object):
-    """ Requires the request to contains either a filter or a search query 
+    """ Requires the request to contains either a filter or a search query
         This avoids sending large unfiltered data sets
     """
     def get(self, request, *args, **kwargs):
@@ -69,7 +69,7 @@ class FilterRequiredMixin(object):
             for field in filter_fields:
                 if re.search(field, keys):
                     filter_or_search_present = True
-                    break 
+                    break
 
         if not filter_or_search_present:
             return HttpResponseBadRequest("Query Required")
@@ -82,7 +82,6 @@ class PostListPaginator(LimitOffsetPagination):
 
 class PostList(generics.ListCreateAPIView):
     description = "Add a Post"
-
     serializer_class = PostSerializer
     filter_fields = ('source', 'user', 'id')
     pagination_class = PostListPaginator
@@ -183,7 +182,7 @@ class GroupPageDetailImages(generics.ListAPIView):
         return GroupPageMedia.objects.filter(page=self.kwargs.get("pk"))
 
 class EventsLocationList(FilterRequiredMixin, generics.ListCreateAPIView):
-    description = "Add a link to your own events"
+    description = "Add a link to your own events page"
 
     metadata_class = SimpleWithFkModelMetadata
     serializer_class = YqnSerializer.EventsLocationSerializer
@@ -191,7 +190,7 @@ class EventsLocationList(FilterRequiredMixin, generics.ListCreateAPIView):
                           IsOwnerOrReadOnly,)
 
     filter_fields = ('user', 'id',)
-    
+
     search_fields = ('$title', '$venue__title')
     filter_backends = (filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend)
 
