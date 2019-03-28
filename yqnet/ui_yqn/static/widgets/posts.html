@@ -1,10 +1,10 @@
 
 <script type="text/x-template" id="events-template">
  <div id="posts-widget">
-    <div class="border-gray p-1 mb-0">
-        Show:
+    <div class="border-gray rounded bg-white mb-2 mt-2 d-flex flex-row">
+        <span>Show:</span>
 
-        <a href='#' class="badge badge-light"
+        <a href='#' class="badge badge-secondary m-1"
          v-for="source in sourceTypes"
          v-on:click.prevent="currentSource = source">{{source.name}}</a>
          <a v-if="currentUser" href="#" class="badge badge-secondary" v-on:click.prevent="currentUser = null">{{currentUser.first_name}} &times;</a>
@@ -61,11 +61,18 @@
         </div>
 
 
-        <div class="media flex-fill pb-3 mb-0 lh-125 post-text-body post"
-         v-bind:class="[ expandedPost == post.id ? expandedPostCSSClass : '']">
-            <!-- start post text -->
-            <div v-html="post.text" v-bind:data-postid="post.id" class="media-text post-text p-2" ref="post-text"></div>
-            <!-- end post text -->
+        <div class="flex-fill d-flex flex-column pb-3 mb-0 lh-125 post-text-body post"
+         v-bind:class="[ post.source === sourceTypes.LOCAL.id ? expandedPostCSSClass : '']">
+        <!-- v-bind:class="[ expandedPost == post.id ? expandedPostCSSClass : '']"> -->
+            <!-- start post -->
+
+            <div v-if="post.media" class="mt-2 m-auto">
+                <img class="img-fluid rounded" v-bind:src="post.media.url" />
+                <div v-html="post.text" v-bind:data-postid="post.id" class="media-text post-text p-2" ref="post-text"></div>
+            </div>
+
+            <div v-else v-html="post.text" v-bind:data-postid="post.id" class="media-text post-text p-2" ref="post-text"></div>
+            <!-- end post -->
         </div>
 
         <div v-if="post.ext_url" class="flex-fill border-top p-3 font-italic">
