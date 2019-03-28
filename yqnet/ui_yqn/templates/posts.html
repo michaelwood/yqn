@@ -4,16 +4,110 @@
 {% load static %}
 {% load vue_widget %}
 
-<div class="my-3 p-3 bg-white rounded shadow-sm">
-    <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
+
+<!-- Modal -->
+<div class="modal fade" id="add-picture-post-modal" tabindex="-1" role="dialog" aria-labelledby="picturePostModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="picturePostModalLabel">Post a picture</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-warning d-none"><span id="pp-warning"></span></div>
+            <form method="POST" id="pp-upload-form" class="align-self-center" action="{% url 'api:media-upload' %}" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="pp-title">Title</label>
+                <input class="form-control" type="text" id="pp-title" name="title" />
+              </div>
+
+              <div class="form-group">
+                <label for="pp-file">File</label>
+                <input type="file" name="file" class="form-control-file" id="pp-file" accept="image/*">
+              </div>
+
+              <div class="form-group">
+                <label for="pp-caption">Caption</label>
+                <textarea name="text" class="form-control" id="pp-caption">
+                            </textarea>
+              </div>
+
+              {% csrf_token %}
+              <input type="hidden" name="post" value="true">
+
+            </form>
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="pp-btn">Post</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<script>
+  $(document).ready(function(){
+
+        $("#pp-btn").click(function(e){
+            e.preventDefault();
+            let data = new FormData($("#pp-upload-form")[0]);
+            data.append("text", tinyMCE.activeEditor.getContent());
+
+            $.ajax({
+                type: "POST",
+                url: $("#pp-upload-form").prop("action"),
+                enctype: 'multipart/form-data',
+                headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+                processData: false,
+                contentType: false,
+                data: data,
+                success: function (data) {
+                    $("#pp-warning").text("").parent().toggleClass("d-none");
+                    yqnBus.$emit("notify", { title: "Picture posted", body : "Thanks for your contribution" });
+                    yqnBus.$emit("data-added");
+                    $("#add-picture-post-modal").modal('hide');
+                },
+                error: function (data) {
+                    console.log(data);
+                    $("#pp-warning").text(data.responseJSON.error).parent().toggleClass("d-none");
+                },
+            });
+        });
+    });
+
+  $("#add-picture-post-modal").on("shown.bs.modal", function(){
+    setTimeout(function(){
+    console.log("wefewf");
+      tinyMCE.init({
+          plugins: "autolink code lists emoticons",
+          menubar: false,
+          toolbar: "undo redo bold italic underline lists emoticons | code",
+          statusbar: false,
+          selector: "#pp-caption",
+      });
+    }, 0);
+  });
+</script>
+{% endif %}
+
+<div class="my-3 p-3 bg-light rounded shadow-sm">
+    <div class="clearfix border-bottom border-gray pb-1 mb-0">
       <div class="float-right">
 
         {% if user.is_authenticated %}
-
-        <button title="Add Post" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-Posts">
-            <i class="fas fa-plus-circle"></i>
+        <div class="btn-group" role="group">
+            <button id="btnGroupDrop1" type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="fas fa-plus-circle"></i>
              Post
-        </button>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+            <a class="dropdown-item" href="#" data-toggle="modal"  data-target="#add-object-modal-Posts"><i class="far fa-comment-alt"></i> Message</a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-picture-post-modal"><i class="far fa-image"></i> Picture</a>
+          </div>
+        </div>
 
         <button title="Add Feed" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#add-object-modal-XMLFeeds">
             <i class="fas fa-plus-circle"></i>
