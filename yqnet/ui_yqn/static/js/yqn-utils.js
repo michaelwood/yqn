@@ -130,8 +130,21 @@ $(document).ready(function(){
 
   setActivePage();
 
+  maybePulseMenuBtn();
+
 });
 
+function maybePulseMenuBtn(){
+
+  if ($(window).width() < 991.98){
+    console.log("maybe pulse menu bnt");
+    $(".navbar-toggler").addClass("pulse-navbar-toggler");
+    /* Disconnect we only need to do this once */
+    window.onresize = null;
+  }
+}
+
+window.onresize = maybePulseMenuBtn;
 
 
 /* prevent Bootstrap from hijacking TinyMCE modal focus

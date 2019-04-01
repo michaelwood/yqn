@@ -141,3 +141,22 @@ a.nav-link.bg-dark {
 a.nav-link.bg-dark:hover {
     background-color: #343a40!important;
 }
+
+/* transparent border so that the animation doesn't change the position
+ by adding and removing a border
+*/
+.navbar-toggler {
+    border: 1px solid rgba(0,0,0,0,0);
+}
+
+@keyframes pulser-toggler {
+   to { border: 1px solid #343a40 }
+   from { border: 1px solid rgba(255,255,255,0.5); }
+}
+
+.pulse-navbar-toggler {
+    animation-name: pulser-toggler;
+    animation-duration: 2s;
+    animation-iteration-count: 4;
+    animation-direction: alternate-reverse;
+}
