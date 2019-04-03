@@ -7,10 +7,10 @@
         Show:
         <a href='#' class="badge badge-light"
          v-for="month in futureMonths"
-         v-on:click.prevent="showMonth = month">{{month.name}}</a>
+         v-on:click.prevent="showMonth = month">{{month.name}} {{month.year}}</a>
     </div>
 
-    <h2>{{showMonth.name}}</h2>
+    <h2>{{showMonth.name}} {{showMonth.year}}</h2>
 
     </span>
 
@@ -98,6 +98,7 @@
 
             currentUser: null,
             currentMonth:  new Date().getMonth(), /* Jan = 0 */
+            currentYear:  new Date().getFullYear(), /* Jan = 0 */
             currentEventId: null,
             }
         },
@@ -111,8 +112,27 @@
 
         created: function (){
             /* Remember that months start at 0 */
-            for (var i=this.currentMonth; i < this.months.length; i++){
-                this.futureMonths.push(this.months[i]);
+            /* Always shows 12 months worth of selectors e.g. nov 2019, dec 2019, jan 2020 ... */
+            for (var i=this.currentMonth; this.futureMonths.length < 12; i++){
+
+                /* We're looping round which is why it is less that the current
+                 * month
+                 */
+                if (i >= 12) {
+
+                    this.futureMonths.push({
+                         name: this.months[i % 12].name,
+                         calNum: this.months[i % 12].calNum,
+                         year: this.currentYear + 1,
+                         });
+
+                } else {
+                    this.futureMonths.push({
+                         name: this.months[i].name,
+                         calNum: this.months[i].calNum,
+                         year: null,
+                    });
+                }
 
                 if (!this.showMonth && (this.currentMonth+1) == this.months[i].calNum ){
                     this.showMonth = this.months[i];
@@ -130,8 +150,6 @@
                 console.log("Get message data changed");
                 ctx.fetchData();
              });
-
-
         },
 
         updated: function(){
@@ -154,11 +172,18 @@
                     var startDate = new Date();
                     var endDate = new Date();
 
-                    startDate.setDate(01);
+                    /* We show all events for this month */
+                    startDate.setDate(1);
                     startDate.setMonth(this.showMonth.calNum - 1);
 
                     endDate.setMonth(this.showMonth.calNum - 1);
                     endDate.setDate(yqnUtils.getDaysInMonth(this.showMonth.calNum));
+
+                    /* if we've looped round to the next year set the year */
+                    if (this.showMonth.year){
+                        startDate.setFullYear(this.showMonth.year);
+                        endDate.setFullYear(this.showMonth.year);
+                    }
 
 
                     /* Split on the time component out as we don't care about the exact time */
