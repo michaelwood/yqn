@@ -87,7 +87,7 @@ class Post(models.Model):
 
     private = models.BooleanField(default=False, help_text="Only show this post to logged in users")
 
-    media = models.ForeignKey(UserMedia, on_delete=models.CASCADE, null=True)
+    media = models.ForeignKey(UserMedia, on_delete=models.CASCADE, null=True, blank=True)
 
     def thumbnail_computed(self):
 
