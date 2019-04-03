@@ -75,31 +75,48 @@
  */
 
 Vue.component('datetime', {
-    props: ['name'],
+    props: ['name', 'value'],
 
     components: {
         /* Note this symbol is currently loaded in base.html */
         vuejsDatepicker
     },
-        template: '<div class="d-flex flex-column">  \
-                    <vuejs-datepicker :required="true" :bootstrap-styling="true"  v-on:selected="dateSelected" placeholder="Select..." v-model="date"></vuejs-datepicker> \
+    template: '<div class="d-flex flex-column"> \
+                    <vuejs-datepicker :required="true" :bootstrap-styling="true"  v-on:selected="dateSelected" placeholder="Select..." v-model="date" value="2019-04-19"></vuejs-datepicker> \
                     <div class="pt-2 form-row"> \
                         <div class="col"> \
                             <label>Hour</label> \
-                            <select class="form-control" v-on:change="hourSelected"><option v-for="(useless, h) in 24">{{h}}</option></select> \
+                            <select ref="hour" class="form-control" v-on:change="hourSelected"><option v-for="(useless, h) in 24">{{h}}</option></select> \
                         </div> \
                         <div class="col"> \
                             <label>Minute</label> \
-                            <select class="form-control" v-on:change="minuteSelected"><option v-for="(useless, m) in 60">{{m}}</option></select>\
+                            <select ref="minute" class="form-control" v-on:change="minuteSelected"><option v-for="(useless, m) in 60">{{m}}</option></select>\
                         </div> \
                     </div> \
-                   </div>',
+                </div>',
 
     data: function(){
         return {
             date: null,
             timedate: new Date(),
         }
+    },
+
+    created: function(){
+        if (this.value){
+            this.date = new Date(this.value);
+            this.timedate = new Date(this.value);
+        }
+    },
+
+    mounted: function(){
+        /* if we had an initial value set set this on the time selectors */
+        this.$nextTick(function(){
+            if (this.value){
+                this.$refs['minute'].value = this.date.getMinutes();
+                this.$refs['hour'].value = this.date.getHours();
+            }
+        });
     },
 
     methods: {
