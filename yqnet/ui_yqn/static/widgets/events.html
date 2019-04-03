@@ -3,7 +3,7 @@
  <div id="events-widget">
     <span v-if="!eventId">
 
-    <div class="border-gray p-1 mb-0">
+    <div class="border-gray p-2 bg-white rounded">
         Show:
         <a href='#' class="badge badge-light"
          v-for="month in futureMonths"
@@ -21,7 +21,7 @@
 
             <div class="d-flex flex-column flex-fill">
 
-                <div class="d-flex flex-row">
+                <div class="d-flex flex-row m-2">
                     <div class="rounded-circle post-thumb d-block" style="min-width: 90px; background-color: #343a40">
                             <h3 class="text-center mt-4" style="color: white;">{{event.display_day}}</h3>
                     </div>
@@ -37,8 +37,8 @@
 
                 <p class="m-2" v-html="event.description"></p>
                 <!-- if the link is relative it won't have http so no point linking to ourselves to find out more -->
-                <a v-if="event.url.indexOf('http') !== -1" v-bind:href="event.url">Find out more</a>
-                <a v-if="event.has_email" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Event', objectId: event.id, title: event.title } )" class="ml-auto">Contact organiser</a>
+                <a v-if="event.url.indexOf('http') !== -1" class="m-2" v-bind:href="event.url">Find out more - {{event.title}}</a>
+                <a v-if="event.has_email" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Event', objectId: event.id, title: event.title } )" class="ml-auto"><i class="fas fa-envelope"></i> Contact organiser</a>
 
             </div>
                 <div class="dropdown dropleft action-menu-yqn">

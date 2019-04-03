@@ -9,8 +9,13 @@
 
 
 
-    <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
+    <div class="clearfix border-bottom border-gray pb-2">
       <div class="float-right">
+
+        <button id="locate-me" class="btn btn-sm btn-outline-secondary" onClick="yqnBus.$emit('locate-me')">
+            <i class="far fa-compass"></i>
+            Locate Me
+        </button>
 
         {% if user.is_authenticated %}
 
@@ -37,10 +42,6 @@
 
         {% endif %}
 
-        <button id="locate-me" class="btn btn-sm btn-secondary" onClick="yqnBus.$emit('locate-me')">
-                <i class="far fa-compass"></i>
-                Locate Me
-        </button>
 
       </div>
 
@@ -49,12 +50,13 @@
            the YQN community. The events are not run by YQN" data-toggle="popover" data-container="body">
             <i class="far fa-question-circle"></i>
         </a>
+
     </div>
 
-    <div id="map-app" class="mt-2" >
+   <div id="map-app" class="mt-2" >
         <map-area></map-area>
-    </div>
 
+    </div>
 </div>
 
 {% load vue_widget %}

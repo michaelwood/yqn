@@ -7,7 +7,7 @@
         <a href='#' class="badge badge-secondary m-1"
          v-for="source in sourceTypes"
          v-on:click.prevent="currentSource = source">{{source.name}}</a>
-         <a v-if="currentUser" href="#" class="badge badge-secondary" v-on:click.prevent="currentUser = null">{{currentUser.first_name}} &times;</a>
+         <a v-if="currentUser" href="#" class="badge badge-warning m-1" v-on:click.prevent="currentUser = null">{{currentUser.first_name}} &times;</a>
     </div>
 
 <transition-group name="list" tag="div">
