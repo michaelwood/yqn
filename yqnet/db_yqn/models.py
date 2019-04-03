@@ -247,8 +247,11 @@ class Venue(models.Model):
     address = models.TextField()
     postcode = models.CharField(max_length=20, help_text="Must be valid UK postcode")
 
-    lat = models.FloatField(max_length=200)
-    lng = models.FloatField(max_length=200)
+    # We try and do the postcode to lat,lng lookup client side so set a default value
+    # If we weren't able to then a default value is provided to allow the validation
+    # and to mark it for geocodeing later on
+    lat = models.FloatField(max_length=200, default=-99)
+    lng = models.FloatField(max_length=200, default=-99)
 
     def get_url(self):
         return reverse_lazy("venue", args=(self.id,))
