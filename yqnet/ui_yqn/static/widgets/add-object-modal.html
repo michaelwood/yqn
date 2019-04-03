@@ -22,27 +22,31 @@
                         <div v-for="field in fields" class="form-group list-item" v-bind:key="field.name">
                             <label v-bind:for="field.name">{{field.data.label}} <span v-if="field.data.required" style="color:red">*</span></label>
 
-                                <location v-if="field.name == 'postcode'" v-bind:field="field" v-on:selected="autocompleteSelected"></location>
-                                <input v-else-if="field.name == 'lat' || field.name == 'lng'" type="text" v-bind:value="input[field.name]" placeholder="Use postcode lookup" v-bind:name="field.name" class="form-control" v-bind:id="field.name"  readonly>
-                                <slug v-else-if="field.name == 'slug'" type="text" v-bind:from="input['title']" v-model="input[field.name]" v-bind:name="field.name" v-bind:id="field.name" v-on:selected="autocompleteSelected"></slug>
+                            <location v-if="field.name == 'postcode'" v-bind:field="field" v-on:selected="autocompleteSelected"></location>
+                            <input v-else-if="field.name == 'lat' || field.name == 'lng'" type="text" v-bind:value="input[field.name]" placeholder="Use postcode lookup" v-bind:name="field.name" class="form-control" v-bind:id="field.name"  readonly>
+                            <slug v-else-if="field.name == 'slug'" type="text" v-bind:from="input['title']" v-model="input[field.name]" v-bind:name="field.name" v-bind:id="field.name" v-on:selected="autocompleteSelected"></slug>
 
-                                <input v-else-if="field.data.max_length" v-bind:name="field.name" type="text" class="form-control" v-model="input[field.name]"  v-bind:id="field.name" >
-                                <div v-else-if="field.data.type === 'boolean'" class="form-check">
-                                    <input v-bind:name="field.name" type="checkbox" class="form-check-input" v-model="input[field.name]"  v-bind:id="field.name" >
-                                    <label class="form-check-label">{{field.data.label}}</label>
-                                </div>
-                                <textarea v-else-if="field.data.type ==='string' && !field.data.max_length" v-bind:id="field.name" v-bind:name="field.name" class="form-control" v-model="input[field.name]" ></textarea>
+                            <input v-else-if="field.data.max_length" v-bind:name="field.name" type="text" class="form-control" v-model="input[field.name]"  v-bind:id="field.name" >
+                            <div v-else-if="field.data.type === 'boolean'" class="form-check">
+                                <input v-bind:name="field.name" type="checkbox" class="form-check-input" v-model="input[field.name]"  v-bind:id="field.name" >
+                                <label class="form-check-label">{{field.data.label}}</label>
+                            </div>
+                            <textarea v-else-if="field.data.type ==='string' && !field.data.max_length" v-bind:id="field.name" v-bind:name="field.name" class="form-control" v-model="input[field.name]" ></textarea>
 
-                                <datetime v-else-if="field.data.type === 'datetime'" v-on:selected="autocompleteSelected" v-bind:name="field.name"></datetime>
-                                <fk-autocomplete v-else-if="field.data.type === 'field'" v-bind:name="field.name" v-on:selected="autocompleteSelected" v-bind:model-hint="field.data.model_hint"></fk-autocomplete>
+                            <datetime v-else-if="field.data.type === 'datetime'"  v-on:selected="autocompleteSelected" v-bind:value="input[field.name]" v-bind:name="field.name"></datetime>
 
-                                <div v-else-if="field.data.type === 'choice'">
-                                    <select v-bind:name="field.name" class="form-control" v-model="input[field.name]"  v-bind:id="field.name">
-                                        <option v-for="choice in field.data.choices" v-bind:value="choice.value">{{choice.display_name}}</option>
-                                    </select>
-                                </div>
+                            <span v-else-if="field.data.type === 'field'" >
+                                <strong v-text="created[field.name]" class="d-block m-1"></strong>
+                                <fk-autocomplete  v-bind:name="field.name" v-on:selected="autocompleteSelected" v-bind:model-hint="field.data.model_hint"></fk-autocomplete>
+                            </span>
 
-                                <small>{{field.data.help_text}}</small>
+                            <div v-else-if="field.data.type === 'choice'">
+                                <select v-bind:name="field.name" class="form-control" v-model="input[field.name]"  v-bind:id="field.name">
+                                    <option v-for="choice in field.data.choices" v-bind:value="choice.value">{{choice.display_name}}</option>
+                                </select>
+                            </div>
+
+                            <small>{{field.data.help_text}}</small>
                         </div>
                         </transition-group>
 
@@ -176,13 +180,14 @@ Vue.component('location', {
         return {
             postcode: null,
             searching: false,
+            success: false,
          }
      },
 
     template: '<div class="input-group mb-3"> \
               <input type="text" class="form-control border-right-0" v-bind:id="field.name" v-model="postcode" v-bind:name="field.name" aria-label="postcode with lookup button addon" aria-describedby="button-addon1"> \
                 <div class="input-group-append"> \
-                    <button class="btn btn-outline-secondary" type="button" v-on:click.prevent="lookup" id="button-addon1" v-bind:class="{ \'disabled\' : searching }">Check \
+                    <button class="btn" type="button" v-on:click.prevent="lookup" id="button-addon1" v-bind:class="[{ \'disabled\' : searching },  success ?  \'btn-outline-success\' : \'btn-outline-danger\' ]">Check \
                     <div class="spinner-border spinner-border-sm d-none" v-bind:class="{ \'d-inline-block\' : searching }" role="status" aria-hidden="true"></div> \
                     </button> \
                 </div> \
@@ -203,11 +208,13 @@ Vue.component('location', {
                 ctx.$emit("selected", { key: "lng", value: data.wgs84_lon });
                 ctx.$emit("selected", { key: "postcode", value: data.postcode });
 
+                ctx.success = true;
                 ctx.searching = false;
             }).fail(
              function(){
                 console.log("error doing postcode lookup");
                 ctx.searching = false;
+                ctx.success = false;
 
             });
 
@@ -343,7 +350,9 @@ Vue.component('add-object-modal', {
                              * also not going to handled nested fields yet
                              */
                             if (data.actions.POST[fields[i]].read_only == true ||
-                                data.actions.POST[fields[i]].type == "nested object"){
+                                data.actions.POST[fields[i]].type == "nested object" ||
+                                fields[i] == "lat" ||
+                                fields[i] == "lng"){
                                 continue;
                             }
 
