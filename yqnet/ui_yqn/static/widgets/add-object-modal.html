@@ -249,7 +249,7 @@ Vue.component('fk-autocomplete', {
     template: '<div> \
                 <input type="text" placeholder="Search..." class="form-control" v-model="searchText" v-bind:id="name"> \
                 <div class="spinner-border spinner-border-sm m-2 d-none mr-4" v-bind:class="{ \'d-block\' : searching }" role="status" aria-hidden="true" style="position: absolute; z-index: 100; right: 0;"></div> \
-                <div class="flex-column shadow-sm border d-none list-group" v-bind:class="{ \'d-flex\':  selectionActive }" > \
+                <div class="flex-column shadow-sm border d-none list-group" style="max-height: 10em; overflow: auto" v-bind:class="{ \'d-flex\':  selectionActive }" > \
                   <span class="list-group-item list-group-item-action p-2" v-if="options.length === 1"><strong>No results</strong></span> \
                   <a href="#" v-for="option in options" class="list-group-item list-group-item-action p-2" v-on:click.prevent="selected(option.id, option.title)">{{option.title}}</a> \
                 </div> \
@@ -304,11 +304,13 @@ Vue.component('fk-autocomplete', {
 
             if (id === "__new__"){
                 selected.modelHint = this.modelHint;
+                selected.fieldName = this.name;
             }
 
             this.$emit("selected", selected);
             this.searchText = title;
             this.options = [];
+            this.searching = false;
         },
 
     },
@@ -330,6 +332,7 @@ Vue.component('add-object-modal', {
                 creationStack: [],
                 tinyMCE: false,
                 model: this.startModel,
+                created: {},
              }
         },
 
@@ -341,7 +344,6 @@ Vue.component('add-object-modal', {
         },
 
         watch: {
-            model: 'fetchData',
             fields: 'maybeInitTinyMCE',
         },
 
@@ -403,8 +405,16 @@ Vue.component('add-object-modal', {
                 var ctx = this;
 
                 if (this.tinyMCE){
-                    this.input[tinyMCE.activeEditor.getElement().name] = tinyMCE.activeEditor.getContent();
+                    let inputName = tinyMCE.activeEditor.getElement().name;
+
+                    this.input[inputName] = tinyMCE.activeEditor.getContent();
+
+                    /* Fall back if the editor failed */
+                    if (this.input[inputName].length === 0){
+                        this.input[inputName] = $('['+inputName+']').val();
+                    }
                 }
+
 
                 $.ajax({
                     type: "POST",
@@ -423,11 +433,11 @@ Vue.component('add-object-modal', {
                         ctx.error = null;
 
                         if (ctx.creationStack.length > 0){
-                            ctx.resumeState();
+                            ctx.resumeState(data);
                             return;
                         }
 
-                        $("#"+ctx.modalId).modal('hide');
+                        $(ctx.$refs['bs-modal']).modal('hide');
 
                         for (i in ctx.input){
                             ctx.input[i] = '';
@@ -465,15 +475,15 @@ Vue.component('add-object-modal', {
             autocompleteSelected: function(data){
                 if (data.value === "__new__"){
                     /* We're switching models to be able to add the new object */
-                    this.switchModel(data.modelHint);
+                    this.switchModel(data.modelHint, data.fieldName);
                     return;
                 }
-                /* Vue set triggers the bindings correctly (as aposed to directly setting the value) */
+                /* Vue.set triggers the bindings correctly (as aposed to directly setting the value) */
                 Vue.set(this.input, data.key, data.value);
             },
 
-            switchModel: function(newModel){
-                this.saveState();
+            switchModel: function(newModel, fieldName){
+                this.saveState(fieldName);
 
                 if (!newModel){
                     throw("No new model given");
@@ -484,24 +494,52 @@ Vue.component('add-object-modal', {
                 this.input = {};
                 this.fields = [];
                 this.error = null;
-                this.tinyMCE = false; // This then fails to get set to true at the rhgint point... TODO
+                this.tinyMCE = false;
                 this.model = newModel;
+
+                this.fetchData();
             },
 
-            saveState: function(){
-                var state = {
+            saveState: function(fieldName){
+                let state = {
                     model: this.model,
                     input: this.input,
+                    fields: this.fields,
+                    wasFetching: fieldName,
                 };
 
-                this.creationStack.push(state);
+                /* Make sure this state object is copied */
+                let newState = JSON.parse(JSON.stringify(state));
+
+                this.creationStack.push(newState);
             },
 
-            resumeState: function(){
-               var state = this.creationStack.pop();
+            /* We went off and added an object and now it is time to resume the
+               previous object creation.
+               addedObject is the object we just added
+             */
+            resumeState: function(addedObject){
+                console.log("far out");
+                let state = this.creationStack.pop();
 
-               this.model = state.model;
-               this.input = state.input;
+                this.model = state.model;
+                this.fields = state.fields;
+
+                Vue.set(this, 'fields', state.fields)
+
+
+               for (let key in state.input){
+                   console.log("Resuming");
+                   console.log(key +":"+ state.input[key]);
+                   Vue.set(this.input, key, state.input[key]);
+               }
+
+               /* TODO isn't always going to be title */
+               Vue.set(this.created, state.wasFetching, addedObject.title);
+               this.input[state.wasFetching] = addedObject.id;
+
+
+               return true;
             },
 
             close: function(){
@@ -513,6 +551,7 @@ Vue.component('add-object-modal', {
                 }
 
                 this.input = {};
+                this.error = null;
             },
 
             maybeInitTinyMCE: function(){
@@ -529,14 +568,13 @@ Vue.component('add-object-modal', {
                         for(let i=0; tinyMCE.EditorManager.editors; i++){
                            let editor = tinyMCE.EditorManager.editors[i];
 
-                           if (editor.id == this.tinyMCE){
+                           if (this.tinyMCE.indexOf(editor.id) > -1){
                                editor.remove();
                                console.log("editor removed");
                            }
                         }
                         /*
-                        tinyMCE.activeEditor.remove();
-                        /* It doesn't really up after itself :( *//*
+                        /* It doesn't really up after itself :(
                         $(".mce-tinymce").remove();*/
                     } catch {}
 
