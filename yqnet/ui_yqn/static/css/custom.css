@@ -75,6 +75,7 @@ body {
 
 .post-expand-overflow-open {
     max-height: 800px;
+    overflow: auto;
 }
 
 .post-text-link, .post-text-link:hover {
