@@ -196,7 +196,7 @@ class GroupPage(models.Model):
             return reverse_lazy("user-page-edit", args=(self.slug,))
         return ""
 
-    def get_link(self):
+    def get_url(self):
         if self.redirect:
             return self.redirect
 
@@ -235,7 +235,7 @@ class GroupPage(models.Model):
                         text="The group page %s has been %s - Check it out!" % (self.title, updated_or_created),
                         user=user,
                         source=Sources.LOCAL,
-                        ext_url=self.get_link(),
+                        ext_url=self.get_url(),
                 )
         # Making a post is optional and we don't want any errors
         # to fail the save on this object

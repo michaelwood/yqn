@@ -79,7 +79,7 @@ class GroupPageRedirectSerializer(serializers.ModelSerializer):
 class GroupPageSerializer(serializers.ModelSerializer):
 
     go_to = serializers.CharField(read_only=True, source="get_edit_link")
-    url = serializers.CharField(read_only=True, source="get_link")
+    url = serializers.CharField(read_only=True, source="get_url")
 
     class Meta:
         model = GroupPage
