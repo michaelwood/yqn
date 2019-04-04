@@ -42,13 +42,17 @@ class Sources(object):
 class XMLFeed(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, editable=False)
-    url = models.URLField(help_text="Url should be an Atom or RSS feed", unique=True)
+
+    url = models.URLField(help_text="Url should be an Atom or RSS feed",
+                          unique=True,
+                          verbose_name="Link (URL)")
+
     name = models.CharField(max_length=100)
     enabled = models.BooleanField(default=False)
 
     source = models.IntegerField(choices=Sources.REMOTE_SOURCE_TYPES,
-        help_text="The 'source' or category for this feed",
-        verbose_name="Category")
+                                 help_text="The 'source' or category for this feed",
+                                 verbose_name="Category")
 
     manual_thumbnail = models.URLField(
         help_text="Url to a thumbnail img, used if the feed doesn't provide one automatically",
@@ -162,7 +166,12 @@ class GroupPage(models.Model):
 
     slug_help = "This sets up a short link to the page e.g. 'my-group-name' results in http://yqnet.uk/my-group-name"
     title = models.CharField(max_length=400)
-    slug = models.SlugField(max_length=200, unique=True, help_text=slug_help, validators=[validators.validate_slug, validate_no_slug_clash])
+
+    slug = models.SlugField(max_length=200,
+                            unique=True,
+                            help_text=slug_help,
+                            validators=[validators.validate_slug, validate_no_slug_clash])
+
     redirect = models.URLField(blank=True, null=True,
      help_text="Instead of a dedicated page people will automatically be redirected to the provided url")
     body = models.TextField(default="", blank=True)
@@ -273,13 +282,21 @@ class Venue(models.Model):
         return self.title
 
 
+    # TODO lookup geocode
+    #def save(self, *args, **kwargs):
+    #    if self.lat == -99 or self.lng == -99:
+    #        print("Need to get location looked up")
+#
+#        super().save(*args, **kwargs)
+
+
 class Event(models.Model):
     title = models.CharField(max_length=200)
     url = models.URLField(null=True, blank=True)
     description = models.TextField()
     date_time_start = models.DateTimeField()
     date_time_end = models.DateTimeField()
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, verbose_name="Venue name")
+    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, verbose_name="Venue name", help_text="e.g. Westminster Quaker Meeting")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     private = models.BooleanField(default=False, help_text="Only show this event to logged in users")
     email = models.EmailField(null=True, blank=True, help_text="Email address for enquiries")
