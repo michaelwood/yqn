@@ -204,6 +204,12 @@ class EventsLocationList(FilterRequiredMixin, generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+class EventsLocationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EventsLocation.objects.all()
+    serializer_class = YqnSerializer.EventsLocationSerializer
+    permission_classes = (IsOwner,)
+
+
 class EventList(FilterRequiredMixin, generics.ListCreateAPIView):
     description = "Add your event listing"
     filter_class = YqnFilters.EventListFilter
@@ -225,6 +231,13 @@ class EventList(FilterRequiredMixin, generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class EventDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Event.objects.all()
+    serializer_class = YqnSerializer.EventsSerializer
+    permission_classes = (IsOwner,)
+
 
 class VenueList(FilterRequiredMixin, generics.ListCreateAPIView):
     description = "Add a venue for your events"
