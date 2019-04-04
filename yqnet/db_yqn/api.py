@@ -12,7 +12,7 @@ from rest_framework import filters
 
 
 from db_yqn.models import Post, Sources, XMLFeed, Twitter, Instagram, GroupPage
-from db_yqn.models import EventsLocation, Venue, Event, GroupPageMedia
+from db_yqn.models import EventsLocation, Venue, Event, GroupPageMedia, Region
 
 from db_yqn.rest_serialiser import PostSerializer, XMLFeedSerializer
 from db_yqn.rest_serialiser import InstagramSerializer, TwitterSerializer
@@ -182,14 +182,14 @@ class GroupPageDetailImages(generics.ListAPIView):
         return GroupPageMedia.objects.filter(page=self.kwargs.get("pk"))
 
 class EventsLocationList(FilterRequiredMixin, generics.ListCreateAPIView):
-    description = "Add a link to your own events page"
+    description = "Add a link to your own Events"
 
     metadata_class = SimpleWithFkModelMetadata
     serializer_class = YqnSerializer.EventsLocationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    filter_fields = ('user', 'id',)
+    filter_fields = ('user', 'id', 'region')
 
     search_fields = ('$title', '$venue__title')
     filter_backends = (filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend)
@@ -251,21 +251,24 @@ class VenueList(FilterRequiredMixin, generics.ListCreateAPIView):
 
 
 class EventsAtVenue(FilterRequiredMixin, generics.ListAPIView):
-#    queryset = Venue.objects.all()
+    queryset = Venue.objects.all()
     serializer_class = YqnSerializer.EventsAtVenue
-    permission_classes = (permissions.AllowAny,)
 
     filter_class = YqnFilters.EventsAtVenueFilter
 
-    def get_queryset(self):
-        return Venue.objects.all()
+class RegionList( generics.ListCreateAPIView):
+    description = "Add a region for your events"
+    queryset = Region.objects.all()
+    search_fields = ("^title",)
+    filter_backends = (filters.SearchFilter,)
+    metadata_class = SimpleWithFkModelMetadata
+    serializer_class = YqnSerializer.RegionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
 
-        queryset = []
 
-        for venue in venues:
-            queryset.append(venue)
+class EventsAtRegion(FilterRequiredMixin, generics.ListAPIView):
+    queryset = Region.objects.all()
+    serializer_class = YqnSerializer.EventsAtRegion
 
-        return queryset
-
-
-#        if not self.request.user.is_authenticated:
+    filter_class = YqnFilters.EventsAtRegionFilter

@@ -27,10 +27,14 @@ urlpatterns = [
     path('EventsLocation/<int:pk>', api.EventsLocationDetail.as_view()),
 
     path('Venues/', api.VenueList.as_view(), name="venues"),
+
     path('Events/', api.EventList.as_view()),
     path('Event/<int:pk>', api.EventDetail.as_view()),
 
+    path('Regions/', api.RegionList.as_view()),
+
     path('EventsAtVenue/', api.EventsAtVenue.as_view()),
+    path('EventsAtRegion/', api.EventsAtRegion.as_view()),
 
     path('Contact/', custom_api.Contact.as_view()),
     path('Upload/', custom_api.Upload.as_view(), name="media-upload"),

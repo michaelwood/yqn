@@ -7,7 +7,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.utils import timezone
-from db_yqn.models import Post, XMLFeed, Instagram, Twitter, GroupPage
+from db_yqn.models import Post, XMLFeed, Instagram, Twitter, GroupPage, Region
 from db_yqn.models import EventsLocation, Venue, Event, GroupPageMedia, UserMedia
 
 # If defining 'fields' remember to add field for id
@@ -95,17 +95,35 @@ class VenueSerializer(serializers.ModelSerializer):
         model = Venue
         fields = ("id", "title", "address", "postcode", "lat", "lng", "url")
 
+class RegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Region
+        fields  = ("__all__")
+
 class EventsLocationSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
+    # These details are for special objects curated for display use
+    # We deliberately leave in the original fields for Update/Create useage
+    # All _details should be read_only
     venue_details = VenueSerializer(read_only=True, source="get_venue")
-    group_page_details = GroupPageSerializer(read_only=True, source="get_group_page")
+    group_page_details = GroupPageDetailsSerializer(read_only=True, source="get_group_page")
+    region_details = RegionSerializer(read_only=True, source="get_region")
 
     has_email = serializers.BooleanField(read_only=True)
 
+    def validate(self, data):
+        if not 'region' in data and not 'venue' in data:
+            raise serializers.ValidationError({ "Region or Venue" : "Either a Venue or an Area for the event must be provided"})
+
+        if not 'url' in data and not 'group_page' in data:
+            raise serializers.ValidationError({ "Link or Group Page" : "For people to find out about the events please provide either a Group page or an external Link or both"})
+
+        return data
+
     class Meta:
         model = EventsLocation
-        fields = ("id","title", "url", "group_page", "venue", "user", "venue_details", "group_page_details", "has_email")
+        fields = ("id","title", "url", "group_page", "venue", "user", "venue_details", "group_page_details", "has_email", "region", "private", "region_details")
 
 class EventsSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -212,3 +230,10 @@ class ImageFileSerializer(serializers.ModelSerializer):
         model = GroupPageMedia
         fields  = ("title", "value")
 
+
+class EventsAtRegion(serializers.ModelSerializer):
+    eventslocation_set = NestedEventsLocationSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Region
+        fields = ("__all__")

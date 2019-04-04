@@ -240,8 +240,21 @@ class GroupPage(models.Model):
         return self.title
 
 
+class Region(models.Model):
+    title = models.CharField(max_length=200, unique=True, verbose_name="Region name")
+
+    lat_tl = models.FloatField(max_length=200, verbose_name="Latitude top left")
+    lng_tl = models.FloatField(max_length=200, verbose_name="Longitude top left")
+
+    lat_br = models.FloatField(max_length=200, verbose_name="Latitude bottom right")
+    lng_br = models.FloatField(max_length=200, verbose_name="Longitude bottom right")
 
 
+    def __str__(self):
+        return self.title
+
+
+# Note Venues are all public but can have private events/eventlocations
 class Venue(models.Model):
     title = models.CharField(max_length=200, unique=True, verbose_name="Venue name")
     address = models.TextField()
@@ -334,19 +347,26 @@ class Event(models.Model):
 
 
 class EventsLocation(models.Model):
+    # Addional validation logic is provided at the API level to ensure venue
+    # or region and group page or url are provided.
     title = models.CharField(max_length=200, help_text="e.g. Quaker Meeting")
-    group_page = models.ForeignKey(GroupPage, null=True, on_delete=models.DO_NOTHING, help_text="Link to a group page")
-    url = models.URLField(help_text="External link to find out more about your events", blank=True, null=True)
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
+    group_page = models.ForeignKey(GroupPage, null=True, on_delete=models.DO_NOTHING, help_text="Link to a Group page or Add new")
+    url = models.URLField(help_text="External link to find out more about your events. e.g. http://example.com/events", blank=True, null=True, verbose_name="Link (URL)")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     private = models.BooleanField(default=False, help_text="Only show this information to logged in users")
     email = models.EmailField(null=True, blank=True, help_text="If left blank enquiries will be forwarded to your current login email")
+
+    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Venue name", help_text="Lookup an existing Venue or Add new")
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True, blank=True, help_text="If your events happen in multiple places in a Region rather than at a single Venue. e.g. London Area or Add new")
 
     def get_venue(self):
         return self.venue
 
     def get_group_page(self):
         return self.group_page
+
+    def get_region(self):
+        return self.region
 
     def has_email(self):
         if self.email and len(self.email) > 0:
@@ -375,6 +395,7 @@ class EventsLocation(models.Model):
 
     def __str__(self):
         return self.title
+
 
 # Note file sizes should be limited using the http server
 # e.g. Apache2 LimitRequestBody 102400 (100k)
@@ -405,3 +426,4 @@ admin.site.register(Venue)
 admin.site.register(Event)
 admin.site.register(UserMedia)
 admin.site.register(GroupPageMedia)
+admin.site.register(Region)
