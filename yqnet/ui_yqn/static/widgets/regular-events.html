@@ -1,18 +1,44 @@
 
 <script type="text/x-template" id="regular-events-template">
-    <div id="events-widget">
-       <div class="border-gray p-1 mb-0">
-        Alphabetical:
-            <a href='#' class="badge badge-light"
-            v-for="letter in alphabet"
-            v-on:click.prevent="search = letter; searchText = '' ">{{letter}}</a>
+    <div id="events-locations-widget" class="mr-2 ml-2">
+        <div class="d-flex flex-column mb-2">
+            <button class="btn btn-sm btn-outline-secondary" data-toggle="collapse" data-target="#search-methods" v-on:click="fetchRegions">
+                <i class="fas fa-search"></i> Show Search Options
+            </button>
+        </div>
+
+        <div class="collapse" id="search-methods">
+
+       <div class="form-group">
+           <label>Alphabetical</label>
+           <div class="rounded bg-white border p-2">
+                <a href='#' class="badge"
+                    v-for="letter in alphabet"
+                    v-bind:class="[ search == letter ? 'badge-dark' : 'badge-light' ]"
+                    v-on:click.prevent="search = letter; searchText = '' ">{{letter}}</a>
+                <a href="#" class="float-right" v-on:click.prevent="search = undefined" title="Clear" style="color: red">&times;</a>
+           </div>
+        </div>
+
+
+
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" v-model="searchText" class="form-control" placeholder="Search title..." />
         </div>
 
         <div class="form-group">
-            <input type="text" v-model="searchText" class="form-control" placeholder="Search..." />
+            <label>Regional events</label>
+            <select class="form-control" v-on:change="setCurrentRegion">
+                <option value="">-</option>
+                <option v-for="region in regions" v-bind:value="region.id">{{region.title}}</option>
+            </select>
+            <small>Events that are held in multiple places in a Region</small>
         </div>
 
-       <p v-if="regularEvents.length == 0 && enabled">None!</p>
+        </div>
+
+       <p v-if="regularEvents.length == 0 && enabled">None added yet!</p>
 
        <transition-group name="list" tag="div">
            <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="event in regularEvents" v-bind:key="event.id" >
@@ -27,8 +53,15 @@
                             <div class="ml-3 d-flex flex-column pb-2 flex-fill">
                                 <h3>{{event.title}}</h3>
                                 <p>
-                                <span v-if="event.group_page_details">Group: <a v-bind:href="event.group_page_details.url">{{event.group_page_details.title}}</a><br /></span>
-                                Location: {{event.venue_details.title}} <span v-html="event.venue_details.address"></span> <a v-bind:href="'https://www.google.com/maps/search/?api=1&query=' + encodeURI(event.venue_details.lat)+',' +encodeURI(event.venue_details.lng) ">Map</a>
+                                <span v-if="event.group_page_details">
+                                    Group: <a v-bind:href="event.group_page_details.url">{{event.group_page_details.title}}</a><br />
+                                </span>
+                                <span v-if="event.venue">
+                                    Location: {{event.venue_details.title}} <span v-html="event.venue_details.address"></span> <a v-bind:href="'https://www.google.com/maps/search/?api=1&query=' + encodeURI(event.venue_details.lat)+',' +encodeURI(event.venue_details.lng) ">Map</a>
+                                <span>
+                                <span v-if="event.region">
+                                    Region: {{event.region_details.title}}
+                                </span>
                                 </p>
                             </div>
                         </div>
@@ -73,12 +106,15 @@
                    regularEvents: [],
                    enabled: false,
                    searchTimer: null,
+                   regions: [],
+                   currentRegion: null,
                }
            },
 
            watch: {
                search: "fetchData",
                searchText: "waitForTypingToStop",
+               currentRegion: "fetchData",
            },
 
            created: function (){
@@ -91,6 +127,7 @@
                     console.log("Get message data changed");
                     ctx.fetchData();
                 });
+
            },
 
            updated: function(){
@@ -107,15 +144,30 @@
 
                    let url = "/api/EventsLocations/"
 
-                   if (this.search){
-                       url += yqnUtils.urlParams({ search: "^"+this.search.replace(" ", "+") });
+                   let params = {}
+
+                   if (this.currentRegion){
+                       /* If search is still the starting value then unset it */
+                       if (this.search == "a"){
+                           this.search = undefined;
+                       }
+                       params.region = this.currentRegion;
                    }
 
+                   if (this.search){
+                       params.search =  "^"+this.search.replace(" ", "+");
+                   }
+
+                   /* This API expects some parameters */
+                   if (Object.keys(params).length == 0){
+                       return;
+                   }
+
+                   url += yqnUtils.urlParams(params);
 
                    $.getJSON(url, function (data) {
                        ctx.regularEvents = data;
                        ctx.enabled = true;
-                       ctx.nextPageUrl = data.next;
                    });
                },
 
@@ -136,6 +188,22 @@
                    this.searchTimer = window.setTimeout(function(){
                        ctx.search = ctx.searchText;
                    }, 500);
+               },
+
+               setCurrentRegion(e){
+                    this.currentRegion = e.srcElement.value;
+               },
+
+               fetchRegions(){
+                   if (this.regions.length > 0){
+                       return;
+                   }
+
+                   let ctx = this;
+
+                   $.getJSON("/api/Regions/", function(data){
+                       ctx.regions = data;
+                   });
 
                },
            }

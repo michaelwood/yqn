@@ -1,20 +1,21 @@
 
 <script type="text/x-template" id="events-template">
- <div id="events-widget">
+ <div id="events-widget" class="ml-2 mr-2">
     <span v-if="!eventId">
 
     <div class="border-gray p-2 bg-white rounded">
         Show:
-        <a href='#' class="badge badge-light"
+        <a v-bind:href="[ '#' + month.name + '-' + (month.year ? month.year : currentYear ) ]" class="badge badge-light"
          v-for="month in futureMonths"
-         v-on:click.prevent="showMonth = month">{{month.name}} {{month.year}}</a>
+         v-on:click="showMonth = month">{{month.name}} {{month.year}}</a>
+
+        <h3 class="mt-2">{{showMonth.name}} {{showMonth.year}}</h3>
     </div>
 
-    <h2>{{showMonth.name}} {{showMonth.year}}</h2>
 
     </span>
 
-    <p v-if="events.length == 0">None found</p>
+    <p v-if="events.length == 0">None added yet!</p>
 
     <transition-group name="list" tag="div">
         <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="event in events" v-bind:key="event.id" >
@@ -184,7 +185,6 @@
                         startDate.setFullYear(this.showMonth.year);
                         endDate.setFullYear(this.showMonth.year);
                     }
-
 
                     /* Split on the time component out as we don't care about the exact time */
                     var params = {

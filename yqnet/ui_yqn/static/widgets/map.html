@@ -35,49 +35,114 @@
     <a name="map" />
     <div id="map-render-area" style="min-height: 70vh;" class="mb-2"></div>
 
-
-    <transition-group name="list" tag="div">
-        <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="venue in venues" v-bind:key="venue.id">
-            <a v-bind:name="venue.title"></a>
-
-            <div class="d-flex flex-column flex-fill">
-
-                <div class="d-flex flex-row flex-fill">
-                    <div class="rounded-circle post-thumb d-block" style="min-width: 90px; background-color: #343a40">
-                        <h3 class="text-center mt-4" style="color: white;"><i class="fas fa-map-marker-alt"></i></h3>
-                    </div>
-
-                    <div class="ml-3 d-flex flex-column pb-2 flex-fill">
-                        <h3>{{venue.title}}</h3>
-                        <p>
-                            Location: <span v-html="venue.address"></span> {{venue.postcode}} <a v-bind:href="'https://www.google.com/maps/search/?api=1&query=' + encodeURI(venue.postcode)">Google Map</a>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-column mt-3">
-                    <ul>
-                        <li v-for="event in venue.eventslocation_set"><a v-bind:href="event.url">{{event.title}}</a> (regular events)</li>
-                        <li v-for="event in venue.event_set"><a  v-bind:href="event.url">{{event.title}}</a> {{event.start}} - {{event.end}}</li>
-                    </ul>
-                    <a href="#map" class="ml-auto">Back to map</a>
-                </div>
-
-            </div>
-
-            <div class="dropdown dropleft action-menu-yqn">
-                <a href class="action-menu-yqn p-1 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-ellipsis-v"></i>
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" v-bind:href="venue.url">Venue</a>
-                    <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(venue.url)">Share</a>
-                    <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Venue', objectId: 'venue.id', report: true, title: venue.title })" >Report <i class="far fa-flag"></i></a>
-                </div>
-            </div> <!-- / dropdown -->
+    <div class="border-bottom mb-2">
+        <h3>Events in this Area</h3>
+        <div class="d-flex mb-1">
+            <span v-if="regionsHaveEvents">Regions with events: <a v-for="region in regions" v-if="region.eventslocation_set.length > 0" class="badge badge-secondary m-1" v-bind:href="['#' + region.title]">{{region.title}}</a></span>
         </div>
-    </transition-group>
+    </div>
 
+
+    <div class="bg-light">
+        <transition-group name="list" tag="div">
+            <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="venue in venues" v-bind:key="venue.id">
+                <a v-bind:name="venue.title"></a>
+
+                <div class="d-flex flex-column flex-fill">
+
+                    <div class="d-flex flex-row flex-fill">
+                        <div class="rounded-circle post-thumb d-block" style="min-width: 90px; background-color: #343a40">
+                            <h3 class="text-center mt-4" style="color: white;"><i class="fas fa-map-marker-alt"></i></h3>
+                        </div>
+
+                        <div class="ml-3 d-flex flex-column pb-2 flex-fill">
+                            <h3>{{venue.title}}</h3>
+                            <p>
+                                Location: <span v-html="venue.address"></span> {{venue.postcode}} <a v-bind:href="'https://www.google.com/maps/search/?api=1&query=' + encodeURI(venue.postcode)">Google Map</a>
+                            </p>
+                            <p>See event links for full details.</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column mt-3 ml-2">
+                        <h5>Events:</h5>
+                        <ul>
+                            <li v-for="event in venue.eventslocation_set">
+                                <a v-if="event.url" v-bind:href="event.url">{{event.title}}</a>
+                                <span v-else>{{event.title}}</span>
+
+                                <span v-if="event.group_page"> By Group: <a v-bind:href="event.group_page.url">{{event.group_page.title}}</a></span>
+                            </li>
+
+                            <li v-for="event in venue.event_set"><a  v-bind:href="event.url">{{event.title}}</a> {{event.start}} - {{event.end}}</li>
+                        </ul>
+                        <a href="#map" class="ml-auto">Back to map</a>
+                    </div>
+
+                </div>
+
+                <div class="dropdown dropleft action-menu-yqn">
+                    <a href class="action-menu-yqn p-1 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" v-bind:href="venue.url">Venue</a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(venue.url)">Share</a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Venue', objectId: 'venue.id', report: true, title: venue.title })" >Report <i class="far fa-flag"></i></a>
+                    </div>
+                </div> <!-- / dropdown -->
+            </div>
+        </transition-group>
+
+
+        <transition-group name="list" tag="div">
+            <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="region in regions" v-bind:key="region.id" v-if="region.eventslocation_set.length > 0">
+                <a v-bind:name="region.title"></a>
+
+                <div class="d-flex flex-column flex-fill">
+
+                    <div class="d-flex flex-row flex-fill">
+                        <div class="rounded-circle post-thumb d-block bg-dark" style="min-width: 90px;">
+                            <h3 class="text-center mt-4" style="color: white;"><i class="fas fa-drafting-compass"></i></h3>
+                        </div>
+
+                        <div class="d-flex flex-fill flex-column ml-3 pb-2">
+                            <h3>{{region.title}} Regional events</h3>
+                            <p>Events which take place in multiple locations in the {{region.title}} region. See their links for details.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex flex-column mt-3 ml-2">
+                        <h5>Events:</h5>
+                        <ul>
+                            <li v-for="event in region.eventslocation_set">
+                                <a v-if="event.url" v-bind:href="event.url">{{event.title}}</a>
+                                <span v-else>{{event.title}}</span>
+                                <span v-if="event.group_page"> By Group: <a v-bind:href="event.group_page.url">{{event.group_page.title}}</a></span>
+
+                            </li>
+                        </ul>
+                        <a href="#map" class="ml-auto">Back to map</a>
+                    </div>
+
+                </div>
+
+                <div class="dropdown dropleft action-menu-yqn">
+                    <a href class="action-menu-yqn p-1 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                       <!-- TODO <a class="dropdown-item" v-bind:href="">Region</a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share()">Share</a> -->
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Region', objectId: 'region.id', report: true, title: region.title })" >Report <i class="far fa-flag"></i></a>
+                    </div>
+                </div> <!-- / dropdown -->
+            </div>
+        </transition-group>
+
+
+    </div>
 
 </div>
 </script>
@@ -98,6 +163,8 @@ Vue.component('map-area', {
                 postcode: "",
                 postcodeErr: null,
                 fetchDataDelayTimer: null,
+                regions: [],
+                regionsHaveEvents: false,
             }
         },
 
@@ -115,7 +182,7 @@ Vue.component('map-area', {
 
                 for (let i = 0; i < this.venues.length; i++) {
                     var m = L.marker([this.venues[i].lat, this.venues[i].lng]).addTo(this.map)
-                        .bindPopup('<a href="#'+ this.venues[i].title +'">'+ this.venues[i].title + '</a>');
+                        .bindPopup('<i class="far fa-calendar-alt"></i> <a href="#'+ this.venues[i].title +'">'+ this.venues[i].title + '</a>');
                     this.markers.push(m);
                 }
 
@@ -150,11 +217,6 @@ Vue.component('map-area', {
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(ctx.map);
-
-                /* fetchData will be triggered by the zoom to location
-                ctx.map.on("locationfound", function(){
-                    ctx.fetchData();
-                }); */
 
                 ctx.map.on("zoomend",  ctx.fetchDataDelay);
                 ctx.map.on("moveend",  ctx.fetchDataDelay);
@@ -227,6 +289,32 @@ Vue.component('map-area', {
                 $.getJSON(url, function(data){
                     ctx.venues = data;
                 });
+
+                /* Find the region that encompasses the middle of the current map */
+                let center = this.map.getCenter();
+
+                let regionParam = {
+                    lat_tl_min: center.lat,
+                    lng_tl_max: center.lng,
+
+                    lat_br_max: center.lat,
+                    lng_br_min: center.lng,
+                };
+
+                $.getJSON("/api/EventsAtRegion/" + yqnUtils.urlParams(regionParam), function(data){
+                    console.log(data);
+                    ctx.regions = data;
+
+                    /* Set a flag to say whether any of the regions found actually contain events */
+                    for (let i=0; i < data.length; i++){
+                        if (data[i].eventslocation_set.length > 0){
+                            ctx.regionsHaveEvents = true;
+                            break;
+                        }
+                        ctx.regionsHaveEvents = false;
+                    }
+                });
+
             },
 
             locateByPostCode: function(){
@@ -253,8 +341,6 @@ Vue.component('map-area', {
                     console.log("error doing postcode lookup");
                     ctx.postcodeErr = data.responseJSON.error;
                 });
-
-
 
             },
 
