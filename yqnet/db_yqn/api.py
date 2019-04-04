@@ -241,7 +241,7 @@ class EventDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class VenueList(FilterRequiredMixin, generics.ListCreateAPIView):
     description = "Add a venue for your events"
-    queryset = Venue.objects.order_by("title")
+    queryset = Venue.objects.all()
     search_fields = ('^title',)
     filter_backends = (filters.SearchFilter,)
     metadata_class = SimpleWithFkModelMetadata
