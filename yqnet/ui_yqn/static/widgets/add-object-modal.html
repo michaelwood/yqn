@@ -9,6 +9,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <p>Required fields are denoted with a <span style="color: red">*</span> <small>(star)</small></p>
                     <div v-if="error" class="alert alert-warning">Please check the form.
                             <span v-for="(value, key) in error" class="alert-error"><strong>{{key}}</strong> - <span v-for="msg in value">{{msg}} </span>
                         </span>
@@ -23,7 +24,6 @@
                             <label v-bind:for="field.name">{{field.data.label}} <span v-if="field.data.required" style="color:red">*</span></label>
 
                             <location v-if="field.name == 'postcode'" v-bind:field="field" v-on:selected="autocompleteSelected"></location>
-                            <input v-else-if="field.name == 'lat' || field.name == 'lng'" type="text" v-bind:value="input[field.name]" placeholder="Use postcode lookup" v-bind:name="field.name" class="form-control" v-bind:id="field.name"  readonly>
                             <slug v-else-if="field.name == 'slug'" type="text" v-bind:from="input['title']" v-model="input[field.name]" v-bind:name="field.name" v-bind:id="field.name" v-on:selected="autocompleteSelected"></slug>
 
                             <input v-else-if="field.data.max_length" v-bind:name="field.name" type="text" class="form-control" v-model="input[field.name]"  v-bind:id="field.name" >
@@ -45,6 +45,8 @@
                                     <option v-for="choice in field.data.choices" v-bind:value="choice.value">{{choice.display_name}}</option>
                                 </select>
                             </div>
+
+                            <input v-else v-bind:name="field.name" type="text" class="form-control" v-model="input[field.name]"  v-bind:id="field.name" />
 
                             <small>{{field.data.help_text}}</small>
                         </div>
@@ -341,6 +343,7 @@ Vue.component('add-object-modal', {
             console.log(this.model);
 
             $(this.$refs['bs-modal']).on("shown.bs.modal", this.modalShown);
+            $(this.$refs['bs-modal']).on("hidden.bs.modal", this.close);
         },
 
         watch: {
