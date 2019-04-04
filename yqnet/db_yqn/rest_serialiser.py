@@ -119,7 +119,7 @@ class EventsLocationSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if not 'region' in data and not 'venue' in data:
-            raise serializers.ValidationError({ "Region or Venue" : "Either a Venue or an Area for the event must be provided"})
+            raise serializers.ValidationError({ "Region or Venue" : "The event must happen somewhere! Please provide either a Venue or a Region"})
 
         if not 'url' in data and not 'group_page' in data:
             raise serializers.ValidationError({ "Link or Group Page" : "For people to find out about the events please provide either a Group page or an external Link or both"})
