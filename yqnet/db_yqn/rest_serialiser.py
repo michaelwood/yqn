@@ -82,9 +82,15 @@ class GroupPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupPage
-        # TODO we don't always need the body and sending it is potentially expensive
         fields = ("id", "go_to", "url", "title", "redirect", "last_modified", "body", "last_updated_by")
         read_only_fields = ('users',"redirect","last_updated_by")
+
+class GroupPageDetailsSerializer(serializers.ModelSerializer):
+    url = serializers.CharField(read_only=True, source="get_url")
+
+    class Meta:
+        model = GroupPage
+        fields = ("id", "title", "url")
 
 class VenueSerializer(serializers.ModelSerializer):
 
@@ -201,10 +207,12 @@ class EventsLocationListSerializer(serializers.ListSerializer):
         return super().to_representation(data)
 
 class NestedEventsLocationSerializer(serializers.ModelSerializer):
+    group_page = GroupPageDetailsSerializer(read_only=True)
+
     class Meta:
         model = EventsLocation
         lists_serializer_class = EventsLocationListSerializer
-        fields = ("id", "title", "url")
+        fields = ("id", "title", "url", "group_page")
 
 ####
 
