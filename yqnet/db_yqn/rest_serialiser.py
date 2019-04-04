@@ -138,7 +138,7 @@ class EventsSerializer(serializers.ModelSerializer):
 
     url = serializers.CharField(read_only=True, source="get_url")
 
-    # Date formatting is much better in Python than JS so do this here
+    # Anti-pattern Date formatting is so much better in Python than JS so do this here
     display_day = serializers.CharField(read_only=True, source="get_display_day")
     display_date_time_start = serializers.CharField(read_only=True, source="get_display_date_time_start")
     display_date_time_end = serializers.CharField(read_only=True, source="get_display_date_time_end")
@@ -149,27 +149,9 @@ class EventsSerializer(serializers.ModelSerializer):
         model = Event
         fields = ("__all__")
 
-# Ex fields for many=True
-# queryset they use is blah_set.all()
-# usage:
-#   blah_set = EventField(many=True, read_only=True)
-#
-# class EventsLocationField(serializers.RelatedField):
-#      def to_representation(self, events_location):
-#        return { "title" : events_location.title,
-#                 "id": events_location.id,
-#                 "url": events_location.url}
-#
-#class EventField(serializers.RelatedField):
-#      def to_representation(self, event):
-#        return {"title": event.title,
-#                "id": event.id,
-#                "url": event.get_url(),
-#                "start": event.get_display_date_time_start(),
-#                "end": event.get_display_date_time_end(),
-#                }
-
 #### Nested Events for EventsAtVenue
+# As this model isn't the primary model for the API we are also filtering the model
+# here.
 
 class FutureEventsListSerializer(serializers.ListSerializer):
     def to_representation(self, data):
@@ -195,8 +177,10 @@ class NestedFutureEventsSerializer(serializers.ModelSerializer):
 ####
 
 
-#### Nested EventsLocation for EventsAtVenue
+#### Nested EventsLocation for EventsAtVenue and EventsAtRegion
 
+# As this model isn't the primary model for the API we are filtering the model
+# here
 class EventsLocationListSerializer(serializers.ListSerializer):
     def to_representation(self, data):
         if not self.context['request'].user.is_authenticated:
