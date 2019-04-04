@@ -28,7 +28,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     user = UserSerializer(read_only=True)
     publish_date = serializers.DateTimeField(format="%d %b %H:%M", read_only=True)
-    media = UserMediaSerializer()
+    media = UserMediaSerializer(read_only=True)
 
     class Meta:
         model = Post
@@ -58,7 +58,6 @@ class TwitterSerializer(SocialMediaAccSerializer):
 class InstagramSerializer(SocialMediaAccSerializer):
     class Meta(SocialMediaAccSerializer.Meta):
         model = Instagram
-
 
 class GroupPagesSerializer(serializers.ModelSerializer):
 
