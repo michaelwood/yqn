@@ -203,7 +203,7 @@ class NestedEventsLocationSerializer(serializers.ModelSerializer):
 
 class EventsAtVenue(serializers.ModelSerializer):
     eventslocation_set = NestedEventsLocationSerializer(many=True, read_only=True)
-    url = serializers.CharField(read_only=True, source="get_url")
+    url = serializers.URLField(read_only=True, source="get_url")
     event_set = NestedFutureEventsSerializer(read_only=True, many=True)
 
     class Meta:
