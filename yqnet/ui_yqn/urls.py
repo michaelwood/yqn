@@ -64,8 +64,16 @@ urlpatterns = [
 ]
 
 
+# Dev purposes
 # Media upload files serving for dev purposes
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Make sure we don't see 404 errors for the favicon
+# In production this would be provided by the webserver
+urlpatterns += [
+    path('favicon.ico',RedirectView.as_view(url='%simgs/fav/favicon-16x16.png' % settings.STATIC_URL)),
+]
