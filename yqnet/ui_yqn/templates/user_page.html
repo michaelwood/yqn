@@ -278,7 +278,7 @@
             {% endif %}
 
             {% if user_can_edit and not editing %}
-              <a href="{% url "user-page-edit" page.slug %}" tabindex=0 class="btn btn-primary btn-sm float-right small" ><i class="fas fa-edit"></i> Edit</a>
+              <a href="{% url "user-page-edit" page.slug %}" tabindex=0 class="btn btn-primary btn-sm float-right small" data-test-id="page-edit-btn"><i class="fas fa-edit"></i> Edit</a>
             {% endif %}
           </div>
 

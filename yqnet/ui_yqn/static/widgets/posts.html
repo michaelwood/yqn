@@ -43,17 +43,17 @@
                 </div>
             </div>
             <div class="dropdown dropleft action-menu-yqn">
-                <a href class="action-menu-yqn p-1 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a href class="action-menu-yqn p-1 dropdown-toggle" v-bind:id="[ post.id + '-menu-button']" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-ellipsis-v"></i>
                 </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <div class="dropdown-menu" v-bind:aria-labelledby="[ post.id + '-menu-button']">
                     <a class="dropdown-item"
                        href="#"
                        v-on:click.prevent="currentUser = post.user">
                         <i class="far fa-user"></i> All from user
                     </a>
                     <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(post.url)"><i class="fas fa-share-alt"></i> Share</a>
-                    <a v-if="post.user.id == yqnUtils.loggedInUser.id" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(post.id)"><i class="far fa-trash-alt"></i> Delete</a>
+                    <a v-if="post.user.id == yqnUtils.loggedInUser.id" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(post.id)" data-test-id="post-delete-btn"><i class="far fa-trash-alt" ></i> Delete</a>
                     <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Posts', objectId: post.id, title: 'Report: '+post.title, report: true })"><i class="far fa-flag"></i> Report</a>
                 </div>
             </div>
