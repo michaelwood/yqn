@@ -99,11 +99,11 @@
 
         {% if user.is_authenticated %}
         <div class="btn-group" role="group">
-            <button id="btnGroupDrop1" type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button id="add-posts-btn-group-drop" title="Add a post" type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-plus-circle"></i>
              Post
           </button>
-          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+          <div class="dropdown-menu" aria-labelledby="add-posts-btn-group-drop">
             <a class="dropdown-item" href="#" data-toggle="modal"  data-target="#add-object-modal-Posts"><i class="far fa-comment-alt"></i> Message</a>
             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-picture-post-modal"><i class="far fa-image"></i> Picture</a>
           </div>

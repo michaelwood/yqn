@@ -44,7 +44,7 @@ class Contact(View):
 
     def validate_length(self, value, field):
         if len(value) < 1:
-            raise ValidationError("Expected value for %s not provided" % field)
+            raise ValidationError("Expected value for %s not provided (is it set in your profile?)" % field)
 
     def post(self,request, *args, **kwargs):
 

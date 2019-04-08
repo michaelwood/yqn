@@ -18,7 +18,7 @@ from django.urls import path, include, reverse_lazy
 from django.contrib.auth import views as auth_views
 from django_registration.backends.one_step.views import RegistrationView
 
-from ui_yqn import views, upload
+from ui_yqn import views
 
 urlpatterns = [
     path('', views.PostsView.as_view(), name="index"),
@@ -37,10 +37,7 @@ urlpatterns = [
 
     path('groups/', views.GroupPagesView.as_view(), name="pages"),
 
-    path("media/browser", upload.MediaBrowser.as_view(), name="media-browser"),
-
     path('api/', include('db_yqn.urls', namespace="api")),
-
 
     # Acounts stuff
     path('accounts/edit', views.UpdateUserDetailsView.as_view(), name="edit-profile"),
