@@ -1,0 +1,9 @@
+
+# Usage
+
+./manage.py test tests.browser
+
+# Identifying elements
+
+In the markup if an element isn't identifiable via an id or class use data-test-id as an attribute.
+This keeps it separate from the useage of element id or classes which may change or be used client side.
