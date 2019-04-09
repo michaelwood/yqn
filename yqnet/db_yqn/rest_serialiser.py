@@ -54,7 +54,6 @@ class CommentPostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ("text",)
 
-
 class XMLFeedSerializer(serializers.ModelSerializer):
 
     user = UserSerializer(read_only=True)
@@ -65,11 +64,11 @@ class XMLFeedSerializer(serializers.ModelSerializer):
         read_only_fields = ('user','enabled')
 
 class SocialMediaAccSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+   # user = UserSerializer(read_only=True)
 
     class Meta:
-        fields = ("__all__")
-        read_only_fields = ('user',)
+        fields = ("username",)
+        #read_only_fields = ('user',)
 
 class TwitterSerializer(SocialMediaAccSerializer):
     class Meta(SocialMediaAccSerializer.Meta):

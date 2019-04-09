@@ -152,8 +152,9 @@ class TwitterDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwner,)
 
 class InstagramList(generics.ListCreateAPIView):
-    queryset = Instagram.objects.all()
-    serializer_class = InstagramSerializer
+    description = "Add your instagram username (must be public)"
+    queryset = Instagram.objects.order_by('?')
+    serializer_class = YqnSerializer.InstagramSerializer
     permission_classes = (IsOwner,)
 
     def perform_create(self, serializer):
