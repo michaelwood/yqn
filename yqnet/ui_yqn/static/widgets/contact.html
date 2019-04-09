@@ -13,8 +13,7 @@
         </div>
         <div class="modal-body">
             <p v-if="report">Report an issue to site admin.</p>
-            <h6>Subject: {{title}}</h6>
-
+            <h6 v-if="title">Subject: {{title}}</h6>
 
             <div v-if="error" class="alert alert-warning">Please check the form.
                     <span class="alert-error"> {{error}} </span>

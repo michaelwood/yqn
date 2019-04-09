@@ -20,8 +20,6 @@
            </div>
         </div>
 
-
-
         <div class="form-group">
             <label>Title</label>
             <input type="text" v-model="searchText" class="form-control" placeholder="Search title..." />
@@ -58,7 +56,7 @@
                                 </span>
                                 <span v-if="event.venue">
                                     Location: {{event.venue_details.title}} <span v-html="event.venue_details.address"></span> <a v-bind:href="'https://www.google.com/maps/search/?api=1&query=' + encodeURI(event.venue_details.lat)+',' +encodeURI(event.venue_details.lng) ">Map</a>
-                                <span>
+                                </span>
                                 <span v-if="event.region">
                                     Region: {{event.region_details.title}}
                                 </span>
