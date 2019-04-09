@@ -88,6 +88,10 @@ body {
     height: 90px;
 }
 
+.comments .post-thumb {
+    width: 46px;
+    height: 46px;
+}
 /* Work around - Seems to be a weird bug where long text
  * with no spaces are not wrapped properly
  */
