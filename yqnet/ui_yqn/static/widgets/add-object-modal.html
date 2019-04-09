@@ -491,7 +491,7 @@ Vue.component('add-object-modal', {
                 console.log("modal opened");
                 this.maybeInitTinyMCE();
 
-                this.$refs['main-form'].getElementsByTagName("input")[0].focus();
+                this.$refs['main-form'].getElementsByTagName("label")[0].focus();
             },
 
             autocompleteSelected: function(data){
