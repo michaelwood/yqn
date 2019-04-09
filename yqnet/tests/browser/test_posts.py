@@ -134,7 +134,33 @@ class TestPosts(YqnBrowserTest):
 
         self.assertTrue(XMLFeed.objects.count() > 0, "Xml Feed wasn't added to DB")
 
+    @YqnBrowserTest.login
+    def test_add_comment(self):
+        """ Add a comment to a post """
+        comment = "This is simply great"
+
+        Post.objects.create(
+            title="Best post ever",
+            text="What I think is...",
+            user=self.logged_in_user,
+        )
+
+        self.get(reverse('posts'))
 
         time.sleep(2)
 
-        self.assertTrue(XMLFeed.objects.count() > 0, "Xml Feed wasn't added to DB")
+        self.click_test_id("comments-btn")
+
+        self.click_test_id("add-comment-btn")
+
+        time.sleep(1)
+
+        self.enter_text_tinymce(comment)
+
+        self.click("#add-object-modal .btn-primary")
+
+        time.sleep(1)
+
+        result_comment = self.find_all(".comments .post-text-body .post-text")[0].text
+
+        self.assertTrue(comment in result_comment, "Could not find comment text expected")
