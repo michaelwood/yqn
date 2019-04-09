@@ -14,9 +14,6 @@ from rest_framework.response import Response
 from db_yqn.models import Post, Sources, XMLFeed, Twitter, Instagram, GroupPage
 from db_yqn.models import EventsLocation, Venue, Event, GroupPageMedia, Region
 
-from db_yqn.rest_serialiser import PostSerializer, XMLFeedSerializer
-from db_yqn.rest_serialiser import InstagramSerializer, TwitterSerializer
-from db_yqn.rest_serialiser import GroupPagesSerializer
 import db_yqn.rest_serialiser as YqnSerializer
 import db_yqn.api_filters as YqnFilters
 
@@ -128,7 +125,7 @@ class CommentsPost(generics.CreateAPIView):
 class XMLFeedList(generics.ListCreateAPIView):
     description = "Automatically publishes posts from your Blog, Podcast or News feed."
     queryset = XMLFeed.objects.all()
-    serializer_class = XMLFeedSerializer
+    serializer_class = YqnSerializer.XMLFeedSerializer
     permission_classes = (IsOwner,)
 
     def perform_create(self, serializer):
@@ -136,14 +133,14 @@ class XMLFeedList(generics.ListCreateAPIView):
 
 class XMLFeedDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = XMLFeed.objects.all()
-    serializer_class = XMLFeedSerializer
+    serializer_class = YqnSerializer.XMLFeedSerializer
     permission_classes = (IsOwner,)
 
 
 class TwitterList(generics.ListCreateAPIView):
     description = "Add your twitter username"
     queryset = Twitter.objects.all()
-    serializer_class = TwitterSerializer
+    serializer_class = YqnSerializer.TwitterSerializer
     permission_classes = (IsOwner,)
 
     def perform_create(self, serializer):
@@ -151,7 +148,7 @@ class TwitterList(generics.ListCreateAPIView):
 
 class TwitterDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Twitter.objects.all()
-    serializer_class = TwitterSerializer
+    serializer_class = YqnSerializer.TwitterSerializer
     permission_classes = (IsOwner,)
 
 class InstagramList(generics.ListCreateAPIView):
@@ -164,13 +161,13 @@ class InstagramList(generics.ListCreateAPIView):
 
 class InstagramDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Instagram.objects.all()
-    serializer_class = InstagramSerializer
+    serializer_class = YqnSerializer.InstagramSerializer
     permission_classes = (IsOwner,)
 
 class GroupPagesList(generics.ListCreateAPIView):
     description = "Add a dedicated web page for your group"
     queryset = GroupPage.objects.order_by("title")
-    serializer_class = GroupPagesSerializer
+    serializer_class = YqnSerializer.GroupPagesSerializer
     permission_classes = (IsOwner,)
 
     search_fields = ("^title",)
