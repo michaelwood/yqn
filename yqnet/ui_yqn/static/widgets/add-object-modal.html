@@ -58,7 +58,7 @@
                     <button v-if="creationStack.length" v-on:click.prevent="resumeState" class="btn btn-primary">Back</button>
 
                     <button type="button" class="btn btn-secondary" v-on:click="close" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" v-on:click="add">
+                    <button type="button" class="btn btn-primary" v-on:click="add" data-test-id="add-object-modal-addnext">
                         <span v-if="creationStack.length">Next</span>
                         <span v-else>Add</span>
                     </button>
@@ -84,15 +84,15 @@ Vue.component('datetime', {
         vuejsDatepicker
     },
     template: '<div class="d-flex flex-column"> \
-                    <vuejs-datepicker :required="true" :bootstrap-styling="true"  v-on:selected="dateSelected" placeholder="Select..." v-model="date" value="2019-04-19"></vuejs-datepicker> \
+                    <vuejs-datepicker  :required="true" :bootstrap-styling="true"  v-on:selected="dateSelected" placeholder="Select..." v-model="date" v-bind:value="value" data-test-id="date-picker" ></vuejs-datepicker> \
                     <div class="pt-2 form-row"> \
                         <div class="col"> \
                             <label>Hour</label> \
-                            <select ref="hour" class="form-control" v-on:change="hourSelected"><option v-for="(useless, h) in 24">{{h}}</option></select> \
+                            <select ref="hour" class="form-control" v-on:change="hourSelected" v-bind:data-test-id="[ name + \'-hour-select\' ]"><option v-for="(useless, h) in 24">{{h}}</option></select> \
                         </div> \
                         <div class="col"> \
                             <label>Minute</label> \
-                            <select ref="minute" class="form-control" v-on:change="minuteSelected"><option v-for="(useless, m) in 60">{{m}}</option></select>\
+                            <select ref="minute" class="form-control" v-on:change="minuteSelected" v-bind:data-test-id="[ name + \'-minute-select\' ]"><option v-for="(useless, m) in 60">{{m}}</option></select>\
                         </div> \
                     </div> \
                 </div>',
@@ -204,9 +204,9 @@ Vue.component('location', {
      },
 
     template: '<div class="input-group mb-3"> \
-              <input type="text" class="form-control border-right-0" v-bind:id="field.name" v-model="postcode" v-bind:name="field.name" aria-label="postcode with lookup button addon" aria-describedby="button-addon1"> \
+              <input type="text" class="form-control border-right-0" v-bind:id="field.name" v-model="postcode" v-bind:name="field.name" aria-label="postcode with lookup button addon" aria-describedby="postcode-lookup-btn"> \
                 <div class="input-group-append"> \
-                    <button class="btn" type="button" v-on:click.prevent="lookup" id="button-addon1" v-bind:class="[{ \'disabled\' : searching },  success ?  \'btn-outline-success\' : \'btn-outline-danger\' ]">Check \
+                    <button class="btn" type="button" v-on:click.prevent="lookup" id="postcode-lookup-btn" v-bind:class="[{ \'disabled\' : searching },  success ?  \'btn-outline-success\' : \'btn-outline-danger\' ]">Check \
                     <div class="spinner-border spinner-border-sm d-none" v-bind:class="{ \'d-inline-block\' : searching }" role="status" aria-hidden="true"></div> \
                     </button> \
                 </div> \
@@ -248,7 +248,7 @@ Vue.component('location', {
 Vue.component('fk-autocomplete', {
     props: ['name', 'modelHint'],
 
-    template: '<div> \
+    template: '<div v-bind:data-test-id="[ name + \'-autocomplete\' ]"> \
                 <input type="text" placeholder="Search..." class="form-control" v-model="searchText" v-bind:id="name"> \
                 <div class="spinner-border spinner-border-sm m-2 d-none mr-4" v-bind:class="{ \'d-block\' : searching }" role="status" aria-hidden="true" style="position: absolute; z-index: 100; right: 0;"></div> \
                 <div class="flex-column shadow-sm border d-none list-group" style="max-height: 10em; overflow: auto" v-bind:class="{ \'d-flex\':  selectionActive }" > \

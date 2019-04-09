@@ -10,7 +10,7 @@
 
         {% if user.is_authenticated %}
 
-        <button title="Add Single Event" class="btn btn-primary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel" : "Events",  "title" : "Add your one-off event", "success" : "Thank you for adding your event"}'>
+        <button title="Add Single Event" class="btn btn-primary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel" : "Events",  "title" : "Add your one-off event", "success" : "Thank you for adding your event"}' data-test-id="add-event-btn">
             <i class="fas fa-plus-circle"></i>
              Event
         </button>
