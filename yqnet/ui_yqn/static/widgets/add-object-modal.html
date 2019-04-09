@@ -1,5 +1,5 @@
 <scipt type="text/template" id="modal-template">
-    <div class="modal fade" tabindex="-1" role="dialog" v-bind:id="modalId" ref="bs-modal" >
+    <div class="modal fade" tabindex="-1" role="dialog" ref="bs-modal" id="add-object-modal" >
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -322,11 +322,8 @@ Vue.component('fk-autocomplete', {
 Vue.component('add-object-modal', {
         template: "#modal-template",
 
-        props: ['start-model', 'title', 'success'],
-
         data: function(){
             return {
-                modalId: "add-object-modal-" + this.startModel,
                 fields: [],
                 info: "",
                 input: {},
@@ -335,11 +332,32 @@ Vue.component('add-object-modal', {
                 tinyMCE: false,
                 model: this.startModel,
                 created: {},
+                title: "",
              }
         },
 
+        created: function(){
+            let ctx = this;
+
+            yqnBus.$on("modal", function(data){
+
+            if (data.startModel === undefined ||
+                data.success === undefined ||
+                data.title == undefined) {
+                console.error("Not enough parameters for modal widget");
+                return;
+            }
+
+            ctx.model = data.startModel;
+            ctx.title = data.title;
+            ctx.success = data.success;
+
+            $(ctx.$refs['bs-modal']).modal("show");
+        });
+
+        },
+
         mounted: function (){
-            this.fetchData();
             console.log(this.model);
 
             $(this.$refs['bs-modal']).on("shown.bs.modal", this.modalShown);
@@ -348,6 +366,7 @@ Vue.component('add-object-modal', {
 
         watch: {
             fields: 'maybeInitTinyMCE',
+            model: 'fetchData',
         },
 
         methods: {
@@ -356,7 +375,7 @@ Vue.component('add-object-modal', {
 
                 var ctx = this;
                 $.ajax({
-                    url: "/api/" + ctx.model,
+                    url: "/api/" + ctx.model + "/",
                     method: "OPTIONS",
                     success: function(data){
                         console.log("getting metadata for model")
@@ -567,6 +586,7 @@ Vue.component('add-object-modal', {
 
                     try {
                         console.log("removing old editor?");
+                        tinyMCE.activeEditor.setContent("");
                         /* Find our editor */
                         for(let i=0; tinyMCE.EditorManager.editors; i++){
                            let editor = tinyMCE.EditorManager.editors[i];
@@ -583,7 +603,7 @@ Vue.component('add-object-modal', {
 
                     if (this.tinyMCE){
                         let ctx = this;
-                        let modal = $("#"+ctx.modalId);
+                        let modal = $(this.$refs['bs-modal']);
 
                         /* TinyMCE appears to be easily racy. Replacement TODO*/
 

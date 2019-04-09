@@ -10,7 +10,7 @@
     <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
       <div class="float-right">
         {% if user.is_authenticated %}
-        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-Twitters">
+        <button class="btn btn-primary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel" : "Twitters", "title" : "Add your Twitter feed", "success" : "Twitter feed added" }'>
             <i class="fas fa-plus-circle"></i>
              Twitter
         </button>
@@ -44,12 +44,5 @@
 
     </div>
 </div>
-
-
-<div id="add-object-modal-app" v-cloak>
-  <add-object-modal start-model="Twitters" title="Add your Twitter feed" success="Twitter feed added"></add-object-modal>
-</div>
-
-{% vue_widget "add-object-modal.html" %}
 
 {% endblock %}

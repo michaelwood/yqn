@@ -10,12 +10,12 @@
 
         {% if user.is_authenticated %}
 
-        <button title="Add Single Event" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-Events">
+        <button title="Add Single Event" class="btn btn-primary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel" : "Events",  "title" : "Add your one-off event", "success" : "Thank you for adding your event"}'>
             <i class="fas fa-plus-circle"></i>
              Event
         </button>
 
-        <button title="Add a link to your Events" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#add-object-modal-EventsLocations">
+        <button title="Add a link to your Events" class="btn btn-secondary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel" :  "EventsLocations",  "success" : "Thank you for adding your event",  "title" : "Add a link to your events" }'>
             <i class="fas fa-plus-circle"></i>
             Events Link
         </button>
@@ -60,17 +60,8 @@
 
 </div>
 
-<div id="add-object-modal-app" v-cloak>
-    <add-object-modal start-model="EventsLocations" success="Thank you for adding your event" title="Add a location"></add-object-modal>
-    <add-object-modal start-model="Events" title="Add your one-off event" success="Thank you for adding your event"></add-object-modal>
-</div>
-
 {% vue_widget "events.html" %}
 {% vue_widget "regular-events.html" %}
-
-{% if user.is_authenticated %}
-  {% vue_widget "add-object-modal.html" %}
-{% endif %}
 
 
 {% endblock %}

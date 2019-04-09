@@ -127,6 +127,9 @@ $(document).ready(function(){
 
   yqnUtils.setCookieData({ last_time: Date.now() });
 
+  $("[data-toggle='add-object-modal']").click(function(){
+    yqnBus.$emit("modal", $(this).data("options"));
+  });
 
   setActivePage();
 

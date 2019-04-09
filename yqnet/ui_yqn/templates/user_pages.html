@@ -16,12 +16,12 @@
 
             {% if user.is_authenticated %}
 
-            <button title="" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-object-modal-GroupPages" data-original-title="Add Group Page">
+            <button title="Add a Page for your Group" class="btn btn-primary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel": "GroupPages", "title": "Add Group Page", "success": "Group page added" }' data-test-id="add-group-page-btn">
                 <i class="fas fa-plus-circle"></i>
                 Group Page
             </button>
 
-            <button title="" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#add-object-modal-GroupRedirectPages" data-original-title="Add Link">
+            <button title="Add a link to your existing website" class="btn btn-secondary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel": "GroupRedirectPages", "title": "Add a link", "success": "Link added" }'>
                 <i class="fas fa-plus-circle"></i>
                 Link
             </button>
@@ -88,17 +88,6 @@
         {{page.last_modified}}
     </small>
 </div>
-
-{% load vue_widget %}
-
-{% if user.is_authenticated %}
-<div id="add-object-modal-app" v-cloak>
-  <add-object-modal start-model="GroupPages" title="Create a Page"></add-object-modal>
-  <add-object-modal start-model="GroupRedirectPages" title="Add a Link"></add-object-modal>
-</div>
-
-{% vue_widget "add-object-modal.html" %}
-{% endif %}
 
 <script>
     /* TODO */

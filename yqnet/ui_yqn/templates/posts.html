@@ -104,12 +104,12 @@
              Post
           </button>
           <div class="dropdown-menu" aria-labelledby="add-posts-btn-group-drop">
-            <a class="dropdown-item" href="#" data-toggle="modal"  data-target="#add-object-modal-Posts"><i class="far fa-comment-alt"></i> Message</a>
+            <a class="dropdown-item" href="#" data-toggle="add-object-modal" data-options='{ "startModel": "Posts", "title": "Add a Post", "success" : "Your post was added thanks for your contribution" }' data-test-id="add-post-btn"><i class="far fa-comment-alt"></i> Message</a>
             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add-picture-post-modal"><i class="far fa-image"></i> Picture</a>
           </div>
         </div>
 
-        <button title="Add a Blog, Podcast or News Feed" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#add-object-modal-XMLFeeds">
+        <button title="Add a Blog, Podcast or News Feed" class="btn btn-secondary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel": "XMLFeeds", "title": "Add a Blog, Podcast or News Feed", "success" :  "Your feed was successfully submitted. Posts will appear the next time it syncs (approx once an hour)" }' data-test-id="add-feed-btn">
             <i class="fas fa-plus-circle"></i>
              Feed
         </button>
@@ -144,16 +144,6 @@
 </div>
 
 {% vue_widget "posts.html" %}
-
-
-{% if user.is_authenticated %}
-<div id="add-object-modal-app" v-cloak>
-  <add-object-modal start-model="Posts"  title="Add a Post" success="Your post was added thanks for your contribution"></add-object-modal>
-  <add-object-modal start-model="XMLFeeds" title="Add a Blog, Podcast or News Feed" success="Your feed was successfully submitted. Posts will appear the next time it syncs (approx once an hour)"></add-object-modal>
-</div>
-
-{% vue_widget "add-object-modal.html" %}
-{% endif %}
 
   <div id="contact-app">
       <contact></contact>

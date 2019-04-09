@@ -16,7 +16,7 @@
             <i class="far fa-question-circle"></i>
         </a>
         {% if user.is_authenticated %}
-        <button v-on:click="addPost" class="btn btn-primary btn-sm">
+        <button class="btn btn-sm btn-primary" data-toggle="add-object-modal" data-options='{ "title" : "Add Instagram", "startModel" : "Instagrams", "success" : "Added your Instagram account"}' >
             <i class="fas fa-plus-circle"></i>
              Add Instagram
         </button>
