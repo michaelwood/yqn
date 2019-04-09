@@ -169,12 +169,13 @@
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Other Stuff</a>
             <div class="dropdown-menu" aria-labelledby="dropdown02">
 
-            <a class="dropdown-item" href="https://docs.google.com/forms/d/e/1FAIpQLSdp04I8BoBT-nN9MqiY0k3Wqvl91GrYs4_uwappQsy_4LxATA/viewform?usp=pp_url&entry.308816372={{user.first_name}}&entry.921790785={{user.email}}">FEEDBACK</a>
             <a class="dropdown-item" href="{% url "about" %}">About</a>
             <a class="dropdown-item" href="{% url "privacy" %}">Privacy</a>
-            <a class="dropdown-item" href="#TODO">Mailing lists</a>
-            <a class="dropdown-item" href="#TODO">Zoom meeting</a>
-            <a class="dropdown-item" href="#TODO">Documents</a>
+            <a class="dropdown-item" href="{% url "contact" %}">Contact</a>
+            <a class="dropdown-item" href="https://docs.google.com/forms/d/e/1FAIpQLSdp04I8BoBT-nN9MqiY0k3Wqvl91GrYs4_uwappQsy_4LxATA/viewform?usp=pp_url&entry.308816372={{user.first_name}}&entry.921790785={{user.email}}">Feedback</a>
+            <a class="dropdown-item disabled" href="#TODO">Mailing lists</a>
+            <a class="dropdown-item disabled" href="#TODO">Zoom meeting</a>
+            <a class="dropdown-item disabled" href="#TODO">Documents</a>
             </div>
           </li>
 

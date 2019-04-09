@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}About{% endblock %}
+{% block content %}
+{% load static %}
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+    <div class="clearfix border-bottom border-gray pb-2 mb-2  ">
+
+        <h6 class="float-left">Contact</h6>
+    </div>
+
+    <div class="m-2">
+
+        <h2>Contact</h2>
+        <p>If you have any questions or issues please don't hesitate to contact us on info@<span id="domain"></span></p>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#domain").text("quakr.net");
+    });
+</script>
+
+
+{% endblock %}
