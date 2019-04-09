@@ -125,5 +125,10 @@ class YqnBrowserTest(SeleniumTestCase):
         """ Finds the [data-test-id=test_id] element and clicks it """
         return self.click("[data-test-id='%s']" % test_id)
 
+    def find_test_id(self, test_id):
+        """ finds test_id element """
+        return self.find("[data-test-id='%s']" % test_id)
 
-
+    def find_all_test_id(self, test_id):
+        """ finds all test_id elements """
+        return self.find_all("[data-test-id='%s']" % test_id)
