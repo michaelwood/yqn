@@ -121,5 +121,9 @@ class YqnBrowserTest(SeleniumTestCase):
         # N.b. assumes jquery available (which it is)
         self.driver.execute_script("$(\"%s\").trigger('change');" % selector)
 
+    def click_test_id(self, test_id):
+        """ Finds the [data-test-id=test_id] element and clicks it """
+        return self.click("[data-test-id='%s']" % test_id)
+
 
 
