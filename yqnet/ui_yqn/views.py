@@ -180,9 +180,3 @@ class GroupPageEditorsUpdate(UpdateView, LoginRequiredMixin):
             raise PermissionDenied("User not allowed")
 
         return page
-
-class AboutView(TemplateView):
-    template_name = "about.html"
-
-class PrivacyView(TemplateView):
-    template_name = "privacy.html"

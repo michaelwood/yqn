@@ -17,14 +17,16 @@ from django.contrib import admin
 from django.urls import path, include, reverse_lazy
 from django.contrib.auth import views as auth_views
 from django_registration.backends.one_step.views import RegistrationView
+from django.views.generic.base import TemplateView
 
 from ui_yqn import views
 
 urlpatterns = [
     path('', views.PostsView.as_view(), name="index"),
 
-    path('about/', views.AboutView.as_view(), name="about"),
-    path('privacy/', views.PrivacyView.as_view(), name="privacy"),
+    path('about/', TemplateView.as_view(template_name="about.html"), name="about"),
+    path('privacy/', TemplateView.as_view(template_name="privacy.html"), name="privacy"),
+
     path('posts/', views.PostsView.as_view(), name="posts"),
     path('posts/twitter/', views.TwittersView.as_view(), name="twitters"),
     path('posts/instagram/', views.InstagramView.as_view(), name="instagram"),
