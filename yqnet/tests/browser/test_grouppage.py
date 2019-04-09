@@ -34,12 +34,12 @@ class TestGroupPage(YqnBrowserTest):
 
         self.get(reverse('pages'))
 
-        self.click('button[data-target="#add-object-modal-GroupPages"]')
+        self.click_test_id("add-group-page-btn")
 
         self.enter_text("#title", page_title)
         self.enter_text("#email", page_email)
 
-        self.click("#add-object-modal-GroupPages .btn-primary")
+        self.click("#add-object-modal .btn-primary")
 
         # Wait for the redirect to the new page
         time.sleep(2)
@@ -66,7 +66,7 @@ class TestGroupPage(YqnBrowserTest):
 
 
     @YqnBrowserTest.login
-    def test_image_post(self):
+    def test_edit_page(self):
         """ Edit a page then deleted it """
 
         slug = "start-slug"
@@ -89,7 +89,7 @@ class TestGroupPage(YqnBrowserTest):
 
         self.get(reverse("user-pages", args=(slug,)))
 
-        self.click('a[data-test-id="page-edit-btn"]')
+        self.click_test_id("page-edit-btn")
 
         self.replace_text("#title-input", new_title)
         self.replace_text("#slug-input", new_slug)
@@ -137,7 +137,7 @@ class TestGroupPage(YqnBrowserTest):
 
         self.enter_text("#body", message)
 
-        self.click('button[data-test-id="contact-send-btn"]')
+        self.click_test_id("contact-send-btn")
 
         time.sleep(3)
 

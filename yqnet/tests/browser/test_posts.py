@@ -15,7 +15,7 @@ from selenium.webdriver.common.keys import Keys
 
 from tests.browser.yqn_browser_test import YqnBrowserTest
 
-from db_yqn.models import UserMedia, XMLFeed
+from db_yqn.models import UserMedia, XMLFeed, Post
 
 import time
 import os
@@ -35,21 +35,24 @@ class TestPosts(YqnBrowserTest):
         self.get(url)
 
         self.click("#add-posts-btn-group-drop")
-        self.click('a[data-target="#add-object-modal-Posts"]')
+        time.sleep(0.2)
+        self.click_test_id("add-post-btn")
 
         self.enter_text("#title", post_title)
 
         # Post text is a TinyMCE  editor
         self.enter_text_tinymce(post_text)
 
-        self.click("#add-object-modal-Posts .btn-primary")
+        self.click("#add-object-modal .btn-primary")
 
         # Wait for the Vue widget to render the new post
         time.sleep(2)
 
-        new_post = self.find_all(".list-item")[0]
+        post = Post.objects.last()
 
-        result_text = new_post.find_element_by_class_name("post-text").text
+        new_post = self.find("#post-%s" % post.pk)
+
+        result_text = new_post.find_element_by_class_name("post-text-body").text
         result_title = new_post.find_element_by_tag_name("h3").text
 
         self.assertTrue(post_text in result_text)
@@ -88,9 +91,11 @@ class TestPosts(YqnBrowserTest):
         # Wait for the Vue widget to render the new post
         time.sleep(2)
 
-        new_post = self.find_all(".list-item")[0]
+        post = Post.objects.last()
 
-        result_text = new_post.find_element_by_class_name("post-text").text
+        new_post = self.find("#post-%s" % post.pk)
+
+        result_text = new_post.find_element_by_class_name("post-text-body").text
         result_title = new_post.find_element_by_tag_name("h3").text
 
         self.assertTrue(post_text in result_text)
@@ -110,20 +115,25 @@ class TestPosts(YqnBrowserTest):
 
     @YqnBrowserTest.login
     def test_add_feed(self):
+        """ Adds a feed link """
         feed_url = "http://wwww.example.com"
 
-        url = reverse('posts')
-        self.get(url)
+        self.get(reverse('posts'))
 
-        self.click('button[data-target="#add-object-modal-XMLFeeds"]')
+        self.click_test_id("add-feed-btn")
 
         #fill in the form
-        self.enter_text("#add-object-modal-XMLFeeds #url", feed_url)
-        self.enter_text("#add-object-modal-XMLFeeds #name", "Best Blog")
-        self.select_option_by_index("#add-object-modal-XMLFeeds #source", 0)
+        self.enter_text("#add-object-modal #url", feed_url)
+        self.enter_text("#add-object-modal #name", "Best Blog")
+        self.select_option_by_index("#add-object-modal #source", 0)
 
         # And submit it
-        self.click("#add-object-modal-XMLFeeds .btn-primary")
+        self.click("#add-object-modal .btn-primary")
+
+        time.sleep(2)
+
+        self.assertTrue(XMLFeed.objects.count() > 0, "Xml Feed wasn't added to DB")
+
 
         time.sleep(2)
 
