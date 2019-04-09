@@ -23,12 +23,14 @@ class Sources(object):
     BLOG = 1
     PODCAST = 2
     NEWS = 3
+    COMMENT = 4
 
     SOURCE_TYPES = (
         (LOCAL, "Local Post"),
         (BLOG, "Blog"),
         (PODCAST, "Podcast"),
         (NEWS, "News"),
+        (COMMENT, "Comment"),
     )
 
     # All but the Local post
@@ -77,7 +79,7 @@ class Post(models.Model):
 
     publish_date = models.DateTimeField("publish", name="publish_date", default=timezone.now)
     text = models.TextField()
-    title = models.CharField(max_length=100, default="", help_text="Title or Subject of Post")
+    title = models.CharField(max_length=100, default="", blank=True, null=True, help_text="Title or Subject of Post")
     thumbnail = models.URLField(blank=True, null=True)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -92,6 +94,7 @@ class Post(models.Model):
     private = models.BooleanField(default=False, help_text="Only show this post to logged in users")
 
     media = models.ForeignKey(UserMedia, on_delete=models.CASCADE, null=True, blank=True)
+    comments = models.ManyToManyField("self", symmetrical=False, blank=True)
 
     def thumbnail_computed(self):
 
@@ -127,8 +130,15 @@ class Post(models.Model):
 
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        for comment in self.comments.all():
+            comment.delete()
+
+        super().delete(*args, **kwargs)
+
+
     def __str__(self):
-        return self.title
+        return "%s %s" % (self.id ,self.title)
 
 
 class Twitter(models.Model):
@@ -139,7 +149,7 @@ class Twitter(models.Model):
         return self.username
 
 class Instagram(models.Model):
-    username = models.CharField(help_text="Enter your Instagram username", max_length=200)
+    username = models.CharField(help_text="Enter your Instagram username (without @)", unique=True, max_length=200)
     user = models.ForeignKey(User, null=True, default=None, on_delete=models.CASCADE)
 
     def __str__(self):
