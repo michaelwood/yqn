@@ -8,8 +8,8 @@ import django_filters.rest_framework
 
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
-from rest_framework import filters
-
+from rest_framework import filters, status
+from rest_framework.response import Response
 
 from db_yqn.models import Post, Sources, XMLFeed, Twitter, Instagram, GroupPage
 from db_yqn.models import EventsLocation, Venue, Event, GroupPageMedia, Region
@@ -82,17 +82,19 @@ class PostListPaginator(LimitOffsetPagination):
 
 class PostList(generics.ListCreateAPIView):
     description = "Add a Post"
-    serializer_class = PostSerializer
+    serializer_class = YqnSerializer.PostSerializerNoComments
     filter_fields = ('source', 'user', 'id')
     pagination_class = PostListPaginator
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
     def get_queryset(self):
-        if self.request.user and self.request.user.is_authenticated:
-            return Post.objects.order_by("-publish_date")
+        posts = Post.objects.exclude(source=Sources.COMMENT)
 
-        return Post.objects.exclude(private=True).order_by("-publish_date")
+        if self.request.user and self.request.user.is_authenticated:
+            return posts.order_by("-publish_date")
+
+        return posts.exclude(private=True).order_by("-publish_date")
 
 
     def perform_create(self, serializer):
@@ -101,9 +103,26 @@ class PostList(generics.ListCreateAPIView):
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    serializer_class = YqnSerializer.PostSerializerWComments
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
+
+    def get_queryset(self):
+        if self.request.user and self.request.user.is_authenticated:
+            return Post.objects.all()
+
+        return Post.objects.exclude(private=True)
+
+
+class CommentsPost(generics.CreateAPIView):
+
+    queryset = Post.objects.all()
+    serializer_class = YqnSerializer.CommentPostSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serialzer):
+        # Note get_object method is the magic look up from pk args from url
+        serialzer.save(user=self.request.user, source=Sources.COMMENT, post_set=[self.get_object()])
 
 
 class XMLFeedList(generics.ListCreateAPIView):

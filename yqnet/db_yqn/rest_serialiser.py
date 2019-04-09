@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from db_yqn.models import Post, XMLFeed, Instagram, Twitter, GroupPage, Region
 from db_yqn.models import EventsLocation, Venue, Event, GroupPageMedia, UserMedia
+from db_yqn.models import Sources
 
 # If defining 'fields' remember to add field for id
 
@@ -24,16 +25,35 @@ class UserMediaSerializer(serializers.ModelSerializer):
         model = UserMedia
         fields = ('url',)
 
-class PostSerializer(serializers.ModelSerializer):
+
+class PostSerializerBase(serializers.ModelSerializer):
 
     user = UserSerializer(read_only=True)
     publish_date = serializers.DateTimeField(format="%d %b %H:%M", read_only=True)
     media = UserMediaSerializer(read_only=True)
+    comments_count = serializers.IntegerField(read_only=True, source="comments.count")
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'media', 'user', 'source','text', 'publish_date', 'ext_url','thumbnail_computed', 'url', 'ext_author',)
-        read_only_fields = ('user','source','publish_date', 'ext_author', 'ext_url','thumbnail', 'thumbnail_computed', 'url', 'media',)
+        fields = ('id', 'title', 'media', 'user', 'source','text', 'publish_date', 'ext_url','thumbnail_computed', 'url', 'ext_author', 'comments_count')
+        read_only_fields = ('user','source','publish_date', 'ext_author', 'ext_url','thumbnail', 'thumbnail_computed', 'url', 'media')
+
+class PostSerializerNoComments(PostSerializerBase):
+    class Meta(PostSerializerBase.Meta):
+        pass
+
+class PostSerializerWComments(PostSerializerBase):
+    comments = PostSerializerBase(many=True, read_only=True)
+
+    class Meta(PostSerializerBase.Meta):
+        fields = PostSerializerBase.Meta.fields + ("comments",)
+
+class CommentPostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Post
+        fields = ("text",)
+
 
 class XMLFeedSerializer(serializers.ModelSerializer):
 

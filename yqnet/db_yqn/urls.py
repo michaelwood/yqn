@@ -11,6 +11,7 @@ app_name = "yqn_api"
 urlpatterns = [
     path('Posts/', api.PostList.as_view()),
     path('Post/<int:pk>/', api.PostDetail.as_view()),
+    path('Post/<int:pk>/comments/', api.CommentsPost.as_view()),
     path('XMLFeeds/', api.XMLFeedList.as_view()),
     path('XMLFeed/<int:pk>/', api.XMLFeedDetail.as_view()),
     path('Twitters/', api.TwitterList.as_view()),
