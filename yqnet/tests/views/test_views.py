@@ -38,6 +38,8 @@ class UIViewsTests(TestCase):
             if "accounts" in url:
                 self.client.login(username="test", password="test")
 
+            print("Testing %s" % url)
+
             response = self.client.get(url, HTTP_HOST="localhost", follow=True)
 
             self.assertEqual(response.status_code, 200, "%s failed %s" % (url, response.reason_phrase))
