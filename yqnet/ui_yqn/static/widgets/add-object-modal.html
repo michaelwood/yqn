@@ -523,6 +523,12 @@ Vue.component('add-object-modal', {
             },
 
             saveState: function(fieldName){
+                /* Get the current content from tinyMCE */
+                if (this.tinyMCE){
+                    let inputName = tinyMCE.activeEditor.getElement().name;
+                    this.input[inputName] = tinyMCE.activeEditor.getContent();
+                }
+
                 let state = {
                     model: this.model,
                     input: this.input,
@@ -541,20 +547,20 @@ Vue.component('add-object-modal', {
                addedObject is the object we just added
              */
             resumeState: function(addedObject){
-                console.log("far out");
                 let state = this.creationStack.pop();
 
                 this.model = state.model;
                 this.fields = state.fields;
+                this.input = state.input;
 
                 Vue.set(this, 'fields', state.fields)
 
 
                for (let key in state.input){
-                   console.log("Resuming");
-                   console.log(key +":"+ state.input[key]);
+                   /* Trigger the update in Vue */
                    Vue.set(this.input, key, state.input[key]);
                }
+
 
                /* TODO isn't always going to be title */
                Vue.set(this.created, state.wasFetching, addedObject.title);
@@ -574,6 +580,10 @@ Vue.component('add-object-modal', {
 
                 this.input = {};
                 this.error = null;
+
+                if (this.tinyMCE){
+                    tinyMCE.activeEditor.setContent("");
+                }
             },
 
             maybeInitTinyMCE: function(){
@@ -586,7 +596,6 @@ Vue.component('add-object-modal', {
 
                     try {
                         console.log("removing old editor?");
-                        tinyMCE.activeEditor.setContent("");
                         /* Find our editor */
                         for(let i=0; tinyMCE.EditorManager.editors; i++){
                            let editor = tinyMCE.EditorManager.editors[i];
@@ -617,7 +626,12 @@ Vue.component('add-object-modal', {
                                 selector: ctx.tinyMCE,
                                 setup: function(ed){
                                     ed.on("init", function(){
-                                        console.log("tinyMCE Loaded");
+                                        console.log("tinyMCE Loaded" );
+                                        /* See if we already have initial content for the editor */
+                                        let inputName = this.getElement().name;
+                                        if (ctx.input[inputName]){
+                                            this.setContent(ctx.input[inputName]);
+                                        }
                                     });
                                 },
                             });
@@ -628,7 +642,6 @@ Vue.component('add-object-modal', {
                         } else {
                             modal.on("shown.bs.modal", initTinyMCE);
                         }
-
                     }
                 });
             },
