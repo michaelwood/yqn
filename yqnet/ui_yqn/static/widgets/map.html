@@ -199,15 +199,18 @@ Vue.component('map-area', {
 
         created: function(){
             let ctx = this;
-            /* This comes from the locate me button way up the page out of the
-             * scope for this component */
-            yqnBus.$on("locate-me", function(){
-                ctx.locate();
-            });
 
-
-            yqnBus.$on("data-added", function () {
+            yqnBus.$on("data-added", function(data) {
                 console.log("Get message data changed");
+                console.log(data);
+
+                if (data.venue_details) {
+                    ctx.map.setView(
+                        [data.venue_details.lat, data.venue_details.lng],
+                        11, { maxZoom: 11 }
+                    );
+                }
+
                 ctx.fetchData();
             });
 
