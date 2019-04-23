@@ -605,9 +605,6 @@ Vue.component('add-object-modal', {
                                console.log("editor removed");
                            }
                         }
-                        /*
-                        /* It doesn't really up after itself :(
-                        $(".mce-tinymce").remove();*/
                     } catch {}
 
                     if (this.tinyMCE){
@@ -624,6 +621,8 @@ Vue.component('add-object-modal', {
                                 toolbar: "undo redo bold italic underline lists emoticons | code",
                                 statusbar: false,
                                 selector: ctx.tinyMCE,
+                                relative_urls: false,
+                                document_base_url: '//',
                                 setup: function(ed){
                                     ed.on("init", function(){
                                         console.log("tinyMCE Loaded" );
