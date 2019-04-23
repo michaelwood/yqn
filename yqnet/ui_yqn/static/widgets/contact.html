@@ -79,11 +79,10 @@ Vue.component('contact', {
 
         yqnBus.$on("contact", function(data){
 
-            if (data.modelName === undefined || data.objectId === undefined
-                || data.title == undefined) {
-                    console.log("Not enough parameters for contact widget");
-                    return;
-                }
+            if (!data.modelName || !data.objectId) {
+                console.log("Not enough parameters for contact widget");
+                return;
+            }
 
             ctx.modelName = data.modelName;
             ctx.objectId = data.objectId;
