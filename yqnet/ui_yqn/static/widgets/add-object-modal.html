@@ -373,7 +373,8 @@ Vue.component('add-object-modal', {
             /* Introspect the model to generate the form */
             fetchData: function(){
 
-                var ctx = this;
+                let ctx = this;
+
                 $.ajax({
                     url: "/api/" + ctx.model + "/",
                     method: "OPTIONS",
@@ -448,8 +449,7 @@ Vue.component('add-object-modal', {
                     success: function (data) {
                         console.log("all good");
                         console.log(data);
-                        yqnBus.$emit("data-added", this.input);
-
+                        yqnBus.$emit("data-added", data);
 
                         /* Clear the current form and any errors */
                         ctx.error = null;
