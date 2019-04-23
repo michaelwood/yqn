@@ -133,11 +133,9 @@
               </a>
             </div>
 
-
           </div>
 
-
-            <input type="text" class="form-control mt-3 d-none" id="url-input">
+          <input type="text" class="form-control mt-3 d-none" id="url-input">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -150,14 +148,18 @@
       <a class="navbar-brand mr-auto mr-lg-0" href="{% url "index" %}">
         <img alt="Young Quaker Network logo"
         src="{% static "imgs/logo_yqn.png" %}" height="25"
-        title="The Young Quaker Network"
+        title="Quakr - The Young Quaker Network"
         data-toggle="tooltip"
         />
         <div class="spinner-border" id="ajax-loading-spinner" role="status" style="position: absolute; left: 0.88rem; top: 0.9rem; height: 30px; width: 30px; border-width: 0.1em; display: none;">
             <span class="sr-only">Loading...</span>
         </div>
-        !BETA!
       </a>
+
+      <p class="align-top ml-1 mr-2" title="About">
+        <a href="{% url "about" %}" style="color:white;">&hellip;</a>
+      </p>
+
       <button class="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
         <span class="navbar-toggler-icon"></span>
       </button>
