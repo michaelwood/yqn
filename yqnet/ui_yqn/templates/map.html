@@ -4,50 +4,41 @@
 <link rel="stylesheet" href="{% static "/vendor/leaflet/leaflet.css" %}" />
 <script src="{% static "/vendor/leaflet/leaflet.min.js" %}"></script>
 
-<div class="my-3 p-3 bg-white rounded shadow-sm">
-    <div class="clearfix border-bottom border-gray pb-1 mb-0  ">
-
-
-
+<div class="my-3 p-3 bg-light rounded shadow-sm">
     <div class="clearfix border-bottom border-gray pb-2">
-      <div class="float-right">
+        <div class="float-right">
 
-        <button id="locate-me" class="btn btn-sm btn-outline-secondary" onClick="yqnBus.$emit('locate-me')">
-            <i class="far fa-compass"></i>
-            Locate Me
-        </button>
+            {% if user.is_authenticated %}
 
-        {% if user.is_authenticated %}
+            <button title="Add Single Event" class="btn btn-primary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel" : "Events",  "title" : "Add your one-off event", "success" : "Thank you for adding your event"}'>
+                <i class="fas fa-plus-circle"></i>
+                Event
+            </button>
 
-        <button title="Add Single Event" class="btn btn-primary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel" : "Events",  "title" : "Add your one-off event", "success" : "Thank you for adding your event"}'>
-            <i class="fas fa-plus-circle"></i>
-             Event
-        </button>
+            <button title="Add a link to your Events on the map" class="btn btn-secondary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel" :  "EventsLocations",  "success" : "Thank you for adding your event",  "title" : "Add a link to your events" }'>
+                <i class="fas fa-plus-circle"></i>
+                Events Link
+            </button>
 
-        <button title="Add a link to your Events" class="btn btn-secondary btn-sm" data-toggle="add-object-modal" data-options='{ "startModel" :  "EventsLocations",  "success" : "Thank you for adding your event",  "title" : "Add a link to your events" }'>
-            <i class="fas fa-plus-circle"></i>
-            Events Link
-        </button>
+            {% else %}
 
-        {% else %}
+            <a href="{% url "login" %}?next={% url "map" %}?action=do_post" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus-circle"></i>
+                Event
+            </a>
 
-        <a href="{% url "login" %}?next={% url "map" %}?action=do_post" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus-circle"></i>
-            Event
-        </a>
+            <a href="{% url "login" %}?next={% url "map" %}?action=do_post" class="btn btn-secondary btn-sm">
+                <i class="fas fa-plus-circle"></i>
+                Events Link
+            </a>
 
-        <a href="{% url "login" %}?next={% url "map" %}?action=do_post" class="btn btn-secondary btn-sm">
-            <i class="fas fa-plus-circle"></i>
-            Events Link
-        </a>
+            {% endif %}
 
-        {% endif %}
+        </div>
 
-
-      </div>
-
-      <h6 class="float-left">Events</h6>
-        <a href="#" tabindex=0 class="small float-left ml-2" data-trigger="focus" data-placement="left" data-content="These are event aggregated from around the web and from
+    <h6 class="float-left">Events</h6>
+        <a href="#" tabindex=0 class="small float-left ml-2" data-trigger="focus" data-placement="left"
+            data-content="These are event aggregated from around the web and from
            the Quakr community. The events are not run by Quakr" data-toggle="popover" data-container="body">
             <i class="far fa-question-circle"></i>
         </a>
@@ -56,7 +47,6 @@
 
    <div id="map-app" class="mt-2" >
         <map-area></map-area>
-
     </div>
 </div>
 

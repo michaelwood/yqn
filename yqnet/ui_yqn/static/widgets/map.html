@@ -32,8 +32,15 @@
         </div>
     </div>
 
-    <a name="map" />
-    <div id="map-render-area" style="min-height: 70vh;" class="mb-2"></div>
+    <a name="map"></a>
+    <div id="map-render-area" style="min-height: 70vh;" class="mb-2">
+        <div class="leaflet-top leaflet-right">
+          <button id="locate-me" class="btn btn-sm btn-light border mt-2 mr-2" style="pointer-events:auto !important" v-on:click="locate">
+                <i class="far fa-compass"></i>
+                Locate Me
+          </button>
+        </div>
+    </div>
 
     <div class="border-bottom mb-2">
         <h3>Events in this Area</h3>
@@ -43,7 +50,7 @@
     </div>
 
 
-    <div class="bg-light">
+    <div>
         <transition-group name="list" tag="div">
             <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="venue in venues" v-bind:key="venue.id">
                 <a v-bind:name="venue.title"></a>

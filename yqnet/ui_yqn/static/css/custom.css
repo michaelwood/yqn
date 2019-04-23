@@ -156,12 +156,13 @@ a.nav-link.bg-dark:hover {
 
 @keyframes pulser-toggler {
    to { border: 1px solid #343a40 }
-   from { border: 1px solid rgba(255,255,255,0.5); }
+   from { border: 1px solid #ffffff; }
 }
 
 .pulse-navbar-toggler {
     animation-name: pulser-toggler;
     animation-duration: 2s;
-    animation-iteration-count: 4;
+    animation-iteration-count: 8;
     animation-direction: alternate-reverse;
+    animation-timing-function: ease-in-out;
 }

@@ -1,7 +1,6 @@
-
 <script type="text/x-template" id="events-template">
- <div id="posts-widget">
-    <div class="border-gray rounded bg-white mb-2 mt-2 d-flex flex-row">
+ <div id="posts-widget" class="p-2">
+    <div class="border-gray rounded bg-white mb-2 mt-2 d-flex flex-row p-2">
         <span>Show:</span>
 
         <a href='#' class="badge badge-secondary m-1"
@@ -19,7 +18,7 @@
             <div>
                 <img v-bind:src="post.thumbnail_computed" alt="thumb" class="mr-2 rounded-circle post-thumb">
             </div>
-            <div class="post-metadata d-flex flex-column flex-fill">
+            <div class="post-metadata d-flex flex-column flex-fill ml-2">
 
                 <strong class="d-block text-gray-dark">
                     <a v-if="post.ext_url" v-bind:href="post.ext_url" target="_blank" class="ext-link-yqn"><h3>{{post.title}}</h3></a>
@@ -39,7 +38,7 @@
                     <i v-else-if="post.source === sourceTypes.PODCAST.id" class="fas fa-podcast" data-toggle="tooltip" data-placement="top" title="Podcast"> Podcast</i>
                     <i v-else-if="post.source === sourceTypes.LOCAL.id" class="fas fa-users" data-toggle="tooltip" data-placement="top" title="YQN community"> Quakr</i>
                     <i v-else-if="post.source === sourceTypes.NEWS.id" class="fas fa-newspaper" data-toggle="tooltip" data-placement="top" title="News"> News</i>
-                    <span>{{post.publish_date}}</span>
+                    <small>{{post.publish_date}}</small>
                 </div>
             </div>
             <div class="dropdown dropleft action-menu-yqn">
@@ -54,7 +53,7 @@
                     </a>
                     <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(post.url)"><i class="fas fa-share-alt"></i> Share</a>
                     <a v-if="post.user.id == yqnUtils.loggedInUser.id" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(post.id)" data-test-id="post-delete-btn"><i class="far fa-trash-alt" ></i> Delete</a>
-                    <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Posts', objectId: post.id, title: 'Report: '+post.title, report: true })"><i class="far fa-flag"></i> Report</a>
+                    <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Posts', objectId: post.id, title: post.title, report: true })"><i class="far fa-flag"></i> Report</a>
                 </div>
             </div>
             <!-- / dropdown -->
@@ -65,7 +64,7 @@
          v-bind:class="[ post.source === sourceTypes.LOCAL.id ? expandedPostCSSClass : '']">
             <!-- start post -->
 
-            <div v-if="post.media" class="mt-3 m-auto">
+            <div v-if="post.media" class="mt-2 ml-auto mr-auto">
                 <img class="img-fluid rounded" v-bind:src="post.media.url" />
                 <div v-html="post.text" v-bind:data-postid="post.id" class="media-text post-text p-2" ref="post-text"></div>
             </div>
@@ -83,7 +82,7 @@
         <div class="ml-5 flex-column comments" v-if="comments" v-bind:class="[ showCommentsForPost == post.id ? 'd-flex' : 'd-none' ]" >
 
             <transition-group name="list" tag="div">
-                <div v-for="comment in comments" class="p-3 shadow-sm rounded mt-2 mb-2" v-bind:key="comment.id" >
+                <div v-for="comment in comments" class="p-3 shadow-sm rounded mt-2 mb-2 mr-2" v-bind:key="comment.id" >
                     <div class="d-flex flex-row post-details pb-2">
                         <div>
                             <img v-bind:src="comment.thumbnail_computed" alt="thumb" class="mr-2 rounded-circle post-thumb">
@@ -95,9 +94,10 @@
 
                             <div class="text-muted">
                                 <i class="fas fa-comment"></i>
-                                <span>{{comment.publish_date}}</span>
+                                <small>{{comment.publish_date}}</small>
                             </div>
                         </div>
+
 
                         <div class="dropdown dropleft action-menu-yqn">
                             <a href class="action-menu-yqn p-1 dropdown-toggle" v-bind:id="[ comment.id + '-menu-button']" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -105,16 +105,16 @@
                             </a>
                             <div class="dropdown-menu" v-bind:aria-labelledby="[ post.id + '-menu-button']">
                                 <a v-if="comment.user.id == yqnUtils.loggedInUser.id" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(comment.id)"><i class="far fa-trash-alt" ></i> Delete</a>
-                                <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Posts', objectId: comment.id, title: 'Report: '+comment.title, report: true })"><i class="far fa-flag"></i> Report</a>
+                                <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Posts', objectId: comment.id, title: comment.title, report: true })"><i class="far fa-flag"></i> Report</a>
                             </div>
                         </div>
                         <!-- / dropdown -->
                     </div>
 
-                    <div class="flex-fill d-flex flex-column pb-3 mb-0 lh-125 post-text-body post post-expand-overflow-open">
+                    <div class="flex-fill d-flex flex-column lh-125 post-text-body post post-expand-overflow-open bg-light rounded">
                         <!-- start comment post -->
 
-                        <div v-if="comment.media" class="mt-2 m-auto">
+                        <div v-if="comment.media" class="mt-3 m-auto">
                             <img class="img-fluid rounded" v-bind:src="comment.media.url" />
                             <div v-html="comment.text" v-bind:data-postid="comment.id" class="media-text post-text p-2"></div>
                         </div>
@@ -125,7 +125,8 @@
                 </div>
             </transition-group>
 
-            <button class="btn btn-sm btn-outline-secondary mt-2 mb-2" v-on:click="addComment(post)" data-test-id="add-comment-btn" ><i class="fas fa-plus-circle"></i> Comment</button>
+            <button v-if="yqnUtils.loggedInUser.name" class="btn btn-sm btn-outline-secondary mt-2 mb-2 mr-2 align-self-end" v-on:click="addComment(post)" data-test-id="add-comment-btn" ><i class="fas fa-plus-circle"></i> Comment</button>
+            <a v-else href="/accounts/login/?next=/posts/" class="btn btn-sm btn-outline-secondary mt-2 mb-2 mr-2 align-self-end"><i class="fas fa-plus-circle"></i> Comment</a>
         </div>
         <!-- End Comments section-->
     </div>

@@ -84,7 +84,7 @@ Vue.component('datetime', {
         vuejsDatepicker
     },
     template: '<div class="d-flex flex-column"> \
-                    <vuejs-datepicker  :required="true" :bootstrap-styling="true"  v-on:selected="dateSelected" placeholder="Select..." v-model="date" v-bind:value="value" data-test-id="date-picker" ></vuejs-datepicker> \
+                    <vuejs-datepicker  :required="true" :bootstrap-styling="true" :clear-button="true" v-on:selected="dateSelected" placeholder="Select..." v-model="date" v-bind:value="value" data-test-id="date-picker" ></vuejs-datepicker> \
                     <div class="pt-2 form-row"> \
                         <div class="col"> \
                             <label>Hour</label> \
