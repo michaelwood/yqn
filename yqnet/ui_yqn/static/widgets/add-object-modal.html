@@ -296,7 +296,6 @@ Vue.component('fk-autocomplete', {
         },
         selected: function(id, title) {
             this.selectionActive = false;
-            console.log("selected "+ id);
             this.selection = title;
 
             /* value is id this sounds strange but id is the fk of the object
@@ -358,8 +357,6 @@ Vue.component('add-object-modal', {
         },
 
         mounted: function (){
-            console.log(this.model);
-
             $(this.$refs['bs-modal']).on("shown.bs.modal", this.modalShown);
             $(this.$refs['bs-modal']).on("hidden.bs.modal", this.close);
         },
@@ -379,7 +376,6 @@ Vue.component('add-object-modal', {
                     url: "/api/" + ctx.model + "/",
                     method: "OPTIONS",
                     success: function(data){
-                        console.log("getting metadata for model")
                         if (data.description){
                             ctx.info = data.description;
                         }
@@ -447,8 +443,6 @@ Vue.component('add-object-modal', {
                     accept: 'application/json',
                     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
                     success: function (data) {
-                        console.log("all good");
-                        console.log(data);
                         yqnBus.$emit("data-added", data);
 
                         /* Clear the current form and any errors */
@@ -488,7 +482,6 @@ Vue.component('add-object-modal', {
             },
 
             modalShown: function(){
-                console.log("modal opened");
                 this.maybeInitTinyMCE();
 
                 this.$refs['main-form'].getElementsByTagName("label")[0].focus();
@@ -590,19 +583,16 @@ Vue.component('add-object-modal', {
                 this.$nextTick(function(){
 
                     if (typeof(tinyMCE) === 'undefined'){
-                        console.log("No tinyMCE");
                         return;
                     }
 
                     try {
-                        console.log("removing old editor?");
                         /* Find our editor */
                         for(let i=0; tinyMCE.EditorManager.editors; i++){
                            let editor = tinyMCE.EditorManager.editors[i];
 
                            if (this.tinyMCE.indexOf(editor.id) > -1){
                                editor.remove();
-                               console.log("editor removed");
                            }
                         }
                     } catch {}
@@ -614,7 +604,6 @@ Vue.component('add-object-modal', {
                         /* TinyMCE appears to be easily racy. Replacement TODO*/
 
                         function initTinyMCE(){
-                            console.log("Init tinymce: " + ctx.tinyMCE);
                             tinyMCE.init({
                                 plugins: "autolink code lists emoticons",
                                 menubar: false,
@@ -625,7 +614,6 @@ Vue.component('add-object-modal', {
                                 document_base_url: '//',
                                 setup: function(ed){
                                     ed.on("init", function(){
-                                        console.log("tinyMCE Loaded" );
                                         /* See if we already have initial content for the editor */
                                         let inputName = this.getElement().name;
                                         if (ctx.input[inputName]){
