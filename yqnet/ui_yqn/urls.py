@@ -27,6 +27,7 @@ urlpatterns = [
     path('about/', TemplateView.as_view(template_name="about.html"), name="about"),
     path('privacy/', TemplateView.as_view(template_name="privacy.html"), name="privacy"),
     path('contact/', TemplateView.as_view(template_name="contact_yqn.html"), name="contact"),
+    path('whatsapp/', TemplateView.as_view(template_name="whatsapp.html"), name="whatsapp"),
 
     path('posts/', views.PostsView.as_view(), name="posts"),
     path('posts/twitter/', views.TwittersView.as_view(), name="twitters"),

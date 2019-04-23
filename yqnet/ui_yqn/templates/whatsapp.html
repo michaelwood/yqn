@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}About{% endblock %}
+{% block content %}
+{% load static %}
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+    <div class="clearfix border-bottom border-gray pb-2 mb-2  ">
+
+        <h6 class="float-left">WhatsApp <i class="fab fa-whatsapp"></i></h6>
+    </div>
+
+    <div class="m-2">
+        <h2>WhatsApp</h2>
+        <p>There is currently a big ol WhatsApp group for Young Quaker stuff. If would like to join it please send you mobile number to whatsapp@<span id="domain"></span></p>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#domain").text("quakr.net");
+    });
+</script>
+
+
+{% endblock %}
