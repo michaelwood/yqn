@@ -72,6 +72,28 @@ var yqnUtils = {
         $("#share-facebook").prop("href", "https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(url));
         $("#share-email").prop("href", "mailto:?subject=You%20might%20be%20interested%20in%20this%20(via%20Quakr)&body="+text);
 
+        $("#url-input").prop("value", url);
+
+        $("#share-link").click(function(e){
+          e.preventDefault();
+          let urlInput = $("#url-input");
+
+          urlInput.toggleClass("d-none");
+
+          urlInput.focus();
+          urlInput.select();
+
+          /* Doesn't work in universally yet but is not crucial */
+          try {
+            let success = document.execCommand('copy');
+            if (success){
+              yqnBus.$emit("notify", {"title": "Copied", "body": "Url copied to clipboard" });
+            }
+          } catch (err) {
+            console.log("Copy not supported");
+          }
+        });
+
         $("#share-modal").modal("show");
       },
 };
