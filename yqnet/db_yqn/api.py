@@ -240,10 +240,12 @@ class EventList(FilterRequiredMixin, generics.ListCreateAPIView):
                           IsOwnerOrReadOnly,)
 
     def get_queryset(self):
-        if self.request.user and self.request.user.is_authenticated:
-            return Event.objects.all()
+        events = Event.objects.order_by("date_time_start")
 
-        return Event.objects.exclude(private=True)
+        if self.request.user and self.request.user.is_authenticated:
+            return events
+
+        return events.exclude(private=True)
 
 
     def perform_create(self, serializer):
