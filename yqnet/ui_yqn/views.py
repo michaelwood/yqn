@@ -75,16 +75,10 @@ class EventsView(TemplateView):
         context['total_events'] = total
         return context
 
+# Note these inherit from the EventsView which is why they're not
+# direct templates
 class EventView(EventsView):
     template_name = "event.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['id'] = kwargs['pk']
-
-        return context
-
 
 class MapView(EventsView):
     template_name = "map.html"
@@ -100,17 +94,8 @@ class EventsListingView(EventsView):
 
         return context
 
-
 class EventsAtVenueView(EventsView):
     template_name = "events_at_venue.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['id'] = kwargs['pk']
-
-        return context
-
 
 class GroupPageView(TemplateView):
     template_name = "user_page.html"
@@ -175,7 +160,8 @@ class UpdateUserDetailsView(UpdateView, LoginRequiredMixin):
 
         return context
 
-# TEMP TODO this
+# TEMP TODO this. This is a clunky way to edit the permissions.
+# Will be relaced once a proper ui is designed.
 class GroupPageEditorsUpdate(UpdateView, LoginRequiredMixin):
     template_name = "update_grouppage_editors.html"
     fields = ['users']

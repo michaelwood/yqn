@@ -2,14 +2,14 @@
 {% load static %}
 
 {% block extra_nav %}
-    <a href="{% url "venue" id %}" id="venue-title" class="nav-link"></a>
+    <a href="{% url "venue" view.kwargs.pk %}" id="venue-title" class="nav-link"></a>
 {% endblock %}
 
 {% block events_content %}
 <div class="my-3 p-3 bg-white rounded shadow-sm">
     <div class="clearfix pb-1 mb-0  ">
         <div id="venue-app" >
-            <venue venue-id="{{id}}"></venue>
+            <venue venue-id="{{view.kwargs.pk}}"></venue>
         </div>
 
     </div>
