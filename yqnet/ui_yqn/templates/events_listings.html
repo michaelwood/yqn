@@ -1,5 +1,19 @@
 {% extends 'events_base.html' %}
 
+
+
+{% block extra_nav %}
+{% if group_page %}
+    <a href="{% url 'user-pages' group_page.slug %}" class="nav-link bg-dark">{{group_page.title}}</a>
+{% endif %}
+{% endblock %}
+
+{% block title %}
+{% if group_page %}
+{{group_page.title}} Events
+{% endif %}
+{% endblock %}
+
 {% block events_content %}
 {% load vue_widget %}
 
@@ -42,6 +56,18 @@
         </a>
     </div>
 
+    {% if group_page %}
+    <h1>Events for {{group_page.title}}</h1>
+
+    <div id="regular-events-app" class="border-bottom">
+        <regular-events group-page="{{group_page.pk}}"></regular-events>
+    </div>
+    <div id="events-app" class="border-bottom">
+        <events group_page="{{group_page.pk}}"></events>
+    </div>
+
+    {% else %}
+
     <h1>One-off events</h1>
     <a name="one-off"></a>
     <div id="events-app" class="border-bottom">
@@ -53,15 +79,15 @@
        <h1 class="mb-4">Regular Events</h1>
     </div>
 
-
     <div id="regular-events-app" class="border-bottom">
         <regular-events></regular-events>
     </div>
 
+    {% endif %}
 </div>
 
-{% vue_widget "events.html" %}
 {% vue_widget "regular-events.html" %}
+{% vue_widget "events.html" %}
 
 
 {% endblock %}

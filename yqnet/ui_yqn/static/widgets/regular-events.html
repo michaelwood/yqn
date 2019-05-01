@@ -88,17 +88,15 @@
    <script type="text/javascript">
 
        Vue.component('regular-events', {
-           props: {
-
-            },
+           props: [ 'groupPage' ],
 
            template: '#regular-events-template',
 
            data: function() {
                return {
-                   alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
-                   search: 'a',
-                   searchText: '',
+                   alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+                   search: null,
+                   searchText: null,
                    yqnUtils: yqnUtils,
                    yqnBus: yqnBus,
                    regularEvents: [],
@@ -156,7 +154,12 @@
                        params.search =  "^"+this.search.replace(" ", "+");
                    }
 
-                   /* This API expects some parameters */
+                   if (this.groupPage){
+                       params.group_page = this.groupPage;
+                   }
+
+                   /* This API expects some parameters, set the default
+                    *  to just alphabetical search */
                    if (Object.keys(params).length == 0){
                        return;
                    }
