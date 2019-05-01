@@ -60,8 +60,10 @@ urlpatterns = [
 
     # Capture all other url paths before this one
     path('<slug:slug>/', views.GroupPageView.as_view(), name="user-pages"),
-    path('<slug:slug>/edit', views.GroupPageEditView.as_view(),
+    path('<slug:slug>/edit/', views.GroupPageEditView.as_view(),
          name="user-page-edit"),
+    path('<slug:slug>/events/', views.EventsListingView.as_view(),
+         name="user-page-events"),
 
     # temp
     path("<slug:slug>/permissions/<int:pk>", views.GroupPageEditorsUpdate.as_view(), name="user-page-permissions"),

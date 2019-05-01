@@ -163,6 +163,7 @@ class EventsSerializer(serializers.ModelSerializer):
     display_date_time_end = serializers.CharField(read_only=True, source="get_display_date_time_end")
 
     has_email = serializers.BooleanField(read_only=True)
+    group_page_details = GroupPageDetailsSerializer(read_only=True, source="get_group_page")
 
     class Meta:
         model = Event

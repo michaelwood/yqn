@@ -11,10 +11,11 @@ class EventListFilter(filters.FilterSet):
 
     date_time_start = filters.DateTimeFromToRangeFilter()
     id = filters.NumberFilter
+    group_page = filters.NumberFilter
 
     class Meta:
         model = Event
-        fields = ['date_time_start', 'id']
+        fields = ['date_time_start', 'id', 'group_page']
 
 class EventsAtVenueFilter(filters.FilterSet):
 

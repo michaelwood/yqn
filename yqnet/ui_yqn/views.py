@@ -92,6 +92,15 @@ class MapView(EventsView):
 class EventsListingView(EventsView):
     template_name = "events_listings.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if kwargs.get("slug"):
+            context['group_page'] = GroupPage.objects.get(slug=kwargs['slug'])
+
+        return context
+
+
 class EventsAtVenueView(EventsView):
     template_name = "events_at_venue.html"
 
