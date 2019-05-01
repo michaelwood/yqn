@@ -119,7 +119,7 @@ $.ajaxSetup({
 
 function setActivePage(){
  $(".nav-scroller .nav-link").each(function(){
-   if($(this).prop("href") == window.location.href){
+   if(window.location.href.indexOf($(this).prop("href")) != -1){
      $(this).addClass("bg-dark");
    } else {
      $(this).removeClass("bg-dark");
@@ -162,7 +162,6 @@ $(document).ready(function(){
 function maybePulseMenuBtn(){
 
   if ($(window).width() < 991.98){
-    console.log("maybe pulse menu bnt");
     $(".navbar-toggler").addClass("pulse-navbar-toggler");
     /* Disconnect we only need to do this once */
     window.onresize = null;
