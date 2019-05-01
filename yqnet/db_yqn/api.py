@@ -199,14 +199,14 @@ class GroupPageDetailImages(generics.ListAPIView):
         return GroupPageMedia.objects.filter(page=self.kwargs.get("pk"))
 
 class EventsLocationList(FilterRequiredMixin, generics.ListCreateAPIView):
-    description = "Add a link to your own Events"
+    description = "Add a Link to your existing Events web page"
 
     metadata_class = SimpleWithFkModelMetadata
     serializer_class = YqnSerializer.EventsLocationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    filter_fields = ('user', 'id', 'region')
+    filter_fields = ('user', 'id', 'region', 'group_page')
 
     search_fields = ('$title', '$venue__title')
     filter_backends = (filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend)

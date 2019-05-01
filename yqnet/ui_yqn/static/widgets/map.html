@@ -52,7 +52,7 @@
 
     <div>
         <transition-group name="list" tag="div">
-            <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="venue in venues" v-bind:key="venue.id">
+            <div class="d-flex flex-row w-100 p-3 shadow-sm bg-white rounded mb-3 list-item" v-for="venue in venues" v-bind:key="venue.id">
                 <a v-bind:name="venue.title"></a>
 
                 <div class="d-flex flex-column flex-fill">
@@ -93,9 +93,9 @@
                         <i class="fas fa-ellipsis-v"></i>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" v-bind:href="venue.url">Venue</a>
-                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(venue.url)">Share</a>
-                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Venue', objectId: 'venue.id', report: true, title: venue.title })" >Report <i class="far fa-flag"></i></a>
+                        <a class="dropdown-item" v-bind:href="venue.url"><i class="fas fa-map-marker-alt"></i> Venue</a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(venue.url)"><i class="fas fa-share-alt"></i> Share</a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Venue', objectId: 'venue.id', report: true, title: venue.title })" ><i class="far fa-flag"></i> Report</a>
                     </div>
                 </div> <!-- / dropdown -->
             </div>
@@ -142,7 +142,7 @@
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                        <!-- TODO <a class="dropdown-item" v-bind:href="">Region</a>
                         <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share()">Share</a> -->
-                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Region', objectId: 'region.id', report: true, title: region.title })" >Report <i class="far fa-flag"></i></a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Region', objectId: 'region.id', report: true, title: region.title })" ><i class="far fa-flag"></i> Report </a>
                     </div>
                 </div> <!-- / dropdown -->
             </div>

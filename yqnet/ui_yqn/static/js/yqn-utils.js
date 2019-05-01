@@ -87,7 +87,7 @@ var yqnUtils = {
           try {
             let success = document.execCommand('copy');
             if (success){
-              yqnBus.$emit("notify", {"title": "Copied", "body": "Url copied to clipboard" });
+              yqnBus.$emit("notify", {"title": "Copied", "body": "Link copied to the clipboard" });
             }
           } catch (err) {
             console.log("Copy not supported");

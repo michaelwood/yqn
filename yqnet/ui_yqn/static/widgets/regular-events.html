@@ -9,37 +9,37 @@
 
         <div class="collapse" id="search-methods">
 
-       <div class="form-group">
-           <label>Alphabetical</label>
-           <div class="rounded bg-white border p-2">
-                <a href='#' class="badge"
-                    v-for="letter in alphabet"
-                    v-bind:class="[ search == letter ? 'badge-dark' : 'badge-light' ]"
-                    v-on:click.prevent="search = letter; searchText = '' ">{{letter}}</a>
-                <a href="#" class="float-right" v-on:click.prevent="search = undefined" title="Clear" style="color: red">&times;</a>
-           </div>
-        </div>
+            <div class="form-group">
+                <label>Alphabetical</label>
+                <div class="rounded bg-white border p-2">
+                        <a href='#' class="badge"
+                            v-for="letter in alphabet"
+                            v-bind:class="[ search == letter ? 'badge-dark' : 'badge-light' ]"
+                            v-on:click.prevent="search = letter; searchText = '' ">{{letter}}</a>
+                        <a href="#" class="float-right" v-on:click.prevent="search = undefined" title="Clear" style="color: red">&times;</a>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label>Title</label>
-            <input type="text" v-model="searchText" class="form-control" placeholder="Search title..." />
-        </div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" v-model="searchText" class="form-control" placeholder="Search title..." />
+            </div>
 
-        <div class="form-group">
-            <label>Regional events</label>
-            <select class="form-control" v-on:change="setCurrentRegion">
-                <option value="">-</option>
-                <option v-for="region in regions" v-bind:value="region.id">{{region.title}}</option>
-            </select>
-            <small>Events that are held in multiple places in a Region</small>
-        </div>
+            <div class="form-group">
+                <label>Regional events</label>
+                <select class="form-control" v-on:change="setCurrentRegion">
+                    <option value="">-</option>
+                    <option v-for="region in regions" v-bind:value="region.id">{{region.title}}</option>
+                </select>
+                <small>Events that are held in multiple places in a Region</small>
+            </div>
 
         </div>
 
        <p v-if="regularEvents.length == 0 && enabled">None added yet!</p>
 
        <transition-group name="list" tag="div">
-           <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="event in regularEvents" v-bind:key="event.id" >
+           <div class="d-flex flex-row w-100 shadow-sm bg-white rounded p-3 mb-3 list-item" v-for="event in regularEvents" v-bind:key="event.id" >
                <div class="d-flex flex-column flex-fill">
                     <div class="d-flex flex-row">
 
@@ -74,9 +74,9 @@
                         <i class="fas fa-ellipsis-v"></i>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(event.url)">Share</a>
-                        <a v-if="event.user.id == yqnUtils.loggedInUser.id" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(event.id)">Delete</a>
-                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'EventsLocation', objectId: event.id, title: 'Report: '+event.title, report: true })">Report <i class="far fa-flag"></i></a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(event.url)"><i class="fas fa-share-alt"></i> Share</a>
+                        <a v-if="event.user.id == yqnUtils.loggedInUser.id" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(event.id)"><i class="far fa-trash-alt" ></i>  Delete</a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'EventsLocation', objectId: event.id, title: 'Report: '+event.title, report: true })"><i class="far fa-flag"></i> Report</a>
                     </div>
                 </div> <!-- / dropdown -->
            </div>

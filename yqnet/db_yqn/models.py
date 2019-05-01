@@ -183,7 +183,8 @@ class GroupPage(models.Model):
                             validators=[validators.validate_slug, validate_no_slug_clash])
 
     redirect = models.URLField(blank=True, null=True,
-     help_text="Instead of a dedicated page people will automatically be redirected to the provided url")
+     help_text="Provide a Link to redirect people to your website",
+     verbose_name="Link")
     body = models.TextField(default="", blank=True)
     last_modified = models.DateTimeField(auto_now=True)
     email = models.EmailField(help_text="Email address for enquiries", null=True, blank=True)
@@ -377,7 +378,7 @@ class EventsLocation(models.Model):
     # Addional validation logic is provided at the API level to ensure venue
     # or region and group page or url are provided.
     title = models.CharField(max_length=200, help_text="e.g. Quaker Meeting")
-    group_page = models.ForeignKey(GroupPage, null=True, on_delete=models.DO_NOTHING, help_text="Link to a Group page or Add new")
+    group_page = models.ForeignKey(GroupPage, null=True, on_delete=models.DO_NOTHING, help_text="Associate this event with a Group")
     url = models.URLField(help_text="External link to find out more about your events. e.g. http://example.com/events", blank=True, null=True, verbose_name="Link (URL)")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     private = models.BooleanField(default=False, help_text="Only show this information to logged in users")

@@ -145,7 +145,7 @@
   </div>
 
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
-      <a class="navbar-brand mr-auto mr-lg-0" href="{% url "index" %}">
+      <a class="navbar-brand mr-0" href="{% url "index" %}">
         <img alt="Young Quaker Network logo"
         src="{% static "imgs/logo_yqn.png" %}" height="25"
         title="Quakr - The Young Quaker Network"
@@ -156,7 +156,7 @@
         </div>
       </a>
 
-      <p class="align-top ml-1 mr-2" title="About">
+      <p class="align-top ml-1 mr-auto" title="About">
         <a href="{% url "about" %}" style="color:white;">&hellip;</a>
       </p>
 
@@ -165,7 +165,7 @@
       </button>
 
       <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto ">
+        <ul class="navbar-nav mr-auto ml-2">
 
           <li class="nav-item">
             <a class="nav-link" href="{% url "posts" %}">Posts</a>
@@ -230,9 +230,9 @@
       <div id="yqn-welcome-msg" class="d-flex align-items-center p-3 my-3 rounded shadow-sm bg-white d-none" style="display: none !important">
         <img src="{% static "imgs/round-logo.png" %}" style="max-width: 100px" class="rounded-circle mr-3" alt="Logo" />
           <div>
-            <h5 class="mb-0"><strong>Welcome to Quakr (BETA)</strong></h5>
+            <h5 class="mb-0"><strong>Welcome to Quakr</strong></h5>
             <p>The Young Quaker Network. Your number 1 source for info about Young Quaker activities!</p>
-            <p>Once <a href="{% url "login" %}">logged in</a> people can create events, add pages, makes posts and much more.
+            <p>Once <a href="{% url "login" %}">logged in</a> people can create events, add pages, write posts and much more.
                <a href="{% url "about" %}">Find out more about Quakr</a>.
             </p>
           </div>

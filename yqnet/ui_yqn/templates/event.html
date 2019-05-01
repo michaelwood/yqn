@@ -2,6 +2,10 @@
 {% load static %}
 {% block events_content %}
 
+{% block extra_nav %}
+    <a href="{% url "event" id %}" id="event-title" class="nav-link"></a>
+{% endblock %}
+
 <div class="my-3 p-3 bg-white rounded">
     <div class="clearfix pb-1 mb-0  ">
         <div id="events-app">

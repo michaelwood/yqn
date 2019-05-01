@@ -77,6 +77,10 @@
             </p>
             {% endif %}
 
+            <p class="card-text">
+                <small>Updated {{page.last_modified|date:"jS M Y"}}</small>
+            </p>
+
             <a href="{% if page.redirect %}{{page.redirect}}{% else %}{% url "user-pages" page.slug %}{% endif %}"
                 class="btn btn-primary card-link">Vist</a>
         </div>
