@@ -53,16 +53,21 @@
 
     <div class="card-deck">
     {% for page in pages %}
-    <div class="card page-list-item m-4 align-self-center" style="min-width: 10rem;"  >
-        <div class="card-header">
+    <div class="card page-list-item m-4 align-self-center" style="min-width: 15rem;"  >
+        <div class="card-header text-right" >
+            <i class="fas fa-map-pin float-left" style="color: #343a40"></i>
             {{page.title}}
         </div>
         <div class="card-body overflow-hidden">
             <h5 class="card-title">{{page.title}}</h5>
             {% if page.body %}
             <p class="card-text">
-            {{page.body|striptags|truncatewords_html:10|safe}}
+            {{page.body|striptags|truncatewords_html:14|safe}}
             </p>
+            {% endif %}
+
+            {% if page.eventslocation_set.count > 0 %}
+            <a href="{% url 'user-page-events' page.slug %}"><i class="fas fa-calendar-alt"></i> Events</a></p>
             {% endif %}
 
             <p class="card-text small text-muted">

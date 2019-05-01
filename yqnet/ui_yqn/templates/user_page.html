@@ -15,12 +15,9 @@
 
     <!-- Bootstrap core CSS -->
     <link href="{% static "vendor/bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
-    <!-- Custom styles for this template -->
+    <link href="{% static "vendor/bootstrap/css/offcanvas.css" %}" rel="stylesheet">
 
     <script src="{% static "vendor/jquery/jquery-3.3.1.min.js" %}"></script>
-    <!-- Custom styles for this template TODO ? -->
-<!--     <link href="{% static "css/user-page.css" %}" rel="stylesheet"> -->
-
     <script src="{% static "vendor/popper/popper.min.js" %}"></script>
     <script src="{% static "vendor/bootstrap/js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/bootstrap-helpers.js" %}"></script>
@@ -172,7 +169,7 @@
   </head>
 
 
-  <body class="bg-light">
+  <body class="bg-light pt-0">
     {% csrf_token %}
 
     <div id="notifications-app">
@@ -185,7 +182,7 @@
     </div>
     {% vue_widget "contact.html" %}
 
-	  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+	  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
       <a class="mr-auto mr-lg-0" href="{% url "pages" %}">
         <img alt="Young Quaker Network logo"
         src="{% static "imgs/logo_yqn.png" %}"
@@ -213,9 +210,19 @@
 
           </ul>
       </div>
+    </nav>
 
+        {% if page.eventslocation_set.count > 0 %}
+        <nav>
+        <div class="nav-scroller bg-white shadow-sm">
+            <div class="nav nav-underline">
+                <a href="{% url 'user-pages' page.slug %}" class="nav-link">{{page.title}}</a>
+                <a href="{% url 'user-page-events' page.slug %}" class="nav-link">Events <i class="fas fa-calendar-alt"></i></a>
+            </div>
+        </div>
+        </nav>
+        {% endif %}
 
-	  </nav>
 
 	  <main role="main" class="container">
 
@@ -277,6 +284,7 @@
 
             {% endif %}
 
+
             {% if user_can_edit and not editing %}
               <a href="{% url "user-page-edit" page.slug %}" tabindex=0 class="btn btn-primary btn-sm float-right small" data-test-id="page-edit-btn"><i class="fas fa-edit"></i> Edit</a>
             {% endif %}
@@ -299,7 +307,7 @@
           </div>
 
         {% if page.has_email %}
-        <button class="ml-auto d-block btn btn-sm btn-secondary" id="contact-btn"><i class="fas fa-envelope"></i> Contact</button>
+        <button class="ml-auto d-block btn btn-sm btn-secondary mt-2" id="contact-btn"><i class="fas fa-envelope"></i> Contact</button>
         {% endif %}
 
         {% endif %}
