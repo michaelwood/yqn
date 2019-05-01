@@ -311,6 +311,7 @@ class Event(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     private = models.BooleanField(default=False, help_text="Only show this event to logged in users")
     email = models.EmailField(null=True, blank=True, help_text="Email address for enquiries")
+    group_page = models.ForeignKey(GroupPage, null=True, on_delete=models.DO_NOTHING, help_text="Associate this Event with a Group")
 
     out_format = "%a %d %b %Y at %H:%M"
 
@@ -345,6 +346,9 @@ class Event(models.Model):
 
 
         super().save(*args, **kwargs)
+
+    def get_group_page(self):
+        return self.group_page
 
     def get_display_day(self):
         # https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#std:templatefilter-date
