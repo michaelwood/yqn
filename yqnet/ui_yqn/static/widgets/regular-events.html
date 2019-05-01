@@ -124,6 +124,12 @@
                     ctx.fetchData();
                 });
 
+                window.onpopstate = function(event) {
+                    if (event.state.search){
+                        ctx.search = event.state.search;
+                    }
+                };
+
            },
 
            updated: function(){
@@ -143,15 +149,12 @@
                    let params = {}
 
                    if (this.currentRegion){
-                       /* If search is still the starting value then unset it */
-                       if (this.search == "a"){
-                           this.search = undefined;
-                       }
-                       params.region = this.currentRegion;
+                        params.region = this.currentRegion;
                    }
 
                    if (this.search){
                        params.search =  "^"+this.search.replace(" ", "+");
+                       window.history.pushState({ search: this.search }, "search", "?search="+this.search);
                    }
 
                    if (this.groupPage){
@@ -161,7 +164,8 @@
                    /* This API expects some parameters, set the default
                     *  to just alphabetical search */
                    if (Object.keys(params).length == 0){
-                       return;
+                       this.search = 'a';
+                       params.search = this.search;
                    }
 
                    url += yqnUtils.urlParams(params);
