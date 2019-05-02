@@ -50,7 +50,9 @@ class TestPosts(YqnBrowserTest):
         time.sleep(0.5)
 
         days = date_pickers[0].find_elements_by_css_selector(".cell.day")
-        days[3].click()
+        # Always at least cells in because of the week pattern e.g. Feb because of lack of
+        # days starts on saturday
+        days[7].click()
 
         self.select_option_by_index("[data-test-id='date_time_start-hour-select']", 3)
         self.select_option_by_index("[data-test-id='date_time_start-hour-select']", 4)
@@ -58,7 +60,7 @@ class TestPosts(YqnBrowserTest):
 
         date_pickers[1].click()
         days = date_pickers[1].find_elements_by_css_selector(".cell.day")
-        days[4].click()
+        days[8].click()
 
         self.select_option_by_index("[data-test-id='date_time_end-hour-select']", 5)
         self.select_option_by_index("[data-test-id='date_time_end-minute-select']", 6)
@@ -93,8 +95,10 @@ class TestPosts(YqnBrowserTest):
 
         event_added_headings = self.find_all("#events-widget .list-item h3")
 
+        start_day = Event.objects.last().get_display_day()
+
         # First heading is the date
-        self.assertTrue("3" in event_added_headings[0].text, "The right event date hasn't appeared on the page")
+        self.assertTrue(start_day in event_added_headings[0].text, "The right event date hasn't appeared on the page")
 
         # Second heading is the title
         self.assertTrue(event_title in event_added_headings[1].text, "The event title hasn't appeared on the page")
