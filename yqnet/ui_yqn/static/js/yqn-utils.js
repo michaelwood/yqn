@@ -119,7 +119,7 @@ $.ajaxSetup({
 
 function setActivePage(){
  $(".nav-scroller .nav-link").each(function(){
-   if(window.location.href.indexOf($(this).prop("href")) != -1){
+   if(window.location.pathname == $(this).prop("href").substr(window.location.origin.length)){
      $(this).addClass("bg-dark");
    } else {
      $(this).removeClass("bg-dark");
