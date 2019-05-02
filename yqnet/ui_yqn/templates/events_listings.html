@@ -8,11 +8,11 @@
 {% endif %}
 {% endblock %}
 
-{% block title %}
 {% if group_page %}
+{% block title %}
 {{group_page.title}} Events
-{% endif %}
 {% endblock %}
+{% endif %}
 
 {% block events_content %}
 {% load vue_widget %}
