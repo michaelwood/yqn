@@ -43,11 +43,9 @@
 
                 <a href="{% url 'password_reset' %}" class="d-block mb-2">Lost password?</a>
 
-
-
                 <input type="hidden" name="next" value="{{ next }}">
 
-                <input type="submit" class="ml-auto d-block btn btn-primary" value="Login">
+                <input type="submit" class="ml-auto d-block btn btn-primary" value="Login" data-test-id="login-btn">
 
             </form>
 

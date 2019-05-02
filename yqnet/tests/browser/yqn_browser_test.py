@@ -74,7 +74,7 @@ class YqnBrowserTest(SeleniumTestCase):
             self.get(reverse("login"))
             self.enter_text("#id_username", username)
             self.enter_text("#id_password", password)
-            self.click("input[type=submit]")
+            self.click_test_id("login-btn")
 
             # Wait for the redirect and load after login
             time.sleep(1)
