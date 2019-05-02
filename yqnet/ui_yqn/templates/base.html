@@ -217,13 +217,9 @@
 
         </ul>
         <form class="form-inline my-2 my-lg-0" action="{% url 'search' %}" method="GET">
-          <div class="input-group">
-            <input class="form-control " type="text" placeholder="Search" name="q" aria-label="Search"
+            <input class="form-control mr-1" type="text" placeholder="Search" name="q" aria-label="Search"
               value="{{view.request.GET.q}}">
-            <div class="input-group-append">
-              <input type="submit" class="btn btn-outline-warning my-2 my-sm-0" type="submit" value="Search">
-            </div>
-          </div>
+            <input type="submit" class="btn btn-outline-warning my-2 my-sm-0" type="submit" value="Search">
         </form>
         </div>
     </nav>
