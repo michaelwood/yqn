@@ -102,7 +102,7 @@ class GroupPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupPage
-        fields = ("id", "go_to", "url", "title", "slug", "redirect", "last_modified", "body", "last_updated_by")
+        fields = ("id", "go_to", "url", "title", "slug", "redirect", "last_modified", "body", "email", "last_updated_by")
         read_only_fields = ('users',"redirect","last_updated_by")
 
 class GroupPageDetailsSerializer(serializers.ModelSerializer):
