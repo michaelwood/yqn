@@ -144,10 +144,6 @@
                 }
             }
 
-            if (window.location.hash.indexOf("event-") > 0){
-                this.currentEventId =  window.location.hash.substr(("#event-").length)
-            }
-
             let ctx = this;
 
             yqnBus.$on("data-added", function(){
