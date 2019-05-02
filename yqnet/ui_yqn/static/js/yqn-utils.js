@@ -42,7 +42,6 @@ var yqnUtils = {
            accept: "application/json",
            headers: { "X-CSRFToken": Cookies.get("csrftoken") },
            success: function() {
-             console.log("deleted");
              if (successCb){
               successCb();
              }

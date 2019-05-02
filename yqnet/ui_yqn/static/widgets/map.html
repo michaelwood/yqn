@@ -201,8 +201,6 @@ Vue.component('map-area', {
             let ctx = this;
 
             yqnBus.$on("data-added", function(data) {
-                console.log("Get message data changed");
-                console.log(data);
 
                 if (data.venue_details) {
                     ctx.map.setView(
@@ -312,7 +310,6 @@ Vue.component('map-area', {
                 };
 
                 $.getJSON("/api/EventsAtRegion/" + yqnUtils.urlParams(regionParam), function(data){
-                    console.log(data);
                     ctx.regions = data;
 
                     /* Set a flag to say whether any of the regions found actually contain events */

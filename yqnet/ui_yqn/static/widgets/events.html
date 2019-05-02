@@ -147,8 +147,6 @@
             let ctx = this;
 
             yqnBus.$on("data-added", function(){
-                /* TODO instead of refresh we could appened to the events[] ? */
-                console.log("Get message data changed");
                 ctx.fetchData();
              });
         },
@@ -167,9 +165,6 @@
                 var url = "/api/Events/"
 
                 if (!this.eventId) {
-
-                    console.log("Fetching data month" + this.showMonth);
-
                     var startDate = new Date();
                     var endDate = new Date();
 

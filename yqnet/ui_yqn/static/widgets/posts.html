@@ -203,8 +203,6 @@
 
             let ctx = this;
             yqnBus.$on("data-added", function(){
-                /* TODO instead of refresh we could appened to the posts[] ? */
-                console.log("Get message data changed");
                 ctx.fetchData();
                 ctx.fetchCommentsData();
              });
@@ -222,8 +220,6 @@
         methods: {
             fetchData() {
                 let ctx = this;
-                console.log("Fetching data for source"+this.currentSource);
-
                 var url = "/api/Posts/"
 
                 var params = {
@@ -283,7 +279,6 @@
 
                 let ctx = this;
 
-                console.log("Fetching comments");
                 $.getJSON("/api/Post/" + ctx.showCommentsForPost, function (data) {
                     ctx.comments = data.comments;
                 });
