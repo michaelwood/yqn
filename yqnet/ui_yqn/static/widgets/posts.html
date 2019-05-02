@@ -21,15 +21,20 @@
             <div class="post-metadata d-flex flex-column flex-fill ml-2">
 
                 <strong class="d-block text-gray-dark">
-                    <a v-if="post.ext_url" v-bind:href="post.ext_url" target="_blank" class="ext-link-yqn"><h3>{{post.title}}</h3></a>
-                    <a v-else href="#" v-on:click.prevent="currentPostId = post.id" class="ext-link-yqn"><h3>{{post.title}}</h3></a>
+                    <span v-if="post.title">
+                    <a v-if="post.ext_url" v-bind:href="post.ext_url" target="_blank" class="ext-link-yqn"><h3 class="d-inline-block">{{post.title}}</h3></a>
+                    <a v-else v-bind:href="post.url" class="ext-link-yqn"><h3 class="d-inline-block">{{post.title}}</h3></a>
+                    </span>
+                    <a v-else v-bind:href="post.url" class="ext-link-yqn"><h3 class="d-inline-block">{{post.publish_date}}</h3></a>
+
+                    <small><a v-bind:href="post.url" ><i class="fas fa-link align-text-top"></i></a></small>
                 </strong>
 
                 <div v-if="post.ext_author">
                     <a v-bind:href="post.ext_url">{{post.ext_author}}</a>
                 </div>
                 <div v-else>
-                   <a href="#" v-on:click.prevent="currentUser = post.user">{{post.user.first_name}}</a>
+                   <a href="#" v-on:click.prevent="currentUser = post.user" v-bind:title="'All posts by' + post.user.first_name">{{post.user.first_name}}</a>
                 </div>
 
 
@@ -49,7 +54,7 @@
                     <a class="dropdown-item"
                        href="#"
                        v-on:click.prevent="currentUser = post.user">
-                        <i class="far fa-user"></i> All from user
+                        <i class="far fa-user"></i> All by {{post.user.first_name}}
                     </a>
                     <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(post.url)"><i class="fas fa-share-alt"></i> Share</a>
                     <a v-if="post.user.id == yqnUtils.loggedInUser.id" class="dropdown-item" href="#" v-on:click.prevent="deleteObj(post.id)" data-test-id="post-delete-btn"><i class="far fa-trash-alt" ></i> Delete</a>
@@ -132,7 +137,8 @@
     </div>
 </transition-group>
     <span class="d-block text-center mt-3">
-        <a href="#" v-on:click.prevent="currentPostId=null; limit = limit + 3;">More posts</a>
+        <a v-if="currentPostId" v-bind:href="postsUrl" >More posts</a>
+        <a v-else href="#" v-on:click.prevent="limit = limit + 3;">More posts</a>
     </span>
 </div>
 </script>
@@ -145,7 +151,10 @@
     Vue.component('posts', {
         props: {
             'limit' : { default: 5  },
-         },
+            'post' : { default: null },
+            'postsUrl' : { default: null },
+        },
+
         template: '#events-template',
 
         data: function() {
@@ -186,9 +195,8 @@
 
         created: function (){
             this.currentSource = this.sourceTypes.ALL;
-            if (window.location.hash.indexOf("post-") > 0){
-                this.currentPostId =  window.location.hash.substr(("#post-").length)
-            }
+
+            this.currentPostId = this.post;
 
             let ctx = this;
             yqnBus.$on("data-added", function(){
@@ -228,7 +236,6 @@
                 }
 
                 if (this.currentPostId){
-                    window.location.hash = 'post-'+this.currentPostId;
                     params.id = this.currentPostId;
                 } else {
                     window.location.hash = '';
@@ -241,18 +248,6 @@
                     incoming.enabled = true;
                     incoming.nextPageUrl = data.next;
                 });
-            },
-
-            expandPost(id, event){
-                $(event.srcElement).tooltip('hide');
-
-                if (this.expandedPost === id){
-                    this.expandedPost = -1;
-                    event.srcElement.scrollIntoView(false);
-                } else {
-                    /* Open */
-                    this.expandedPost = id;
-                }
             },
 
             deleteObj(id){

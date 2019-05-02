@@ -49,6 +49,7 @@
 
 {% if user.is_authenticated %}
 <script>
+  /* Picture post handlers */
   $(document).ready(function(){
 
         $("#pp-btn").click(function(e){
@@ -138,7 +139,7 @@
     </div>
 
     <div id="posts-app" v-cloak>
-      <posts limit="20"></posts>
+      <posts limit="20" post="{{view.kwargs.pk}}" posts-url="{% url 'posts' %}"></posts>
     </div>
 
 </div>

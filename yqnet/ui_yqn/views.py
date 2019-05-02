@@ -144,7 +144,7 @@ class UpdateUserDetailsView(UpdateView, LoginRequiredMixin):
     template_name = "update_userdetails.html"
     model = User
     fields = ['username','first_name', 'last_name', 'email']
-    success_url = "?"
+    success_url = "?result=success"
 
     def get_object(self):
         return self.request.user

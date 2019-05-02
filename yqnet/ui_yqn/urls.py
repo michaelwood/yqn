@@ -30,6 +30,7 @@ urlpatterns = [
     path('whatsapp/', TemplateView.as_view(template_name="whatsapp.html"), name="whatsapp"),
 
     path('posts/', views.PostsView.as_view(), name="posts"),
+    path('post/<int:pk>/', views.PostsView.as_view(), name="post"),
     path('posts/twitter/', views.TwittersView.as_view(), name="twitters"),
     path('posts/instagram/', views.InstagramView.as_view(), name="instagram"),
 

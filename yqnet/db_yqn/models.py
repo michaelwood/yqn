@@ -114,7 +114,7 @@ class Post(models.Model):
         if self.ext_url:
             return self.ext_url
 
-        return reverse_lazy("posts") + "#post-%s" % self.id
+        return reverse_lazy("post", args=(self.id,))
 
 
     def save(self, *args, **kwargs):
