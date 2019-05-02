@@ -93,7 +93,7 @@ Vue.component('search', {
             let ctx = this;
 
             window.onpopstate = function (event) {
-                if (event.state.query) {
+                if (event.state && event.state.query) {
                     ctx.currentQuery = event.state.query;
                 }
             };

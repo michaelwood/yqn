@@ -98,7 +98,7 @@
            data: function() {
                return {
                    alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
-                   search: null,
+                   search: 'a',
                    searchText: null,
                    yqnUtils: yqnUtils,
                    yqnBus: yqnBus,
@@ -122,13 +122,11 @@
                 this.fetchData();
 
                 yqnBus.$on("data-added", function(){
-                    /* TODO instead of refresh we could appened to the events[] ? */
-                    console.log("Get message data changed");
                     ctx.fetchData();
                 });
 
                 window.onpopstate = function(event) {
-                    if (event.state.search){
+                    if (event.state && event.state.search){
                         ctx.search = event.state.search;
                     }
                 };
@@ -167,8 +165,7 @@
                    /* This API expects some parameters, set the default
                     *  to just alphabetical search */
                    if (Object.keys(params).length == 0){
-                       this.search = 'a';
-                       params.search = this.search;
+                       return;
                    }
 
                    url += yqnUtils.urlParams(params);
