@@ -53,11 +53,13 @@
 
     <div class="card-deck">
     {% for page in pages %}
-    <div class="card page-list-item m-4 align-self-center" style="min-width: 15rem;"  >
-        <div class="card-header text-right" >
-            <i class="fas fa-map-pin float-left" style="color: #343a40"></i>
-            {{page.title}}
+    <div class="card page-list-item m-4 align-self-center shadow-sm" style="min-width: 15rem;"  >
+
+        <div class="card-header">
+            <i class="fas fa-map-pin position-absolute float-left" style="color: #343a40; font-size: 2.4em; top: -10px;"></i>
+            <span class="float-right ml-4">{{page.title}}</span>
         </div>
+
         <div class="card-body overflow-hidden">
             <h5 class="card-title">{{page.title}}</h5>
             {% if page.body %}
