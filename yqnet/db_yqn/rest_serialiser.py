@@ -81,10 +81,11 @@ class InstagramSerializer(SocialMediaAccSerializer):
 class GroupPagesSerializer(serializers.ModelSerializer):
 
     go_to = serializers.CharField(read_only=True, source="get_edit_link")
+    url = serializers.CharField(read_only=True, source="get_url")
 
     class Meta:
         model = GroupPage
-        fields = ("id", "title", "slug", "body", "email", "go_to")
+        fields = ("id", "title", "slug", "body", "email", "go_to", "url")
         read_only_fields = ('users', "body")
 
 class GroupPageRedirectSerializer(serializers.ModelSerializer):

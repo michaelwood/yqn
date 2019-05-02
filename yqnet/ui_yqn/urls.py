@@ -28,6 +28,7 @@ urlpatterns = [
     path('privacy/', TemplateView.as_view(template_name="privacy.html"), name="privacy"),
     path('contact/', TemplateView.as_view(template_name="contact_yqn.html"), name="contact"),
     path('whatsapp/', TemplateView.as_view(template_name="whatsapp.html"), name="whatsapp"),
+    path('search/', TemplateView.as_view(template_name="search.html"), name="search"),
 
     path('posts/', views.PostsView.as_view(), name="posts"),
     path('post/<int:pk>/', views.PostsView.as_view(), name="post"),

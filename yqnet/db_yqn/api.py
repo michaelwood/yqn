@@ -85,6 +85,10 @@ class PostList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
+    search_fields = ('$title',)
+    filter_backends = (filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend)
+
+
     def get_queryset(self):
         posts = Post.objects.exclude(source=Sources.COMMENT)
 
@@ -112,7 +116,6 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class CommentsPost(generics.CreateAPIView):
-
     queryset = Post.objects.all()
     serializer_class = YqnSerializer.CommentPostSerializer
     permission_classes = (permissions.IsAuthenticated,)

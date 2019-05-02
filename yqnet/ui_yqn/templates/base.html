@@ -216,11 +216,16 @@
           {% endif %}
 
         </ul>
-        <form class="form-inline my-2 my-lg-0" action="/TODO" method="GET">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" name="search" aria-label="Search" disabled>
-          <button class="btn btn-outline-warning my-2 my-sm-0" type="submit" disabled>Search</button>
+        <form class="form-inline my-2 my-lg-0" action="{% url 'search' %}" method="GET">
+          <div class="input-group">
+            <input class="form-control " type="text" placeholder="Search" name="q" aria-label="Search"
+              value="{{view.request.GET.q}}">
+            <div class="input-group-append">
+              <input type="submit" class="btn btn-outline-warning my-2 my-sm-0" type="submit" value="Search">
+            </div>
+          </div>
         </form>
-      </div>
+        </div>
     </nav>
 
     {% block category_nav %}

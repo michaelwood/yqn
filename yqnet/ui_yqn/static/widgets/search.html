@@ -1,0 +1,198 @@
+<script type="text/x-template" id="search-template">
+<div>
+    <h2>{{results.total}} Results for '{{currentQuery}}'</h2>
+
+    <div class="input-group mb-3">
+
+        <input type="text" class="form-control" v-model="currentQuery" placeholder="Search" v-on:keyup="fetchDataDelay">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" v-on:click.prevent="fetchData">Search</button>
+        </div>
+    </div>
+
+    <div class="m-2">
+        <h4 v-bind:class="{ 'text-very-muted' : results.pages.length == 0 }">{{results.pages.length}} Pages</h4>
+        <result v-for="page in results.pages" v-bind:result="page" v-bind:key="page.id"></result>
+    </div>
+
+    <div class="m-2">
+        <h4 v-bind:class="{ 'text-very-muted' : results.events.length == 0 }">{{results.events.length}} Events</h4>
+        <result v-for="event in results.events" v-bind:result="event" v-bind:key="event.id"></result>
+    </div>
+
+    <div class="m-2">
+        <h4 v-bind:class="{ 'text-very-muted' : results.groups.length == 0 }">{{results.groups.length}} Groups</h4>
+        <result v-for="group in results.groups" v-bind:result="group" v-bind:key="group.id"></result>
+    </div>
+
+    <div class="m-2">
+        <h4 v-bind:class="{ 'text-very-muted' : results.venues.length == 0 }">{{results.venues.length}} Venues</h4>
+        <result v-for="venue in results.venues" v-bind:result="venue" v-bind:key="venue.id"></result>
+    </div>
+
+    <div class="m-2">
+        <h4 v-bind:class="{ 'text-very-muted' : results.posts.length == 0 }">{{results.posts.length}} Posts</h4>
+        <result v-for="post in results.posts" v-bind:result="post" v-bind:key="post.id"></result>
+    </div>
+
+
+</div>
+
+
+</script>
+
+<script type="text/x-template" id="result-template">
+    <transition-group name="list" tag="div">
+    <div class="d-flex flex-row w-100 bg-white rounded ml-2 mb-2 list-item" v-bind:key="result.id">
+       <a v-bind:href="result.url">{{result.title}}</a>
+    </div>
+    </transition-group>
+</script>
+
+<script>
+
+Vue.component('result', {
+    template: '#result-template',
+
+    props: {
+        result: { type: Object },
+    },
+
+});
+
+Vue.component('search', {
+        template: '#search-template',
+
+        props: {
+            query : { type: String },
+        },
+
+        data: function(){
+            return {
+                yqnUtils: yqnUtils,
+                yqnBus: yqnBus,
+
+                currentQuery: '',
+
+                results: {
+                    venues: [],
+                    events: [],
+                    groups: [],
+                    posts: [],
+                    pages: [],
+                    total: 0,
+                },
+
+                fetchDataDelayTimer: null,
+            }
+        },
+
+        created: function() {
+            this.currentQuery = this.query;
+
+            let ctx = this;
+
+            window.onpopstate = function (event) {
+                if (event.state.query) {
+                    ctx.currentQuery = event.state.query;
+                }
+            };
+
+            this.fetchData();
+
+        },
+
+        methods: {
+            fetchData: function(){
+                if (this.currentQuery.length <= 1){
+                    return;
+                }
+
+                this.reset();
+
+                param = { search: this.currentQuery };
+
+                window.history.pushState({ query : this.currentQuery }, "q", "?q="+this.currentQuery);
+
+                let urlParams = yqnUtils.urlParams(param);
+                let ctx = this;
+
+                this.findPages();
+
+                $.getJSON("/api/Venues/"+urlParams, function(data){
+                    ctx.results.venues = data;
+                    ctx.results.total += data.length;
+                });
+
+                $.getJSON("/api/Events/"+urlParams, function(data){
+                    ctx.results.events = ctx.results.events.concat(data);
+                    ctx.results.total += data.length;
+                });
+
+                $.getJSON("/api/EventsLocations/"+urlParams, function(data){
+                    ctx.results.events = ctx.results.events.concat(data);
+                    ctx.results.total += data.length;
+                });
+
+                $.getJSON("/api/GroupPages/"+urlParams, function(data){
+                    ctx.results.groups = data;
+                    ctx.results.total += data.length;
+                });
+
+                $.getJSON("/api/Posts/"+urlParams, function(data){
+                    ctx.results.posts = data.results;
+                    ctx.results.total += data.results.length;
+                });
+
+           },
+
+           fetchDataDelay: function(){
+                /* Add a short delay in fetching the data to avoid hitting the API
+                 * at every change event if the changes are happening rapidly
+                 */
+                if (this.fetchDataDelayTimer){
+                    window.clearTimeout(this.fetchDataDelayTimer);
+                }
+
+                let ctx = this;
+
+                this.fetchDataDelayTimer = window.setTimeout(function(){
+                    ctx.fetchData();
+                }, 1000);
+           },
+
+           findPages: function(){
+               let ctx = this;
+
+               let id = 0;
+
+               $("a").each(function(){
+                   if ($(this).text().toLowerCase().indexOf(ctx.currentQuery.toLowerCase()) != -1){
+                       ctx.results.pages.push({
+                           title: $(this).text(),
+                           url: $(this).prop("href"),
+                           id: id++,
+                       });
+
+                   }
+
+               });
+
+           },
+
+            reset: function (){
+                this.results.venues = [];
+                this.results.events = [];
+                this.results.groups = [];
+                this.results.posts = [];
+                this.results.pages = [];
+                this.results.total = 0;
+            },
+
+        },
+});
+
+var vApp = new Vue({
+    el: '#search-app',
+});
+</script>
