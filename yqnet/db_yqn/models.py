@@ -187,7 +187,7 @@ class GroupPage(models.Model):
      verbose_name="Link")
     body = models.TextField(default="", blank=True)
     last_modified = models.DateTimeField(auto_now=True)
-    email = models.EmailField(help_text="Email address for enquiries", null=True, blank=True)
+    email = models.EmailField(help_text="Email address for enquiries (public)", null=True, blank=True)
     users = models.ManyToManyField(User)
     last_updated_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="page_updater")
 
