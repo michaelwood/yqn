@@ -99,7 +99,7 @@ Vue.component('datetime', {
 
     data: function(){
         return {
-            date: null,
+            date: null, /* The date input */
             timedate: new Date(),
         }
     },
@@ -124,6 +124,8 @@ Vue.component('datetime', {
     methods: {
         dateSelected: function(date){
             this.timedate.setDate(date.getDate());
+            this.timedate.setMonth(date.getMonth());
+            this.timedate.setFullYear(date.getFullYear());
             this.$emit("selected", { key: this.name, value: this.timedate });
         },
 
