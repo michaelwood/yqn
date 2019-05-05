@@ -156,8 +156,6 @@ class EventsSerializer(serializers.ModelSerializer):
     # custom field for the deserialised venue
     venue_details = VenueSerializer(read_only=True, source="get_venue")
 
-    url = serializers.CharField(read_only=True, source="get_url")
-
     # Anti-pattern Date formatting is so much better in Python than JS so do this here
     display_day = serializers.CharField(read_only=True, source="get_display_day")
     display_date_time_start = serializers.CharField(read_only=True, source="get_display_date_time_start")
@@ -165,6 +163,15 @@ class EventsSerializer(serializers.ModelSerializer):
 
     has_email = serializers.BooleanField(read_only=True)
     group_page_details = GroupPageDetailsSerializer(read_only=True, source="get_group_page")
+
+    def to_representation(self, instance):
+        """Convert `username` to lowercase."""
+        event = super().to_representation(instance)
+        if event['url'] is None:
+            event['url'] = reverse_lazy("event", args=(event['id'], ))
+
+        return event
+
 
     class Meta:
         model = Event

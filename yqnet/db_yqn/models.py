@@ -303,7 +303,7 @@ class Venue(models.Model):
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
-    url = models.URLField(null=True, blank=True)
+    url = models.URLField(null=True, blank=True, verbose_name="Link (URL)", help_text="Optional link for people to find out more")
     description = models.TextField()
     date_time_start = models.DateTimeField()
     date_time_end = models.DateTimeField()
@@ -343,9 +343,8 @@ class Event(models.Model):
             except Exception:
                pass
 
-
-
         super().save(*args, **kwargs)
+
 
     def get_group_page(self):
         return self.group_page
@@ -362,12 +361,6 @@ class Event(models.Model):
 
     def get_venue(self):
         return self.venue
-
-    def get_url(self):
-        if self.url:
-            return self.url
-
-        return reverse_lazy("event", args=(self.id,))
 
     def has_email(self):
         if self.email and len(self.email) > 0:

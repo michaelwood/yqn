@@ -42,7 +42,7 @@
                 <p v-if="event.group_page" class="m-2">Event by Group <a v-bind:href="event.group_page_details.url">{{event.group_page_details.title}}</a></p>
                 <p class="m-2" v-html="event.description"></p>
                 <!-- if the link is relative it won't have http so no point linking to ourselves to find out more -->
-                <a v-if="event.url.indexOf('http') !== -1" class="m-2" v-bind:href="event.url">Find out more - {{event.title}}</a>
+                <a v-if="event.url && event.url.indexOf('http') !== -1" class="m-2" v-bind:href="event.url">Find out more - {{event.title}}</a>
                 <a v-if="event.has_email" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Event', objectId: event.id, title: event.title } )" class="ml-auto"><i class="fas fa-envelope"></i> Contact organiser</a>
 
             </div>
