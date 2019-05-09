@@ -51,7 +51,6 @@ class Command(BaseCommand):
                 post, created = Post.objects.get_or_create(
                     title=title,
                     text=text,
-                    publish_date=published,
                     source=Sources.NEWS,
                     user=user,
                     ext_author=self.name,
