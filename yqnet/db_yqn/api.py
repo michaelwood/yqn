@@ -234,7 +234,7 @@ class EventList(FilterRequiredMixin, generics.ListCreateAPIView):
     description = "Add your event listing"
     filter_class = YqnFilters.EventListFilter
 
-    search_fields = ('^title',)
+    search_fields = ('$title',)
     filter_backends = (filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend)
 
     metadata_class = SimpleWithFkModelMetadata
