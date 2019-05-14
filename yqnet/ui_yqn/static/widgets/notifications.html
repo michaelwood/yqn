@@ -44,6 +44,12 @@ Vue.component('notifications', {
                     console.log("Set a title and body please");
                     return;
                 }
+
+                if (typeof(Android) !== 'undefined'){
+                    Android.showToast(msg.title +' - '+ msg.body);
+                    return;
+                }
+
                 msg.id = "notification-"+Date.now(),
                 msg.time = new Date(Date.now()).toLocaleTimeString(),
                 ctx.messages.push(msg)
