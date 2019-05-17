@@ -3,15 +3,24 @@
  <div id="events-widget" class="ml-2 mr-2">
     <span v-if="!eventId">
 
+
     <div class="border-gray p-2 bg-white rounded">
         Show:
         <a v-bind:href="[ '#' + month.name + '-' + (month.year ? month.year : currentYear ) ]" class="badge badge-light"
          v-for="month in futureMonths"
-         v-on:click="showMonth = month">{{month.name}} {{month.year}}</a>
+         v-on:click="showMonth = month; eventSearch = ''">{{month.name}} {{month.year}}</a>
 
-        <h3 class="mt-2">{{showMonth.name}} {{showMonth.year}}</h3>
+        <div class="mt-2 bt-2">
+            <div class="input-group mb-3">
+                <input type="text" placeholder="Event Name" class="form-control" v-model="eventSearch">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" v-on:click.prevent="fetchData">Search</button>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="mt-2" v-if="!eventSearch">{{showMonth.name}} {{showMonth.year}}</h3>
     </div>
-
 
     </span>
 
@@ -85,6 +94,8 @@
 
             futureMonths: [],
             showMonth: null,
+            eventSearch: "",
+            fetchDataDelayTimer: null,
 
             months : [
                 { name: "January", calNum: 1 },
@@ -113,6 +124,7 @@
             limit: 'fetchData',
             currentUser: 'fetchData',
             currentEventId: 'fetchData',
+            eventSearch: 'fetchDataDelay',
         },
 
         created: function (){
@@ -164,7 +176,11 @@
 
                 var url = "/api/Events/"
 
-                if (!this.eventId) {
+                if (this.eventId) {
+                    var params = { id: this.eventId };
+                } else if (this.eventSearch.length > 2){
+                    var params = { search: this.eventSearch };
+                } else {
                     var startDate = new Date();
                     var endDate = new Date();
 
@@ -191,8 +207,6 @@
                         params.group_page = this.groupPage;
                     }
 
-                } else {
-                    var params = { id: this.eventId };
                 }
 
                 url += yqnUtils.urlParams(params);
@@ -207,6 +221,22 @@
                         $("#event-title").text(data[0].title);
                     }
                 });
+            },
+
+
+            fetchDataDelay: function(){
+                /* Add a short delay in fetching the data to avoid hitting the API
+                * at every change event
+                */
+                if (this.fetchDataDelayTimer) {
+                    window.clearTimeout(this.fetchDataDelayTimer);
+                }
+
+                let ctx = this;
+
+                this.fetchDataDelayTimer = window.setTimeout(function(){
+                    ctx.fetchData();
+                }, 1000);
             },
 
             deleteObj(id){
