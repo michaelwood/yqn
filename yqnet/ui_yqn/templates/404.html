@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}About{% endblock %}
+{% block content %}
+{% load static %}
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+    <div class="m-2">
+        <h2>Ahh</h2>
+        <p>Sorry I couldn't find {{request_path}}. <a href="https://quakr.net">Back to the main site</a></p>
+        <p>If you have any questions or issues please don't hesitate to contact us on info@<span id="domain"></span></p>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#domain").text("quakr.net");
+    });
+</script>
+
+
+{% endblock %}
