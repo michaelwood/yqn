@@ -9,7 +9,8 @@ var COOKIE_NAME = "yqn-site-settings";
 var COOKIE_SETTINGS = { path: "/" };
 
 var yqnUtils = {
-    /* From libtoaster Michael Wood GPLv2 */
+    spinnerManualMode: false,
+    /* urlParams From libtoaster Michael Wood GPLv2 */
     urlParams: function (obj){
         var str = "?";
 
@@ -95,6 +96,16 @@ var yqnUtils = {
 
         $("#share-modal").modal("show");
       },
+
+      showSpinner: function(active){
+        yqnUtils.spinnerManualMode = active;
+
+        if (active){
+            $("#ajax-loading-spinner").show();
+        } else {
+            $("#ajax-loading-spinner").hide();
+        }
+      },
 };
 
 var yqnBus = new Vue();
@@ -134,7 +145,9 @@ $(document).ajaxStart(function(){
 });
 
 $(document).ajaxComplete(function(){
-  $("#ajax-loading-spinner").hide();
+  if (!yqnUtils.spinnerManualMode){
+    $("#ajax-loading-spinner").hide();
+  }
 });
 
 
