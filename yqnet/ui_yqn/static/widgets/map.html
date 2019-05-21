@@ -32,8 +32,39 @@
         </div>
     </div>
 
+    <!-- Search area -->
+    <div class="mt-2 bt-2">
+        <div class="input-group mb-2">
+            <input type="text" placeholder="Search Event Name or Venue" class="form-control" v-model="searchText">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" v-on:click.prevent="search">Search</button>
+            </div>
+        </div>
+
+        <div v-if="searchResults.items.length > 0" class="bg-white border mb-2 pt-2 pb-2 rounded">
+            <ul>
+                <li v-for="result in searchResults.items">
+                    <!-- A venue -->
+                    <a v-if="result.hasOwnProperty('lat') && result.hasOwnProperty('lng')" href="#" title="Show on the Map" v-on:click.prevent="zoomTo(result.lat, result.lng)">
+                    {{result.title}}</a>
+
+                    <!-- An event -->
+                    <a v-if="result.hasOwnProperty('venue_details') && result.venue_details" href="#" title="Show on the Map" v-on:click.prevent="zoomTo(result.venue_details.lat, result.venue_details.lng)">
+                    {{result.title}}</a>
+
+                    <a v-if="result.hasOwnProperty('region_details') && result.region_details" href="#" title="Show on the Map" v-on:click.prevent="fitTo(result.region_details)">
+                    {{result.title}}</a>
+
+                    <a v-bind:href="result.url" v-bind:title="result.title + ' Page'"><i class="fas ml-2 fa-link align-text-top action-menu-yqn"></i></a>
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- end search area -->
+
     <a name="map"></a>
-    <div id="map-render-area" style="min-height: 70vh;" class="mb-2">
+    <div id="map-render-area" style="min-height: 70vh;" class="border rounded mb-2">
         <div class="leaflet-top leaflet-right">
           <button id="locate-me" class="btn btn-sm btn-light border mt-2 mr-2" style="pointer-events:auto !important" v-on:click="locate">
                 <i class="far fa-compass"></i>
@@ -49,59 +80,8 @@
         </div>
     </div>
 
-
     <div>
-        <transition-group name="list" tag="div">
-            <div class="d-flex flex-row w-100 p-3 shadow-sm bg-white rounded mb-3 list-item" v-for="venue in venues" v-bind:key="venue.id">
-                <a v-bind:name="venue.title"></a>
-
-                <div class="d-flex flex-column flex-fill">
-
-                    <div class="d-flex flex-row flex-fill">
-                        <div class="rounded-circle post-thumb d-block" style="min-width: 90px; background-color: #343a40">
-                            <h3 class="text-center mt-4" style="color: white;"><i class="fas fa-map-marker-alt"></i></h3>
-                        </div>
-
-                        <div class="ml-3 d-flex flex-column pb-2 flex-fill">
-                            <h3>{{venue.title}}</h3>
-                            <p>
-                                Location: <span v-html="venue.address"></span> {{venue.postcode}} <a v-bind:href="'https://www.google.com/maps/search/?api=1&query=' + encodeURI(venue.postcode)">Google Map</a>
-                            </p>
-                            <p>See event links for full details.</p>
-                        </div>
-                    </div>
-
-                    <div class="d-flex flex-column mt-3 ml-2">
-                        <h5>Events:</h5>
-                        <ul>
-                            <li v-for="event in venue.eventslocation_set">
-                                <a v-if="event.url" v-bind:href="event.url">{{event.title}}</a>
-                                <span v-else>{{event.title}}</span>
-
-                                <span v-if="event.group_page"> By Group: <a v-bind:href="event.group_page.url">{{event.group_page.title}}</a></span>
-                            </li>
-
-                            <li v-for="event in venue.event_set"><a  v-bind:href="event.url">{{event.title}}</a> {{event.start}} - {{event.end}}</li>
-                        </ul>
-                        <a href="#map" class="ml-auto">Back to map</a>
-                    </div>
-
-                </div>
-
-                <div class="dropdown dropleft action-menu-yqn">
-                    <a href class="action-menu-yqn p-1 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" v-bind:href="venue.url"><i class="fas fa-map-marker-alt"></i> Venue</a>
-                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(venue.url)"><i class="fas fa-share-alt"></i> Share</a>
-                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Venue', objectId: 'venue.id', report: true, title: venue.title })" ><i class="far fa-flag"></i> Report</a>
-                    </div>
-                </div> <!-- / dropdown -->
-            </div>
-        </transition-group>
-
-
+        <!-- regional events -->
         <transition-group name="list" tag="div">
             <div class="d-flex flex-row w-100 p-1 shadow-sm bg-white rounded pt-3 mb-3 list-item" v-for="region in regions" v-bind:key="region.id" v-if="region.eventslocation_set.length > 0">
                 <a v-bind:name="region.title"></a>
@@ -149,6 +129,56 @@
         </transition-group>
 
 
+        <transition-group name="list" tag="div">
+            <div class="d-flex flex-row w-100 p-3 shadow-sm bg-white rounded mb-3 list-item" v-for="venue in venues" v-bind:key="venue.id">
+                <a v-bind:name="venue.title"></a>
+
+                <div class="d-flex flex-column flex-fill">
+
+                    <div class="d-flex flex-row flex-fill">
+                        <div class="rounded-circle post-thumb d-block" style="min-width: 90px; background-color: #343a40">
+                            <h3 class="text-center mt-4" style="color: white;"><i class="fas fa-map-marker-alt"></i></h3>
+                        </div>
+
+                        <div class="ml-3 d-flex flex-column pb-2 flex-fill">
+                            <h3>{{venue.title}}</h3>
+                            <p>
+                                Location: <span v-html="venue.address"></span> {{venue.postcode}} <a v-bind:href="'https://www.google.com/maps/search/?api=1&query=' + encodeURI(venue.postcode)" target="_blank" title="Google map">Google Map</a>
+                            </p>
+                            <a href="#map" v-on:click="zoomTo(venue.lat, venue.lng)">Show on Map <i class="fas fa-binoculars"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column mt-2 ml-2">
+                        <h5>Events at {{venue.title}}:</h5>
+                        <ul>
+                            <li v-for="event in venue.eventslocation_set">
+                                <a v-if="event.url" v-bind:href="event.url">{{event.title}}</a>
+                                <span v-else>{{event.title}}</span>
+
+                                <span v-if="event.group_page"> By Group: <a v-bind:href="event.group_page.url">{{event.group_page.title}}</a></span>
+                            </li>
+
+                            <li v-for="event in venue.event_set"><a  v-bind:href="event.url">{{event.title}}</a> {{event.start}} - {{event.end}}</li>
+                        </ul>
+                        <a href="#map" class="ml-auto">Back to map</a>
+                    </div>
+
+                </div>
+
+                <div class="dropdown dropleft action-menu-yqn">
+                    <a href class="action-menu-yqn p-1 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" v-bind:href="venue.url"><i class="fas fa-map-marker-alt"></i> Venue</a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnUtils.share(venue.url)"><i class="fas fa-share-alt"></i> Share</a>
+                        <a class="dropdown-item" href="#" v-on:click.prevent="yqnBus.$emit('contact', { modelName: 'Venue', objectId: 'venue.id', report: true, title: venue.title })" ><i class="far fa-flag"></i> Report</a>
+                    </div>
+                </div> <!-- / dropdown -->
+            </div>
+        </transition-group>
+
     </div>
 
 </div>
@@ -172,6 +202,8 @@ Vue.component('map-area', {
                 fetchDataDelayTimer: null,
                 regions: [],
                 regionsHaveEvents: false,
+                searchResults: { items: [], total: 0 },
+                searchText: null,
             }
         },
 
@@ -245,6 +277,7 @@ Vue.component('map-area', {
 
         watch: {
             located: "fetchData",
+            searchText: "searchDelay",
         },
 
         methods: {
@@ -351,6 +384,86 @@ Vue.component('map-area', {
 
             },
 
+            searchDelay: function(){
+                if (this.fetchDataDelayTimer){
+                    window.clearTimeout(this.fetchDataDelayTimer);
+                }
+
+                let ctx = this;
+
+                this.fetchDataDelayTimer = window.setTimeout(function(){
+                    ctx.search();
+                }, 1000);
+            },
+
+            search: function(){
+                if (this.searchText.length < 2){
+                    return;
+                }
+
+                /* Reset the current values */
+                this.searchResults.items = [];
+                this.searchResults.total = 0;
+
+                let ctx = this;
+                let param = { search: this.searchText };
+
+                let urlParams = yqnUtils.urlParams(param);
+
+                yqnUtils.showSpinner(true);
+
+                let doneCount = 0;
+                function done(){
+                    doneCount++;
+                    yqnUtils.showSpinner(true);
+                    if (doneCount == 3){
+                        yqnUtils.showSpinner(false);
+                    }
+                }
+
+                yqnUtils.showSpinner(true);
+
+                $.getJSON("/api/Venues/"+urlParams, function(data){
+                    ctx.searchResults.items = ctx.searchResults.items.concat(data);
+                    ctx.searchResults.total += data.length;
+                    done();
+                });
+
+                window.setTimeout(function(){
+                    $.getJSON("/api/Events/"+urlParams, function(data){
+                        ctx.searchResults.items = ctx.searchResults.items.concat(data);
+                        ctx.searchResults.total += data.length;
+                        done();
+                    });
+                }, 1000);
+
+                window.setTimeout(function(){
+                    $.getJSON("/api/EventsLocations/"+urlParams, function(data){
+                        ctx.searchResults.items = ctx.searchResults.items.concat(data);
+                        ctx.searchResults.total += data.length;
+                        done();
+                    });
+                }, 2000);
+
+            },
+
+            zoomTo: function(lat, lng){
+                /* Zoom closer in */
+                /* No need to trigger the whole lot if we're already at that position */
+                let currentMapCenter = this.map.getCenter();
+                if (currentMapCenter.lat == lat && currentMapCenter.lng == lng){
+                    return;
+                }
+
+                this.map.setView([lat, lng], 16);
+            },
+
+            fitTo: function(regionDetails){
+                this.map.fitBounds([
+                    [regionDetails.lat_tl, regionDetails.lng_tl],
+                    [regionDetails.lat_br, regionDetails.lng_br]
+                ]);
+            },
         },
 
 });
