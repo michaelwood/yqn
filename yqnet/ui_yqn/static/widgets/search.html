@@ -110,41 +110,66 @@ Vue.component('search', {
 
                 this.reset();
 
-                param = { search: this.currentQuery };
+                let param = { search: this.currentQuery };
 
                 window.history.pushState({ query : this.currentQuery }, "q", "?q="+this.currentQuery);
 
                 let urlParams = yqnUtils.urlParams(param);
                 let ctx = this;
 
+                yqnUtils.showSpinner(true);
+
+                let doneCount = 0;
+                function done(){
+                    doneCount++;
+                    yqnUtils.showSpinner(true);
+                    if (doneCount == 5){
+                        yqnUtils.showSpinner(false);
+                    }
+                }
+
+                yqnUtils.showSpinner(true);
+
                 this.findPages();
 
                 $.getJSON("/api/Venues/"+urlParams, function(data){
                     ctx.results.venues = data;
                     ctx.results.total += data.length;
+                    done();
                 });
 
-                $.getJSON("/api/Events/"+urlParams, function(data){
-                    ctx.results.events = ctx.results.events.concat(data);
-                    ctx.results.total += data.length;
-                });
+                window.setTimeout(function () {
+                    $.getJSON("/api/Events/" + urlParams, function (data) {
+                        ctx.results.events = ctx.results.events.concat(data);
+                        ctx.results.total += data.length;
+                        done();
+                    });
+                }, 1000);
 
-                $.getJSON("/api/EventsLocations/"+urlParams, function(data){
-                    ctx.results.events = ctx.results.events.concat(data);
-                    ctx.results.total += data.length;
-                });
+                window.setTimeout(function () {
+                    $.getJSON("/api/EventsLocations/" + urlParams, function (data) {
+                        ctx.results.events = ctx.results.events.concat(data);
+                        ctx.results.total += data.length;
+                        done();
+                    });
+                }, 2000);
 
-                $.getJSON("/api/GroupPages/"+urlParams, function(data){
-                    ctx.results.groups = data;
-                    ctx.results.total += data.length;
-                });
+                window.setTimeout(function () {
+                    $.getJSON("/api/GroupPages/" + urlParams, function (data) {
+                        ctx.results.groups = data;
+                        ctx.results.total += data.length;
+                        done();
+                    });
+                }, 3000);
 
-                $.getJSON("/api/Posts/"+urlParams, function(data){
-                    ctx.results.posts = data.results;
-                    ctx.results.total += data.results.length;
-                });
-
-           },
+                window.setTimeout(function () {
+                    $.getJSON("/api/Posts/" + urlParams, function (data) {
+                        ctx.results.posts = data.results;
+                        ctx.results.total += data.results.length;
+                        done();
+                    });
+                }, 4000);
+            },
 
            fetchDataDelay: function(){
                 /* Add a short delay in fetching the data to avoid hitting the API
@@ -153,6 +178,8 @@ Vue.component('search', {
                 if (this.fetchDataDelayTimer){
                     window.clearTimeout(this.fetchDataDelayTimer);
                 }
+
+                this.reset();
 
                 let ctx = this;
 
