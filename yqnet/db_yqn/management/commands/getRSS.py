@@ -47,41 +47,25 @@ class Command(BaseCommand):
             except AttributeError:
                 thumbnail = None
 
-            # Due to the sanitisation of the text it is unlikely to match an
-            # existing entry so we have to check first to see if we have this
-            # post by excluding the text data.
+            post, created = Post.objects.get_or_create(
+                title=entry.title,
+                text=entry.summary,
+                publish_date=published,
+                source=xml_feed.source,
+                user=xml_feed.user,
+                ext_author=name,
+                thumbnail=thumbnail,
+                ext_url=entry.link,
+                xml_feed=xml_feed)
 
-            try:
-                Post.objects.get(title=entry.title,
-                                 publish_date=published,
-                                 source=xml_feed.source,
-                                 user=xml_feed.user,
-                                 ext_author=name,
-                                 thumbnail=thumbnail,
-                                 ext_url=entry.link,
-                                 xml_feed=xml_feed)
-
-                logger.warn("  Skipping %s as we already have it", entry.title)
-            except Post.DoesNotExist:
-
-                Post.objects.create(title=entry.title,
-                                    publish_date=published,
-                                    text=entry.summary,
-                                    source=xml_feed.source,
-                                    user=xml_feed.user,
-                                    ext_author=name,
-                                    thumbnail=thumbnail,
-                                    ext_url=entry.link,
-                                    xml_feed=xml_feed)
-
+            if created:
                 self.total_added = self.total_added + 1
-
-            except Post.MultipleObjectsReturned:
-                logger.warn("  Database has already got duplicates. Doing nothing for %s", entry.title)
-
+            else:
+                logger.warn("  Skipping %s as we already have it", entry.title)
 
         except Exception as e:
-            logger.warn("Error saving rss entry as a post %s", e)
+            # Move on
+            logger.warn("Not saving rss entry as a post %s", e)
 
 
     def handle(self, *args, **options):
