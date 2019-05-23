@@ -96,6 +96,11 @@ class Post(models.Model):
     media = models.ForeignKey(UserMedia, on_delete=models.CASCADE, null=True, blank=True)
     comments = models.ManyToManyField("self", symmetrical=False, blank=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'text', 'title'], name='unique_post')
+        ]
+
     def thumbnail_computed(self):
 
         if self.thumbnail:
@@ -174,7 +179,7 @@ def validate_no_slug_clash(value):
 
 class GroupPage(models.Model):
 
-    slug_help = "This sets up a short link to the page e.g. 'my-group-name' results in http://yqnet.uk/my-group-name"
+    slug_help = "This sets up a short link to the page e.g. 'my-group-name' results in https://quakr.net/my-group-name"
     title = models.CharField(max_length=400)
 
     slug = models.SlugField(max_length=200,
