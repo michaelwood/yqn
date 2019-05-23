@@ -25,10 +25,10 @@ class Command(BaseCommand):
     total_added = 0
     base_url = "https://quaker.org.uk"
     thumb_url = "https://quaker.org.uk/assets/quakers-logo-b2e98470cdb2cc01191f7dc88d5825f557e128bd5490aa7e8ae02f840ccdf45e.svg"
-    name = "Britian Yearly Meeting"
+    name = "Britain Yearly Meeting"
 
     def extract_article(self, article):
-        title = article.h3.a.text
+        title = article.h3.a.text.strip()
         ext_url = "%s%s" % (self.base_url, article.h3.a['href'])
         published = None
 
@@ -42,31 +42,32 @@ class Command(BaseCommand):
             logger.warn("Couldn't work out a date")
             pass
 
-        text = article.find_all("p")[-1:][0].text
+        text = article.find_all("p")[-1:][0].text.strip()
 
         user = User.objects.filter(is_superuser=True).first()
 
         try:
-            try:
-                post, created = Post.objects.get_or_create(
-                    title=title,
-                    text=text,
-                    source=Sources.NEWS,
-                    user=user,
-                    ext_author=self.name,
-                    thumbnail=self.thumb_url,
-                    ext_url=ext_url)
+            post, created = Post.objects.get_or_create(
+                title=title,
+                text=text,
+                source=Sources.NEWS,
+                user=user,
+                ext_author=self.name,
+                thumbnail=self.thumb_url,
+                ext_url=ext_url)
 
-                if not created:
-                    logger.warn("  Skipping %s as we already have it", title)
-                else:
-                    self.total_added = self.total_added + 1
-
-            except Post.MultipleObjectsReturned:
-                logger.warn("  Database has already got duplicates. Doing nothing for %s", title)
+            if created:
+                self.total_added = self.total_added + 1
+                # We do this later on due to not wanting to match against the
+                # time in get_or_create
+                post.published = published
+                post.save()
+            else:
+                logger.warn("Skipping %s as we already have it", title)
 
         except Exception as e:
-            logger.warn("Error saving rss as a post %s", e)
+            # Any exceptions we can just skip this one and move on
+            logger.warn("Not saving BYM news post %s", e)
 
 
     def load_from_web(self):
