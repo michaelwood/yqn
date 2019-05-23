@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='post',
-            constraint=models.UniqueConstraint(fields=('user', 'text', 'title'), name='unique_post'),
+            constraint=models.UniqueConstraint(fields=('user', 'title'), name='unique_post'),
         ),
     ]

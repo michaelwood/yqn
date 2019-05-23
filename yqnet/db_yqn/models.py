@@ -98,7 +98,7 @@ class Post(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user', 'text', 'title'], name='unique_post')
+            models.UniqueConstraint(fields=['user', 'title'], name='unique_post')
         ]
 
     def thumbnail_computed(self):
