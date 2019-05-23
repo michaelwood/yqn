@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 self.total_added = self.total_added + 1
                 # We do this later on due to not wanting to match against the
                 # time in get_or_create
-                post.published = published
+                post.publish_date = published
                 post.save()
             else:
                 logger.warn("Skipping %s as we already have it", title)
